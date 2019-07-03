@@ -301,6 +301,10 @@ block-stream@*:
   dependencies:
     inherits "~2.0.0"
 
+bluebird@3.5.4:
+  version "3.5.4"
+  resolved "https://registry.yarnpkg.com/bluebird/-/bluebird-3.5.4.tgz#d6cc661595de30d5b3af5fcedd3c0b3ef6ec5714"
+
 bluebird@^3.2.2, bluebird@^3.4.0, bluebird@^3.5.0, bluebird@^3.5.1:
   version "3.5.5"
   resolved "https://registry.yarnpkg.com/bluebird/-/bluebird-3.5.5.tgz#a8d0afd73251effbbd5fe384a77d73003c17a71f"
@@ -805,7 +809,7 @@ ee-first@1.1.1:
   version "1.1.1"
   resolved "https://registry.yarnpkg.com/ee-first/-/ee-first-1.1.1.tgz#590c61156b0ae2f4f0255732a158b266bc56b21d"
 
-ejs@^2.3.4:
+ejs@2.6.1, ejs@^2.3.4:
   version "2.6.1"
   resolved "https://registry.yarnpkg.com/ejs/-/ejs-2.6.1.tgz#498ec0d495655abc6f23cd61868d926464071aa0"
 
@@ -1346,6 +1350,17 @@ hexo-generator-index@^0.2.1:
   dependencies:
     hexo-pagination "0.0.2"
     object-assign "^4.0.1"
+
+hexo-generator-seo-friendly-sitemap@^0.0.25:
+  version "0.0.25"
+  resolved "https://registry.yarnpkg.com/hexo-generator-seo-friendly-sitemap/-/hexo-generator-seo-friendly-sitemap-0.0.25.tgz#73a02197bc65a38738a0d3927128e2e48ceb29ce"
+  dependencies:
+    bluebird "3.5.4"
+    ejs "2.6.1"
+    lodash "4.17.11"
+    moment "2.24.0"
+    pretty-data "0.40.0"
+    url-join "4.0.0"
 
 hexo-generator-tag@^0.2.0:
   version "0.2.0"
@@ -1900,7 +1915,7 @@ lodash.some@^4.4.0:
   version "4.6.0"
   resolved "https://registry.yarnpkg.com/lodash.some/-/lodash.some-4.6.0.tgz#1bb9f314ef6b8baded13b549169b2a945eb68e4d"
 
-lodash@^4.0.0, lodash@^4.17.11, lodash@^4.17.5, lodash@^4.2.1, lodash@~4.17.10:
+lodash@4.17.11, lodash@^4.0.0, lodash@^4.17.11, lodash@^4.17.5, lodash@^4.2.1, lodash@~4.17.10:
   version "4.17.11"
   resolved "https://registry.yarnpkg.com/lodash/-/lodash-4.17.11.tgz#b39ea6229ef607ecd89e2c8df12536891cac9b8d"
 
@@ -2075,7 +2090,7 @@ moment-timezone@^0.5.14:
   dependencies:
     moment ">= 2.9.0"
 
-"moment@>= 2.9.0", moment@^2.10.6, moment@^2.18.0, moment@^2.19.4:
+moment@2.24.0, "moment@>= 2.9.0", moment@^2.10.6, moment@^2.18.0, moment@^2.19.4:
   version "2.24.0"
   resolved "https://registry.yarnpkg.com/moment/-/moment-2.24.0.tgz#0d055d53f5052aa653c9f6eb68bb5d12bf5c2b5b"
 
@@ -2517,6 +2532,10 @@ postcss@^7.0.0:
 preserve@^0.2.0:
   version "0.2.0"
   resolved "https://registry.yarnpkg.com/preserve/-/preserve-0.2.0.tgz#815ed1f6ebc65926f865b310c0713bcb3315ce4b"
+
+pretty-data@0.40.0:
+  version "0.40.0"
+  resolved "https://registry.yarnpkg.com/pretty-data/-/pretty-data-0.40.0.tgz#572aa8ea23467467ab94b6b5266a6fd9c8fddd72"
 
 pretty-hrtime@^1.0.2:
   version "1.0.3"
@@ -3251,6 +3270,10 @@ uri-js@^4.2.2:
 urix@^0.1.0:
   version "0.1.0"
   resolved "https://registry.yarnpkg.com/urix/-/urix-0.1.0.tgz#da937f7a62e21fec1fd18d49b35c2935067a6c72"
+
+url-join@4.0.0:
+  version "4.0.0"
+  resolved "https://registry.yarnpkg.com/url-join/-/url-join-4.0.0.tgz#4d3340e807d3773bda9991f8305acdcc2a665d2a"
 
 use@^3.1.0:
   version "3.1.1"
