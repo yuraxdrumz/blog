@@ -8,20 +8,20 @@ tags:
   - Context Maps
 ---
 Ideally, it would be great to have a single place that incorporates all of our models, but in reality, our systems fragment to multiple models and we need to understand how to approach building them in way that allows future changes quickly.
-Strategic Domain Driven Design is a high level approach to distributed software architecture. One of its features is context maps, which allow understanding your requirements better through the definition of different relationships between bounded contexts (a boundary within which the ubiquitous language is consistent). In this short post I will introduce you to the basics of context maps.
+Strategic Domain Driven Design is a high level approach to distributed software architecture and is an essential part of DDD. One of its features is context maps, which allows grasping the different relationships between bounded contexts (a boundary within which the ubiquitous language is consistent) and gives the teams a better understanding on how they affect each other. In this short post I will introduce you to the basics of context maps.
 
 ## How to approach Strategic DDD
-Before starting a new project, I always try to understand the requirements better in order to solve the problem at hand easier. To do that, I draw the initial bounded contexts and then I start connecting them with what is called context maps. Understanding context maps is crucial to your business, as wrong relationships between components can quickly turn into a *big ball of mud*, as the experts call it. 
+Before implementing a new feature/project, I draw the initial/existing bounded contexts and then I start connecting them with context maps. Understanding context maps is crucial to your business, as wrong relationships between components can quickly turn into a *big ball of mud*, as the experts call it. 
 ## Types of context maps
-There are several types of context maps that you can define:
-  - Shared Kernel - This is a shared domain model between two teams. A subset of the domain along with its model are shared and agreed upon between the teams.
+Starting from the top, each context map type has greater level of communication between teams at the expense of control over the domain:
+  - Shared Kernel - This is a shared domain model between two teams. Each team has an agreed upon subset of the domain along with its model.
   - Partnership - The teams have a mutual dependency on each other for delivery.
   - Customer-Supplier - The teams define interfaces to adhere and one team acts as a downstream (customer) to another team, which is the upstream (supplier). The upstream team can make changes without fear of breaking something downstream. The domains can evolve independently as long as the upstream context fulfills its interfaces.
+  - Open Host Service - A bounded context that offers a defined set of functionalities exposed to other systems. Any downstream system can implement their own integration.
+  - Published Language - Similar to Open Host Service, however it models a domain as a common language between bounded contexts
   - Conformist - The downstream team conforms to the model of the upstream and there is no translation of models between them. If the upstream is a mess and the dev team behind it does not want / cant change it, the mess is propagated downstream.
   - Anticorruption Layer (ACL) - A layer that isolates/abstracts the downstream's models from another system's models by translation.
   - Separate Ways - There is no connection between the bounded contexts. The teams can find their own solutions in ther domains.
-  - Open Host Service - A bounded context that offers a defined set of functionalities exposed to other systems. Any downstream system can implement their own integration.
-  - Published Language - Similar to Open Host Service, however it models a domain as a common language between bounded contexts
 
 ## Example
 ![](./sddd.jpg)
