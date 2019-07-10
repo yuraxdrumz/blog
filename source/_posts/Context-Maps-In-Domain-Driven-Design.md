@@ -1,5 +1,5 @@
 ---
-title: Basic Strategic Domain Driven Design
+title: Context Maps in Domain Driven Design
 date: 2019-07-10 15:52:33
 category: Architecture
 tags: 
@@ -23,7 +23,7 @@ There are several types of context maps that you can define:
   - Open Host Service - A bounded context that offers a defined set of functionalities exposed to other systems. Any downstream system can implement their own integration.
   - Published Language - Similar to Open Host Service, however it models a domain as a common language between bounded contexts
 
-## Example Domain
+## Example
 ![](./sddd.jpg)
 Once we identify what are our domains and boundaries we can start drawing context maps between them. In this example we can see the U for upstream and D for downstream. The online banking services acts as a supporting or a generic subdomain to our core PFM Banking domain. We use ACL when we receive a response and model it appropriately internally. We have a partnership relationship with the Expense Tracking Domain, which means we need to deliver together as we may have a mutual dependency. Last, we have a conformist relationship with the Web User Profiling. Maybe, the team cant change or wont change their implementation of a model, so we need to do it on our side, on the core domain.
 
