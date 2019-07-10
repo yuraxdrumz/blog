@@ -25,7 +25,7 @@ There are several types of context maps that you can define:
 
 ## Example Domain
 ![](./sddd.jpg)
-Once we identify what are our domains and boundaries we can start drawing context maps between them. In this example we can see the U for upstream and D for downstream. The online banking services acts as a supporting or a generic subdomain to our core PFM Banking domain. We use ACL to give a unified response to the upstream. We have a partnership relationship with the Expense Tracking Domain, which means we need to deliver together as we may have a mutual dependency. Last, we have a conformist relationship with the Web User Profiling. Maybe, the team cant change or wont change their implementation of a model, so we need to do it on our side, on the core domain.
+Once we identify what are our domains and boundaries we can start drawing context maps between them. In this example we can see the U for upstream and D for downstream. The online banking services acts as a supporting or a generic subdomain to our core PFM Banking domain. We use ACL when we receive a response and model it appropriately internally. We have a partnership relationship with the Expense Tracking Domain, which means we need to deliver together as we may have a mutual dependency. Last, we have a conformist relationship with the Web User Profiling. Maybe, the team cant change or wont change their implementation of a model, so we need to do it on our side, on the core domain.
 
 
 ## Summary
