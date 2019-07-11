@@ -11,7 +11,8 @@ Ideally, it would be great to have a single place that incorporates all of our m
 Strategic Domain Driven Design is a high level approach to distributed software architecture and is an essential part of DDD. One of its features is context maps, which allows grasping the different relationships between bounded contexts (a boundary within which the ubiquitous language is consistent) and gives the teams a better understanding on how they affect each other. In this short post I will introduce you to the basics of context maps.
 
 ## How to approach Strategic DDD
-Before implementing a new feature/project, I draw the initial/existing bounded contexts and then I start connecting them with context maps. Understanding context maps is crucial to your business, as wrong relationships between components can quickly turn into a *big ball of mud*, as the experts call it. 
+When working on a project, we can have teams that are large by count or located abroad, we can also have external systems and legacy systems to communicate with. The idea is to have some sort of wiki that teams can refer to, that is neither overly complex nor missing information. Understanding the relationships early on can help diagnose problems, as wrong relationships between components can quickly turn into a *big ball of mud*.
+
 ## Types of context maps
 Starting from the top, each context map type has greater level of communication between teams at the expense of control over the domain:
   - Shared Kernel - This is a shared domain model between two teams. Each team has an agreed upon subset of the domain along with its model.
