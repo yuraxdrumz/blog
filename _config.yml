@@ -10,7 +10,15 @@ author: Yuri Khomyakov
 language: en
 theme_style: light
 
-
+feed:
+  type: atom
+  path: atom.xml
+  limit: 20
+  hub:
+  content:
+  content_limit: 140
+  content_limit_delim: ' '
+  order_by: -date
 # URL
 ## If your site is put in a subdirectory, set url as 'http://yoursite.com/child' and root as '/child/'
 url: https://yuriktech.com/
@@ -38,12 +46,8 @@ render_drafts: false
 post_asset_folder: true
 relative_link: false
 future: true
-highlight:
-  enable: true
-  line_number: true
-  auto_detect: true
-  tab_replace:
-  
+customize:
+  highlight: monokai
 # Home page setting
 # path: Root path for your blogs index page. (default = '')
 # per_page: Posts displayed per page. (0 = disable pagination)
@@ -78,7 +82,7 @@ excerpt:
 # Extensions
 ## Plugins: https://hexo.io/plugins/
 ## Themes: https://hexo.io/themes/
-theme: aero-dual
+theme: icarus
 disqus_shortname: yuritech
 comments: true
 
