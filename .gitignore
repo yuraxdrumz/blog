@@ -6,3 +6,5 @@ node_modules/
 public/
 .deploy*/
 .history
+yarn.lock
+package-lock.json
