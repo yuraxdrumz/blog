@@ -9,6 +9,7 @@ keywords: Blogger, Software Enginner, Software Architect
 author: Yuri Khomyakov
 language: en
 theme_style: light
+toc: true
 
 feed:
   type: atom
