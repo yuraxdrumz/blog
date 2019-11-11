@@ -38,6 +38,7 @@ Microservices can communicate with each other either sync or async:
 ### Sync - HTTP 1.1
 Pros:
   * Most tutorials, examples and implementations are in HTTP, so it is easier to pick it up and get started
+
 Cons:
   * For applications that need to do long running work and/or react to certain events, this type of design can quickly become a bottleneck
 
