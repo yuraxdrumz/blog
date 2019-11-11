@@ -36,8 +36,7 @@ Microservices can communicate with each other either sync or async:
 
 ### Sync - HTTP 1.1
 Pros:
-  * Easier to manage, as HTTP is straight forward, send a request, wait for a response
-
+  * Most tutorials, examples and implementations are in HTTP, so it is easier to pick it up and get started
 Cons:
   * For applications that need to do long running work and/or react to certain events, this type of design can quickly become a bottleneck
 
@@ -110,4 +109,4 @@ Before rushing to build microservices, remember that there is a lot more to them
 The one rule I always try to follow is `keep it simple stupid`. 
 People say monolith like it is a bad word, when in reality, they secretly mean the code itself is coupled, undocumented and not modular. 
 It is perfectly fine and desired to run your code on a single server with a single database on a single platform, as long as you keep your code modular.
-Microservices are an **evolutionary step** you need to take if your lucky and your business thrives, but **it is not the first step**!
+Microservices are an **evolutionary step** you need to take if your lucky and your business thrives, but **they are not the first step**!
