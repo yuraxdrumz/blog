@@ -1,8 +1,6 @@
 ---
 title: What Are Microservices
-date: 2019-11-05 20:24:24
-category: Architecture
-tags: 
+tags:
   - Microservices
   - Design
   - Node.js
@@ -10,7 +8,10 @@ tags:
   - API Gateway
   - Sidecar Pattern
   - Software Architecture
+category: Architecture
+date: 2019-11-05 20:24:24
 ---
+
 ![](./legos-2.jpg)
 After having written and implemented several microservice architectures, I wanted to have a go at explaining microservices from my point of view and share my insights. In this post I will explain what are microservices, what are their pros and cons and the different approaches towards building microservices.
 
