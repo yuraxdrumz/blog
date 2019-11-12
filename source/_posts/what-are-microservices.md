@@ -13,7 +13,7 @@ date: 2019-11-05 20:24:24
 ---
 
 ![](./legos-2.jpg)
-After having written and implemented several microservice architectures, I wanted to have a go at explaining microservices from my point of view and share my insights. In this post I will explain what are microservices, what are their pros and cons and the different approaches towards building microservices.
+After having written and implemented several microservice architectures, I wanted to have a go at explaining microservices from my point of view and share my insights. In this post I will explain what are microservices, what are their pros and cons, how they communicate and the different approaches towards building microservices.
 
 ## What are microservices
 There are a lot of explanations out in the wild regarding what are microservices. Everyone keeps mentioning loose coupling and independant deployments, but in my experience, that is not always true. Sometimes, you will have to deploy several microservices together because they are coupled, a.k.a, orchestration. In my point of view, microservices need to control their own copy of the application data and they should be self contained, meaning, the business logic they handle should only be tied to a specific microservice and to it alone.
@@ -100,15 +100,10 @@ Cons:
   * Easy to leak functionality outside of services
   * Duplication of code between multiple composers
 
-## Conclusion
-There are a lot of pitfalls about running microservices:
-  1. You have to understand whether you need sync or async communication
-  2. You need to know how to separate your services by business logic
-  3. You need to understand how to keep your data consistent across services at any given moment
-  4. You need strong CI/CD, tooling and experienced team members
+## Wrapping Up
 
-Before rushing to build microservices, remember that there is a lot more to them. Always ask yourself, if you really need them. 
-The one rule I always try to follow is `keep it simple stupid`. 
-People say monolith like it is a bad word, when in reality, they secretly mean the code itself is coupled, undocumented and not modular. 
+We saw what are microservices, how they communicate, what do they offer and the different techniques to build them.
+Before rushing to build microservices, remember that there is a lot more to them. 
+People say monolith like it is a bad word, when in reality, they talk about the code and that it is coupled, undocumented and not modular. 
 It is perfectly fine and desired to run your code on a single server with a single database on a single platform, as long as you keep your code modular.
-Microservices are an **evolutionary step** you need to take if your lucky and your business thrives, but **they are not the first step**!
+Microservices are an **evolutionary step** you need to take as your business needs progress and become more demanding/complex  to the point microservices are helpful and not a burden.
