@@ -101,9 +101,10 @@ Cons:
   * Duplication of code between multiple composers
 
 ## Wrapping Up
+Before rushing to build microservices, remember that there is a lot more to them.
 
-We saw what are microservices, how they communicate, what do they offer and the different techniques to build them.
-Before rushing to build microservices, remember that there is a lot more to them. 
-People say monolith like it is a bad word, when in reality, they talk about the code and that it is coupled, undocumented and not modular. 
+People say monolith like it is a bad word, when in reality, they talk about the code and that it is coupled, undocumented and not modular.
+
 It is perfectly fine and desired to run your code on a single server with a single database on a single platform, as long as you keep your code modular.
+
 Microservices are an **evolutionary step** you need to take as your business needs progress and become more demanding/complex  to the point microservices are helpful and not a burden.
