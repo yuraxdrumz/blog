@@ -83,7 +83,7 @@ excerpt:
 # Extensions
 ## Plugins: https://hexo.io/plugins/
 ## Themes: https://hexo.io/themes/
-theme: ica
+theme: icarus
 disqus_shortname: yuritech
 comments: true
 
