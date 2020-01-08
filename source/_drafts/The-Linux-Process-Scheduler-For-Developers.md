@@ -1,5 +1,5 @@
 ---
-title: The Linux Process Scheduler
+title: The Linux Process Scheduler For Developers
 tags:
   - Concurrency
   - Parallelism
@@ -10,7 +10,7 @@ category: Operating Systems
 ---
 
 ![](./concurrency.jpg)
-The linux scheduler is a complex piece of software which allows our linux distros to maximize hardware utilization without starving our processes. In this post, I will introduce you to the types of schedulers, which type Linux uses and how it achieves its goal.
+The linux scheduler is a complex piece of software which allows our linux distros to maximize hardware utilization without starving our processes. In this post, I will introduce you to Linux's scheduler and how it operates.
 
 ### Types
 ### The Cooperative Scheduler
