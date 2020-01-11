@@ -15,33 +15,26 @@ The linux scheduler is a complex piece of software and it is responsible for mak
 
 Lately, I took a deep dive into how the OS handles the scheduling of threads (tasks). I found out the scheduler is not trivial at all and has a lot of interesting features we, as developers, can advantage of or at least keep in the back of our minds.
 
-### Why CFS ?
-The CFS came to life following a well studied classic scheduling algorithm called `weighted fair queuing`, originally invented for packet networks.
-The CFS uses a red-black tree data strcuture, which we will cover in the next section. 
-The CFS has a scheduling complexity of O(log N), where N is the number of tasks in the runqueue. Choosing a task can be done in constant time, but reinserting a task after it has run requires O(log N) operations.
-
-### Red-Black Tree
-### Timeslices
-### Priorities
-### Context switching
-### Conclusion
-
+## What is a scheduler
 The scheduler is the component of the kernel that selects which process to run next.
 There are two types of schedulers:
 
   - `preemptive` - the scheduler decides when a process is to cease running and a new process is to resume running (context switching)
   - `cooperative` - a process does not stop running until it voluntary decides to do so
 
-### Cooperative
-Now, let's say we had a `cooperative` scheduler, 1 core available and 50 single threaded applications running. That would mean we have `1 thread * 50 applications = 50 threads` running. Our pc would have one app working and everything else stuck, which is neither efficient nor good user experience. That is why modern OS's use a `preemptive` scheduler.
 
-### Preemptive
-When the scheduler decides to switch context to another thread,
-In Linux, each process receives a timeslice and a priority:
-   - `timeslice` - the maximum time a process can run before being replaced by another process
-   - `priority` - a number that represents the prioirty of the process running. Linux has a `nice` value (from -20 to 19) for standard priority and it has a `real-time` value (from 0 to 99) for higher priority, like I/O from the user
+## Why CFS ?
+The CFS came to life following a well studied classic scheduling algorithm called `weighted fair queuing`, originally invented for packet networks.
+The CFS uses a red-black tree data strcuture, which we will cover in the next section. 
+The CFS has a scheduling complexity of O(log N), where N is the number of tasks in the runqueue. Choosing a task can be done in constant time, but reinserting a task after it has run requires O(log N) operations.
 
+## Red-Black Tree
+## Timeslices
+## Priorities
+## Context switching
 A context switch can occur on several conditions:
   - When a processes timeslice reaches 0
   - Hardware interrupt
   - Transition between the user mode and kernel mode
+
+## Conclusion
