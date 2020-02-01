@@ -1,0 +1,1334 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><meta name="generator" content="Hexo 3.8.0">
+    <meta charset="utf-8">
+<title>Implementing Ports and Adapters - Yurik&#39;s Tech Blog</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta>
+<meta>
+<meta>
+<meta>
+
+    <meta name="description" content="There are different architectures that allow you to keep focus on your business domain and allow for fast paced development and changes. Examples would be: Clean Architecture, Onion Architecture and P">
+<meta name="keywords" content="Software Architecture,Ports and Adapters,Golang,Hexagonal">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Implementing Ports and Adapters">
+<meta property="og:url" content="https://yuriktech.com/2020/02/01/Implementing-Ports-and-Adapters/index.html">
+<meta property="og:site_name" content="Yurik&#39;s Tech Blog">
+<meta property="og:description" content="There are different architectures that allow you to keep focus on your business domain and allow for fast paced development and changes. Examples would be: Clean Architecture, Onion Architecture and P">
+<meta property="og:locale" content="en">
+<meta property="og:image" content="https://yuriktech.com/images/og_image.png">
+<meta property="og:updated_time" content="2020-02-01T16:15:21.910Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Implementing Ports and Adapters">
+<meta name="twitter:description" content="There are different architectures that allow you to keep focus on your business domain and allow for fast paced development and changes. Examples would be: Clean Architecture, Onion Architecture and P">
+<meta name="twitter:image" content="https://yuriktech.com/images/og_image.png">
+
+
+
+
+
+
+
+<link rel="icon" href="/favicon.ico">
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.7.2/css/bulma.css">
+<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.4.1/css/all.css">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Ubuntu:400,600|Source+Code+Pro">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@9.12.0/styles/monokai.css">
+
+
+    
+    
+    
+    <style>body>.footer,body>.navbar,body>.section{opacity:0}</style>
+    
+
+    
+    
+    
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/lightgallery@1.6.8/dist/css/lightgallery.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/justifiedGallery@3.7.0/dist/css/justifiedGallery.min.css">
+    
+
+    
+    
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/outdatedbrowser@1.1.5/outdatedbrowser/outdatedbrowser.min.css">
+
+
+    
+    
+    
+    
+
+<link rel="stylesheet" href="/css/back-to-top.css">
+
+
+    
+    
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-142167807-1"></script>
+<script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'UA-142167807-1');
+</script>
+
+
+    
+    
+    
+    
+
+    
+    
+<link rel="stylesheet" href="/css/progressbar.css">
+<script src="https://cdn.jsdelivr.net/npm/pace-js@1.0.2/pace.min.js"></script>
+
+    
+    
+    
+
+    
+    
+    
+
+
+<link rel="stylesheet" href="/css/style.css">
+</head>
+<body class="is-3-column">
+    <nav class="navbar navbar-main">
+    <div class="container">
+
+        <div class="navbar-menu">
+            
+            <div class="navbar-start">
+                
+                <a class="navbar-item" href="/">Home</a>
+                
+                <a class="navbar-item" href="/archives">Archives</a>
+                
+                <a class="navbar-item" href="/categories">Categories</a>
+                
+                <a class="navbar-item" href="/tags">Tags</a>
+                
+                <a class="navbar-item" href="/about">About</a>
+                
+            </div>
+            
+            <div class="navbar-end">
+                
+                    
+                    
+                    <a class="navbar-item" target="_blank" title="GitHub" href="https://github.com/yuraxdrumz">
+                        
+                        <i class="fab fa-github"></i>
+                        
+                    </a>
+                    
+                
+                
+                <a class="navbar-item is-hidden-tablet catalogue" title="Catalogue" href="javascript:;">
+                    <i class="fas fa-list-ul"></i>
+                </a>
+                
+                
+                <a class="navbar-item search" title="Search" href="javascript:;">
+                    <i class="fas fa-search"></i>
+                </a>
+                
+            </div>
+        </div>
+    </div>
+</nav>
+    
+    <section class="section">
+        <div class="container">
+            <div class="columns">
+                <div class="column is-8-tablet is-8-desktop is-6-widescreen has-order-2 column-main"><div class="card">
+    
+    <div class="card-content article ">
+        
+        <div class="level article-meta is-size-7 is-uppercase is-mobile is-overflow-x-auto">
+            <div class="level-left">
+                <time class="level-item has-text-grey" datetime="2020-02-01T16:15:21.000Z">2020-02-01</time>
+                
+                <div class="level-item">
+                <a class="has-link-grey -link" href="/categories/Architecture/">Architecture</a>
+                </div>
+                
+                
+                <span class="level-item has-text-grey">
+                    
+                    
+                    14 minutes read (About 2154 words)
+                </span>
+                
+                
+            </div>
+        </div>
+        
+        <h1 class="title is-size-3 is-size-4-mobile has-text-weight-normal">
+            
+                Implementing Ports and Adapters
+            
+        </h1>
+        <div class="content">
+            <p>There are different architectures that allow you to keep focus on your business domain and allow for fast paced development and changes. Examples would be: Clean Architecture, Onion Architecture and Ports and Adapters (also called hexagonal).<br><a href="/2019/06/11/Implementing-Clean-Architecture/">In my previous post</a>, I talked about Clean Architecture and how it helps get your code more modular and developer friendly after a somewhat short learning curve. After joining a new team, I noticed Clean Architecture did not really settle and the team found it to be somewhat over abstracted, so I decided to play around with a variation of Ports and Adapters.<br>In this post I will show what is Ports and Adapters and how I implemented it in Golang. Github repo is available <a href="https://github.com/yuraxdrumz/ports-and-adapters-golang" target="_blank" rel="noopener">here</a>.</p>
+<h3 id="Disclaimer"><a href="#Disclaimer" class="headerlink" title="Disclaimer"></a>Disclaimer</h3><p>Some of the things that I am going to write and show are my personal experiences and opinions.</p>
+<h3 id="Core-Idea"><a href="#Core-Idea" class="headerlink" title="Core Idea"></a>Core Idea</h3><p>Ports and Adapters architecture divides a system into several loosely-coupled interchangeable components. The components communicate with each other through abstracted API’s with the use of interfaces and their implementations.<br>This approach is an alternative to the traditional layered architecture, where components are divided into layers. There are no layers in Ports and Adapters, only ports &lt;- adapters, meaning there are no restrictions on how to structure the applications, only that an adapter relies on a port and the business logic port relies on other ports</p>
+<h3 id="Business-Logic"><a href="#Business-Logic" class="headerlink" title="Business Logic"></a>Business Logic</h3><p>All of your business specific use cases.<br>Example: upon adding a user to a board, send an email, save the user in the database and grant the user permissions to view the board from an auth service.</p>
+<h3 id="Ports"><a href="#Ports" class="headerlink" title="Ports"></a>Ports</h3><p>The interfaces to all of the components in your system. There are two kinds of ports: driven and driver.</p>
+<h4 id="Driven-Ports"><a href="#Driven-Ports" class="headerlink" title="Driven Ports"></a>Driven Ports</h4><p>Interfaces that your application business logic uses for its needs. </p>
+<h4 id="Driver-Ports"><a href="#Driver-Ports" class="headerlink" title="Driver Ports"></a>Driver Ports</h4><p>Interfaces for the outside world, a.k.a API</p>
+<h3 id="Adapters"><a href="#Adapters" class="headerlink" title="Adapters"></a>Adapters</h3><p>Implementations of our ports. They can be either driven or driver, depending on the port we use</p>
+<h4 id="Driven-Adapter"><a href="#Driven-Adapter" class="headerlink" title="Driven Adapter"></a>Driven Adapter</h4><p>Example: Service-To-Service adapter, for when we need to request some data from another service in our business logic use case</p>
+<h4 id="Driver-Adapter"><a href="#Driver-Adapter" class="headerlink" title="Driver Adapter"></a>Driver Adapter</h4><p>Example: GUI adapter, for when we need to convert events triggered by a GUI app to events defined by other ports</p>
+<h3 id="Prerequisites"><a href="#Prerequisites" class="headerlink" title="Prerequisites"></a>Prerequisites</h3><p>Because Ports and Adapters does not define a specific folder structure, I will not focus on it, but you can take a reference from the structure in the github repository.<br>One thing to note is I replaced the <code>driven</code> ports with the name <code>out</code> and the driver ports with the name <code>in</code>, as it confused developers that are new to Ports and Adapters<br>I like to name my packages as <code>package/ports</code>, and the adapters, like <code>package/console.go</code>, <code>package/web.go</code>, meaning there are two adapters, one is console and one is web for a specific port, that way it is easier to know what is implemented where.<br>Regarding the structs, I prefer putting them in each package as a sub package, in order to avoid cyclic import dependencies. <code>package/ports/...</code></p>
+<h3 id="Ports-and-Adapters-In-Practice"><a href="#Ports-and-Adapters-In-Practice" class="headerlink" title="Ports and Adapters In Practice"></a>Ports and Adapters In Practice</h3><p>lets build a shopping cart. Our cart will have two use cases, <code>addToCart</code> and <code>removeFromCart</code>. Let’s say that we need a warehouse service and a database to save the changes.</p>
+<p>We can create one port for all the use cases regarding the cart, or we can do a port per use case in the cart. It is up to you and the level of abstraction you seek.<br>I chose to put all the cart use cases under one port.</p>
+<h4 id="Ports-In-Practice"><a href="#Ports-In-Practice" class="headerlink" title="Ports In Practice"></a>Ports In Practice</h4><h5 id="Driven-ports"><a href="#Driven-ports" class="headerlink" title="Driven ports"></a>Driven ports</h5><p>Our warehouse package ports will look like this:<br><code>warehouse/ports.go</code></p>
+<figure class="highlight go hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-keyword">package</span> warehouse</span><br><span class="line"></span><br><span class="line"><span class="hljs-keyword">type</span> Port <span class="hljs-keyword">interface</span> &#123;</span><br><span class="line">	CheckIfAvailable(itemID <span class="hljs-keyword">string</span>) (<span class="hljs-keyword">bool</span>, error)</span><br><span class="line">	RemoveItemFromWarehouse(itemID <span class="hljs-keyword">string</span>) (<span class="hljs-keyword">bool</span>, error)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>Our cart repository package ports will look like this:<br><code>cartRepository/ports.go</code></p>
+<figure class="highlight go hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-keyword">package</span> cartrepository</span><br><span class="line"></span><br><span class="line"><span class="hljs-keyword">import</span> (</span><br><span class="line">	<span class="hljs-string">"github.com/yuraxdrumz/ports-and-adapters-golang/internal/app/cart/structs"</span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="hljs-keyword">type</span> Port <span class="hljs-keyword">interface</span> &#123;</span><br><span class="line">	AddItemToDB(item *structs.Item) (<span class="hljs-keyword">string</span>, error)</span><br><span class="line">	RemoveItemFromDB(itemID <span class="hljs-keyword">string</span>) (<span class="hljs-keyword">bool</span>, error)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>I like to use the repository design pattern to abstract database interaction.<br>I already wrote about it <a href="/2019/06/11/Implementing-Clean-Architecture/#Repository-Pattern">here</a>.</p>
+<p>Let’s see an example of the port for the cart.<br><code>cart/ports.go</code></p>
+<figure class="highlight go hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-keyword">package</span> cart</span><br><span class="line"></span><br><span class="line"><span class="hljs-keyword">import</span> <span class="hljs-string">"github.com/yuraxdrumz/ports-and-adapters-golang/internal/app/cart/structs"</span></span><br><span class="line"></span><br><span class="line"><span class="hljs-keyword">type</span> Port <span class="hljs-keyword">interface</span> &#123;</span><br><span class="line">	Add(item structs.Item) error</span><br><span class="line">	Remove(itemID <span class="hljs-keyword">string</span>) error</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h5 id="Driver-Ports-1"><a href="#Driver-Ports-1" class="headerlink" title="Driver Ports"></a>Driver Ports</h5><p><code>driver/ports.go</code></p>
+<figure class="highlight go hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-keyword">package</span> driver</span><br><span class="line"></span><br><span class="line"><span class="hljs-comment">// Port - how an adapter can use the app</span></span><br><span class="line"><span class="hljs-keyword">type</span> Port <span class="hljs-keyword">interface</span> &#123;</span><br><span class="line">	Run()</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>Now that we finished the ports part, lets look at the adapters.<br>We will first create simple adapters, like in memory repository adapter and a console warehouse adapter so that we can start using the app.<br>Afterwards, we will create an sql adapter to show how Ports and Adapters come to our advantage.</p>
+<h4 id="Adapters-In-Practice"><a href="#Adapters-In-Practice" class="headerlink" title="Adapters In Practice"></a>Adapters In Practice</h4><h5 id="Driven-Adapters"><a href="#Driven-Adapters" class="headerlink" title="Driven Adapters"></a>Driven Adapters</h5><p><code>warehouse/console.go</code></p>
+<figure class="highlight go hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-keyword">package</span> warehouse</span><br><span class="line"></span><br><span class="line"><span class="hljs-keyword">import</span> (</span><br><span class="line">	<span class="hljs-string">"errors"</span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="hljs-comment">// our console warehouse struct with all the adapters it uses, in this case with the console adapter we dont need any dependencies</span></span><br><span class="line"><span class="hljs-keyword">type</span> ConsoleWarehouse <span class="hljs-keyword">struct</span> &#123;&#125;</span><br><span class="line"></span><br><span class="line"><span class="hljs-comment">// a new console warehouse factory</span></span><br><span class="line"><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">NewConsoleWarehouse</span><span class="hljs-params">()</span> *<span class="hljs-title">ConsoleWarehouse</span></span> &#123;</span><br><span class="line">	<span class="hljs-keyword">return</span> &amp;ConsoleWarehouse&#123;&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="hljs-comment">// our implementation of the port for console warehouse</span></span><br><span class="line"><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-params">(w *ConsoleWarehouse)</span> <span class="hljs-title">CheckIfAvailable</span><span class="hljs-params">(itemID <span class="hljs-keyword">string</span>)</span> <span class="hljs-params">(<span class="hljs-keyword">bool</span>, error)</span></span> &#123;</span><br><span class="line">	<span class="hljs-keyword">if</span> itemID == <span class="hljs-string">"0"</span> &#123;</span><br><span class="line">		<span class="hljs-keyword">return</span> <span class="hljs-literal">false</span>, errors.New(<span class="hljs-string">"item is not available"</span>)</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="hljs-keyword">return</span> <span class="hljs-literal">true</span>, <span class="hljs-literal">nil</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="hljs-comment">// our implementation of the port for console warehouse</span></span><br><span class="line"><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-params">(w *ConsoleWarehouse)</span> <span class="hljs-title">RemoveItemFromWarehouse</span><span class="hljs-params">(itemID <span class="hljs-keyword">string</span>)</span> <span class="hljs-params">(<span class="hljs-keyword">bool</span>, error)</span></span> &#123;</span><br><span class="line">	<span class="hljs-keyword">if</span> itemID == <span class="hljs-string">"0"</span> &#123;</span><br><span class="line">		<span class="hljs-keyword">return</span> <span class="hljs-literal">false</span>, errors.New(<span class="hljs-string">"item cannot be removed from warehouse, please check again later"</span>)</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="hljs-keyword">return</span> <span class="hljs-literal">true</span>, <span class="hljs-literal">nil</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><code>cartRepository/inMemory.go</code></p>
+<figure class="highlight go hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-keyword">package</span> cartrepository</span><br><span class="line"></span><br><span class="line"><span class="hljs-keyword">import</span> (</span><br><span class="line">	<span class="hljs-string">"errors"</span></span><br><span class="line">	<span class="hljs-string">"github.com/yuraxdrumz/ports-and-adapters-golang/internal/app/cart/structs"</span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="hljs-comment">// in memory repository adapter, we dont have any dependencies on other adapters so its empty</span></span><br><span class="line"><span class="hljs-keyword">type</span> InMemoryRepository <span class="hljs-keyword">struct</span> &#123;&#125;</span><br><span class="line"></span><br><span class="line"><span class="hljs-comment">// new in memory repository factory</span></span><br><span class="line"><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">NewInMemoryRepository</span><span class="hljs-params">()</span> *<span class="hljs-title">InMemoryRepository</span></span> &#123;</span><br><span class="line">	<span class="hljs-keyword">return</span> &amp;InMemoryRepository&#123;&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="hljs-comment">// our implementation of the port</span></span><br><span class="line"><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-params">(r *InMemoryRepository)</span> <span class="hljs-title">AddItemToDB</span><span class="hljs-params">(item *structs.Item)</span> <span class="hljs-params">(<span class="hljs-keyword">bool</span>, error)</span></span> &#123;</span><br><span class="line">	<span class="hljs-keyword">if</span> item.Id == <span class="hljs-string">"0"</span> &#123;</span><br><span class="line">		<span class="hljs-keyword">return</span> <span class="hljs-literal">false</span>, errors.New(<span class="hljs-string">"cannot add item to db"</span>)</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="hljs-keyword">return</span> <span class="hljs-literal">true</span>, <span class="hljs-literal">nil</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="hljs-comment">// our implementation of the port</span></span><br><span class="line"><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-params">(r *InMemoryRepository)</span> <span class="hljs-title">RemoveItemFromDB</span><span class="hljs-params">(itemID <span class="hljs-keyword">string</span>)</span> <span class="hljs-params">(<span class="hljs-keyword">bool</span>, error)</span></span> &#123;</span><br><span class="line">	<span class="hljs-keyword">if</span> itemID == <span class="hljs-string">"0"</span> &#123;</span><br><span class="line">		<span class="hljs-keyword">return</span> <span class="hljs-literal">false</span>, errors.New(<span class="hljs-string">"item cannot be removed, please check again later"</span>)</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="hljs-keyword">return</span> <span class="hljs-literal">true</span>, <span class="hljs-literal">nil</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>Lets see the cart adapter with Add implemented</p>
+<p><code>cart/cart.go</code></p>
+<figure class="highlight go hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="hljs-keyword">package</span> cart</span><br><span class="line"></span><br><span class="line"><span class="hljs-keyword">import</span> (</span><br><span class="line">	<span class="hljs-string">"github.com/yuraxdrumz/ports-and-adapters-golang/internal/app/cart/structs"</span></span><br><span class="line">	<span class="hljs-string">"github.com/yuraxdrumz/ports-and-adapters-golang/internal/pkg/adapters/out/cartRepository"</span></span><br><span class="line">	<span class="hljs-string">"github.com/yuraxdrumz/ports-and-adapters-golang/internal/pkg/adapters/out/warehouse"</span></span><br><span class="line">	<span class="hljs-string">"sync"</span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="hljs-keyword">type</span> Cart <span class="hljs-keyword">struct</span> &#123;</span><br><span class="line">	wh   warehouse.Port</span><br><span class="line">	repo cartrepository.Port</span><br><span class="line">	mutex sync.Mutex</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">NewCart</span><span class="hljs-params">(wh warehouse.Port, repo cartrepository.Port)</span> *<span class="hljs-title">Cart</span></span> &#123;</span><br><span class="line">	<span class="hljs-keyword">return</span> &amp;Cart&#123;</span><br><span class="line">		wh:   wh,</span><br><span class="line">		repo: repo,</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-params">(c *Cart)</span> <span class="hljs-title">Add</span><span class="hljs-params">(item *structs.Item)</span> <span class="hljs-title">error</span></span> &#123;</span><br><span class="line">	c.mutex.Lock()</span><br><span class="line">	<span class="hljs-keyword">defer</span> c.mutex.Unlock()</span><br><span class="line">	</span><br><span class="line">	isAvailable, err := c.wh.CheckIfAvailable(item.Id)</span><br><span class="line">	<span class="hljs-keyword">if</span> err != <span class="hljs-literal">nil</span> &#123;</span><br><span class="line">		<span class="hljs-keyword">return</span> err</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="hljs-keyword">if</span> isAvailable &#123;</span><br><span class="line">		_, err = c.repo.AddItemToDB(item)</span><br><span class="line">		<span class="hljs-keyword">if</span> err != <span class="hljs-literal">nil</span> &#123;</span><br><span class="line">			<span class="hljs-keyword">return</span> err</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="hljs-keyword">return</span> <span class="hljs-literal">nil</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-params">(c *Cart)</span> <span class="hljs-title">Remove</span><span class="hljs-params">(itemID <span class="hljs-keyword">string</span>)</span> <span class="hljs-title">error</span></span> &#123;</span><br><span class="line">	<span class="hljs-keyword">return</span> <span class="hljs-literal">nil</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>At this point we have our cart, warehouse and repository ports and adapters implemented, all these ports are driven, because our app uses them internally.<br>Now, we need a driver adapter.</p>
+<p>Let’s create a cli adapter which receives the item, id and description from the cli.</p>
+<h5 id="Driver-Adapter-1"><a href="#Driver-Adapter-1" class="headerlink" title="Driver Adapter"></a>Driver Adapter</h5><p><code>driver/cli.go</code></p>
+<figure class="highlight go hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-keyword">package</span> driver</span><br><span class="line"></span><br><span class="line"><span class="hljs-keyword">import</span> (</span><br><span class="line">	<span class="hljs-string">"github.com/sirupsen/logrus"</span></span><br><span class="line">	<span class="hljs-string">"github.com/yuraxdrumz/ports-and-adapters-golang/internal/app/cart"</span></span><br><span class="line">	<span class="hljs-string">"github.com/urfave/cli/v2"</span></span><br><span class="line">	<span class="hljs-string">"github.com/yuraxdrumz/ports-and-adapters-golang/internal/app/cart/structs"</span></span><br><span class="line">	<span class="hljs-string">"os"</span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="hljs-comment">// CliAdapter - struct with necessary ports to run</span></span><br><span class="line"><span class="hljs-keyword">type</span> CliAdapter <span class="hljs-keyword">struct</span> &#123;</span><br><span class="line">	ca cart.Port</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="hljs-comment">// NewCliAdapter - create a new instance of NewCliAdapter with passed implementations</span></span><br><span class="line"><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">NewCliAdapter</span><span class="hljs-params">(ca cart.Port)</span> *<span class="hljs-title">CliAdapter</span></span> &#123;</span><br><span class="line">	<span class="hljs-keyword">return</span> &amp;CliAdapter&#123;ca: ca&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="hljs-comment">// Run - initializes cli adapter run</span></span><br><span class="line"><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-params">(in *CliAdapter)</span> <span class="hljs-title">Run</span><span class="hljs-params">()</span></span> &#123;</span><br><span class="line">	app := &amp;cli.App&#123;</span><br><span class="line">		Name: <span class="hljs-string">"cart"</span>,</span><br><span class="line">		Usage: <span class="hljs-string">"handle cart from cli"</span>,</span><br><span class="line">		Flags: []cli.Flag&#123;</span><br><span class="line">			&amp;cli.StringFlag&#123;</span><br><span class="line">				Name: <span class="hljs-string">"item"</span>,</span><br><span class="line">				Usage: <span class="hljs-string">"item to add"</span>,</span><br><span class="line">				Required: <span class="hljs-literal">true</span>,</span><br><span class="line">			&#125;,</span><br><span class="line">			&amp;cli.StringFlag&#123;</span><br><span class="line">				Name: <span class="hljs-string">"description"</span>,</span><br><span class="line">				Usage: <span class="hljs-string">"description for the item"</span>,</span><br><span class="line">				Required: <span class="hljs-literal">true</span>,</span><br><span class="line">			&#125;,</span><br><span class="line">			&amp;cli.StringFlag&#123;</span><br><span class="line">				Name: <span class="hljs-string">"id"</span>,</span><br><span class="line">				Usage: <span class="hljs-string">"item id"</span>,</span><br><span class="line">				Required: <span class="hljs-literal">true</span>,</span><br><span class="line">			&#125;,</span><br><span class="line">		&#125;,</span><br><span class="line">		Action: <span class="hljs-function"><span class="hljs-keyword">func</span><span class="hljs-params">(c *cli.Context)</span> <span class="hljs-title">error</span></span> &#123;</span><br><span class="line"></span><br><span class="line">			item := &amp;structs.Item&#123;</span><br><span class="line">				Name:        c.String(<span class="hljs-string">"item"</span>),</span><br><span class="line">				Id:          c.String(<span class="hljs-string">"id"</span>),</span><br><span class="line">				Description: c.String(<span class="hljs-string">"description"</span>),</span><br><span class="line">			&#125;</span><br><span class="line">			err := in.ca.Add(item)</span><br><span class="line">			<span class="hljs-keyword">if</span> err != <span class="hljs-literal">nil</span> &#123;</span><br><span class="line">				logrus.WithField(<span class="hljs-string">"error"</span>, err.Error()).Error(<span class="hljs-string">"couldn't add item"</span>)</span><br><span class="line">				<span class="hljs-keyword">return</span> <span class="hljs-literal">nil</span></span><br><span class="line">			&#125;</span><br><span class="line">			logrus.WithFields(logrus.Fields&#123;</span><br><span class="line">				<span class="hljs-string">"name"</span>: item.Name,</span><br><span class="line">				<span class="hljs-string">"description"</span>: item.Description,</span><br><span class="line">				<span class="hljs-string">"id"</span>: item.Id,</span><br><span class="line">			&#125;).Info(<span class="hljs-string">"Added new item"</span>)</span><br><span class="line">			<span class="hljs-keyword">return</span> <span class="hljs-literal">nil</span></span><br><span class="line">		&#125;,</span><br><span class="line">	&#125;</span><br><span class="line">	err := app.Run(os.Args)</span><br><span class="line"></span><br><span class="line">	<span class="hljs-keyword">if</span> err != <span class="hljs-literal">nil</span> &#123;</span><br><span class="line">		logrus.Fatal(err)</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>Now lets glue everything together in <code>main.go</code></p>
+<p><code>main.go</code></p>
+<figure class="highlight go hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-keyword">package</span> main</span><br><span class="line"></span><br><span class="line"><span class="hljs-keyword">import</span> (</span><br><span class="line">	<span class="hljs-string">"github.com/yuraxdrumz/ports-and-adapters-golang/internal/app/cart"</span></span><br><span class="line">	driver <span class="hljs-string">"github.com/yuraxdrumz/ports-and-adapters-golang/internal/pkg/adapters/in"</span></span><br><span class="line">	<span class="hljs-string">"github.com/yuraxdrumz/ports-and-adapters-golang/internal/pkg/adapters/out/warehouse"</span></span><br><span class="line">	<span class="hljs-string">"github.com/yuraxdrumz/ports-and-adapters-golang/internal/pkg/adapters/out/cartRepository"</span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">main</span><span class="hljs-params">()</span></span> &#123;</span><br><span class="line">	<span class="hljs-comment">// declare all ports</span></span><br><span class="line">	<span class="hljs-keyword">var</span> ca cart.Port</span><br><span class="line">	<span class="hljs-keyword">var</span> wh warehouse.Port</span><br><span class="line">	<span class="hljs-keyword">var</span> re cartrepository.Port</span><br><span class="line">	<span class="hljs-keyword">var</span> in driver.Port</span><br><span class="line"></span><br><span class="line">	wh = warehouse.NewConsoleWarehouse()</span><br><span class="line">	re = cartrepository.NewInMemoryRepository()</span><br><span class="line">	ca = cart.NewCart(wh, re)</span><br><span class="line">	in = driver.NewCliAdapter(ca)</span><br><span class="line"></span><br><span class="line">	in.Run()</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>Now, if we run <code>go run main.go</code>, we will get</p>
+<figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">❯ go run main.go</span><br><span class="line">NAME:</span><br><span class="line">   cart - handle cart from cli</span><br><span class="line"></span><br><span class="line">USAGE:</span><br><span class="line">   main [global options] command [command options] [arguments...]</span><br><span class="line"></span><br><span class="line">COMMANDS:</span><br><span class="line">   help, h  Shows a list of commands or help for one command</span><br><span class="line"></span><br><span class="line">GLOBAL OPTIONS:</span><br><span class="line">   --item value         item to add</span><br><span class="line">   --description value  description for the item</span><br><span class="line">   --id value           item id</span><br><span class="line">   --help, -h           show help (default: false)</span><br><span class="line">FATA[0000] Required flags &quot;item, description, id&quot; not set </span><br><span class="line">exit status 1</span><br></pre></td></tr></table></figure>
+
+<p>Lets add an item with id 0 that is supposed to fail and with an id of 1 that is supposed to succeed</p>
+<figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">❯ go run main.go --item bicycle --description &quot;used as trasnport&quot; --id 1</span><br><span class="line">INFO[0000] Added new item                                description=&quot;used as trasnport&quot; id=1 name=bicycle</span><br><span class="line">❯ go run main.go --item bicycle --description &quot;used as trasnport&quot; --id 0</span><br><span class="line">ERRO[0000] couldn&apos;t add item                             error=&quot;item is not available&quot;</span><br></pre></td></tr></table></figure>
+
+<p>It worked!</p>
+<p>Now, let’s create a new sql adapter for the repository</p>
+<p><code>cartRepository/sqlite.go</code></p>
+<figure class="highlight go hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-keyword">package</span> cartrepository</span><br><span class="line"></span><br><span class="line"><span class="hljs-keyword">import</span> (</span><br><span class="line">	<span class="hljs-string">"database/sql"</span></span><br><span class="line">	<span class="hljs-string">"errors"</span></span><br><span class="line">	<span class="hljs-string">"github.com/sirupsen/logrus"</span></span><br><span class="line">	<span class="hljs-string">"github.com/yuraxdrumz/ports-and-adapters-golang/internal/app/cart/structs"</span></span><br><span class="line">	_ <span class="hljs-string">"github.com/mattn/go-sqlite3"</span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="hljs-comment">// in memory repository adapter, we dont have any dependencies on other adapters so its empty</span></span><br><span class="line"><span class="hljs-keyword">type</span> SQLiteRepository <span class="hljs-keyword">struct</span> &#123;</span><br><span class="line">	db *sql.DB</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="hljs-comment">// new in memory repository factory</span></span><br><span class="line"><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">NewSQLiteRepository</span><span class="hljs-params">()</span> *<span class="hljs-title">SQLiteRepository</span></span> &#123;</span><br><span class="line">	db, err := sql.Open(<span class="hljs-string">"sqlite3"</span>, <span class="hljs-string">"database/items.db"</span>)</span><br><span class="line">	<span class="hljs-keyword">if</span> err != <span class="hljs-literal">nil</span> &#123;</span><br><span class="line">		logrus.Fatal(<span class="hljs-string">"Couldn't initialize sqlite db"</span>)</span><br><span class="line">	&#125;</span><br><span class="line">	_, err = db.Exec(<span class="hljs-string">"create table if not exists items (id string, name text, description text)"</span>)</span><br><span class="line">	<span class="hljs-keyword">if</span> err != <span class="hljs-literal">nil</span> &#123;</span><br><span class="line">		logrus.WithField(<span class="hljs-string">"error"</span>, err.Error()).Fatal(<span class="hljs-string">"Couldn't create initial items table"</span>)</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="hljs-keyword">return</span> &amp;SQLiteRepository&#123;</span><br><span class="line">		db: db,</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="hljs-comment">// our implementation of the port</span></span><br><span class="line"><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-params">(r *SQLiteRepository)</span> <span class="hljs-title">AddItemToDB</span><span class="hljs-params">(item *structs.Item)</span> <span class="hljs-params">(<span class="hljs-keyword">string</span>, error)</span></span> &#123;</span><br><span class="line">	<span class="hljs-keyword">if</span> item.Id == <span class="hljs-string">"0"</span> &#123;</span><br><span class="line">		<span class="hljs-keyword">return</span> <span class="hljs-string">""</span>, errors.New(<span class="hljs-string">"cannot add item to db"</span>)</span><br><span class="line">	&#125;</span><br><span class="line">	tx, _ := r.db.Begin()</span><br><span class="line">	stmt, _ := tx.Prepare(<span class="hljs-string">"insert into items (id, name, description) values (?,?,?)"</span>)</span><br><span class="line">	_, err := stmt.Exec(item.Id, item.Name, item.Description)</span><br><span class="line">	<span class="hljs-keyword">if</span> err != <span class="hljs-literal">nil</span> &#123;</span><br><span class="line">		<span class="hljs-keyword">return</span> <span class="hljs-string">""</span>, err</span><br><span class="line">	&#125;</span><br><span class="line">	err = tx.Commit()</span><br><span class="line">	<span class="hljs-keyword">if</span> err != <span class="hljs-literal">nil</span> &#123;</span><br><span class="line">		<span class="hljs-keyword">return</span> <span class="hljs-string">""</span>, err</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="hljs-keyword">return</span> <span class="hljs-string">"random id"</span>, <span class="hljs-literal">nil</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="hljs-comment">// our implementation of the port</span></span><br><span class="line"><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-params">(r *SQLiteRepository)</span> <span class="hljs-title">RemoveItemFromDB</span><span class="hljs-params">(itemID <span class="hljs-keyword">string</span>)</span> <span class="hljs-params">(<span class="hljs-keyword">bool</span>, error)</span></span> &#123;</span><br><span class="line">	<span class="hljs-keyword">if</span> itemID == <span class="hljs-string">"0"</span> &#123;</span><br><span class="line">		<span class="hljs-keyword">return</span> <span class="hljs-literal">false</span>, errors.New(<span class="hljs-string">"item cannot be removed, please check again later"</span>)</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="hljs-keyword">return</span> <span class="hljs-literal">true</span>, <span class="hljs-literal">nil</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>Lets change our main.go</p>
+<figure class="highlight go hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-keyword">package</span> main</span><br><span class="line"></span><br><span class="line"><span class="hljs-keyword">import</span> (</span><br><span class="line">	<span class="hljs-string">"github.com/yuraxdrumz/ports-and-adapters-golang/internal/app/cart"</span></span><br><span class="line">	driver <span class="hljs-string">"github.com/yuraxdrumz/ports-and-adapters-golang/internal/pkg/adapters/in"</span></span><br><span class="line">	<span class="hljs-string">"github.com/yuraxdrumz/ports-and-adapters-golang/internal/pkg/adapters/out/warehouse"</span></span><br><span class="line">	<span class="hljs-string">"github.com/yuraxdrumz/ports-and-adapters-golang/internal/pkg/adapters/out/cartRepository"</span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">main</span><span class="hljs-params">()</span></span> &#123;</span><br><span class="line">	<span class="hljs-comment">// declare all ports</span></span><br><span class="line">	<span class="hljs-keyword">var</span> ca cart.Port</span><br><span class="line">	<span class="hljs-keyword">var</span> wh warehouse.Port</span><br><span class="line">	<span class="hljs-keyword">var</span> re cartrepository.Port</span><br><span class="line">	<span class="hljs-keyword">var</span> in driver.Port</span><br><span class="line"></span><br><span class="line">	wh = warehouse.NewConsoleWarehouse()</span><br><span class="line">	<span class="hljs-comment">//re = cartrepository.NewInMemoryRepository()</span></span><br><span class="line">	re = cartrepository.NewSQLiteRepository()</span><br><span class="line">	ca = cart.NewCart(wh, re)</span><br><span class="line">	in = driver.NewCliAdapter(ca)</span><br><span class="line"></span><br><span class="line">	in.Run()</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>Lets run our main again</p>
+<figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">❯ go run main.go --item bicycle --description &quot;used as trasnport&quot; --id 1</span><br><span class="line">INFO[0000] Added new item                                description=&quot;used as trasnport&quot; id=1 name=bicycle</span><br><span class="line">❯ go run main.go --item bicycle --description &quot;used as trasnport&quot; --id 0</span><br><span class="line">ERRO[0000] couldn&apos;t add item                             error=&quot;item is not available&quot;</span><br><span class="line">❯ go run main.go --item bicycle --description &quot;used as trasnport&quot; --id 11</span><br><span class="line">INFO[0000] Added new item                                description=&quot;used as trasnport&quot; id=11 name=bicycle</span><br></pre></td></tr></table></figure>
+
+<p>It worked and all the data was saved.<br>By now you should be able to add a new adapter to any port, either driver or driven and interchange them without touching other parts of the system.</p>
+<p>A cool thing in Goland is we can easily see who implements our ports and reuse them by calling the adapter we want in <code>main.go</code></p>
+<p><img src="/2020/02/01/Implementing-Ports-and-Adapters/./goland.png" alt></p>
+<h3 id="Summary"><a href="#Summary" class="headerlink" title="Summary"></a>Summary</h3><p>We saw what is the Ports and Adapters pattern and how it is implemented in Golang.<br>We created an initial warehouse, cart, cartRepository and driver(in) ports.<br>Later on, we added each port’s adapter(implementation).<br>Afterwards, we glued everything in main.go.<br>By Using this architectural pattern we saw how components can interchange on any functionality.</p>
+
+        </div>
+        
+        <div class="level is-size-7 is-uppercase">
+            <div class="level-start">
+                <div class="level-item">
+                    <span class="is-size-6 has-text-grey has-mr-7">#</span>
+                    <a class="has-link-grey -link" href="/tags/Golang/">Golang</a>, <a class="has-link-grey -link" href="/tags/Hexagonal/">Hexagonal</a>, <a class="has-link-grey -link" href="/tags/Ports-and-Adapters/">Ports and Adapters</a>, <a class="has-link-grey -link" href="/tags/Software-Architecture/">Software Architecture</a>
+                </div>
+            </div>
+        </div>
+        
+        
+        
+    </div>
+</div>
+
+
+
+
+
+<div class="card card-transparent">
+    <div class="level post-navigation is-flex-wrap is-mobile">
+        
+        
+        <div class="level-end">
+            <a class="level level-item has-link-grey  article-nav-next" href="/2019/11/05/what-are-microservices/">
+                <span class="level-item">What Are Microservices</span>
+                <i class="level-item fas fa-chevron-right"></i>
+            </a>
+        </div>
+        
+    </div>
+</div>
+
+
+
+<div class="card">
+    <div class="card-content">
+        <h3 class="title is-5 has-text-weight-normal">Comments</h3>
+        
+<script>
+    var disqus_config = function () {
+        this.page.url = 'https://yuriktech.com/2020/02/01/Implementing-Ports-and-Adapters/';
+        this.page.identifier = '2020/02/01/Implementing-Ports-and-Adapters/';
+    };
+    (function() {
+        var d = document, s = d.createElement('script');  
+        s.src = '//' + 'yuritech' + '.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', +new Date());
+        (d.head || d.body).appendChild(s);
+    })();
+</script>
+
+<div id="disqus_thread">
+    
+    <noscript>Please enable JavaScript to view the <a href="//disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+    </div>
+</div>
+</div>
+                
+
+
+
+
+<div class="column is-4-tablet is-4-desktop is-3-widescreen  has-order-1 column-left ">
+    
+        
+<div class="card widget">
+    <div class="card-content">
+        <nav class="level">
+            <div class="level-item has-text-centered" style="flex-shrink: 1">
+                <div>
+                    
+                        <img class="image is-128x128 has-mb-6" src="/about/index/avatar.png" alt="Yuri Khomyakov">
+                    
+                    
+                    <p class="is-size-4 is-block">
+                        Yuri Khomyakov
+                    </p>
+                    
+                    
+                    <p class="is-size-6 is-block">
+                        Software Developer
+                    </p>
+                    
+                    
+                </div>
+            </div>
+        </nav>
+        <nav class="level is-mobile">
+            <div class="level-item has-text-centered is-marginless">
+                <div>
+                    <p class="heading">
+                        Posts
+                    </p>
+                    <p class="title has-text-weight-normal">
+                        9
+                    </p>
+                </div>
+            </div>
+            <div class="level-item has-text-centered is-marginless">
+                <div>
+                    <p class="heading">
+                        Categories
+                    </p>
+                    <p class="title has-text-weight-normal">
+                        3
+                    </p>
+                </div>
+            </div>
+            <div class="level-item has-text-centered is-marginless">
+                <div>
+                    <p class="heading">
+                        Tags
+                    </p>
+                    <p class="title has-text-weight-normal">
+                        23
+                    </p>
+                </div>
+            </div>
+        </nav>
+        <div class="level">
+            <a class="level-item button is-link is-rounded" href="https://github.com/yuraxdrumz" target="_blank">
+                Follow</a>
+        </div>
+        
+        
+        <div class="level is-mobile">
+            
+            <a class="level-item button is-white is-marginless" target="_blank" title="Email" href="mailto:yurik1776@gmail.com">
+                
+                <i class="far fa-envelope"></i>
+                
+            </a>
+            
+            <a class="level-item button is-white is-marginless" target="_blank" title="LinkedIn" href="https://www.linkedin.com/in/yuri-khomyakov-383278125/">
+                
+                <i class="fab fa-linkedin"></i>
+                
+            </a>
+            
+            <a class="level-item button is-white is-marginless" target="_blank" title="Github" href="https://github.com/yuraxdrumz">
+                
+                <i class="fab fa-github"></i>
+                
+            </a>
+            
+            <a class="level-item button is-white is-marginless" target="_blank" title="RSS" href="/atom.xml">
+                
+                <i class="fas fa-rss"></i>
+                
+            </a>
+            
+        </div>
+        
+    </div>
+</div>
+    
+        
+<div class="card widget" id="toc">
+    <div class="card-content">
+        <div class="menu">
+            <h3 class="menu-label">
+                Catalogue
+            </h3>
+            <ul class="menu-list"><li>
+        <a class="is-flex" href="#Disclaimer">
+        <span class="has-mr-6">1</span>
+        <span>Disclaimer</span>
+        </a></li><li>
+        <a class="is-flex" href="#Core-Idea">
+        <span class="has-mr-6">2</span>
+        <span>Core Idea</span>
+        </a></li><li>
+        <a class="is-flex" href="#Business-Logic">
+        <span class="has-mr-6">3</span>
+        <span>Business Logic</span>
+        </a></li><li>
+        <a class="is-flex" href="#Ports">
+        <span class="has-mr-6">4</span>
+        <span>Ports</span>
+        </a><ul class="menu-list"><li>
+        <a class="is-flex" href="#Driven-Ports">
+        <span class="has-mr-6">4.1</span>
+        <span>Driven Ports</span>
+        </a></li><li>
+        <a class="is-flex" href="#Driver-Ports">
+        <span class="has-mr-6">4.2</span>
+        <span>Driver Ports</span>
+        </a></li></ul></li><li>
+        <a class="is-flex" href="#Adapters">
+        <span class="has-mr-6">5</span>
+        <span>Adapters</span>
+        </a><ul class="menu-list"><li>
+        <a class="is-flex" href="#Driven-Adapter">
+        <span class="has-mr-6">5.1</span>
+        <span>Driven Adapter</span>
+        </a></li><li>
+        <a class="is-flex" href="#Driver-Adapter">
+        <span class="has-mr-6">5.2</span>
+        <span>Driver Adapter</span>
+        </a></li></ul></li><li>
+        <a class="is-flex" href="#Prerequisites">
+        <span class="has-mr-6">6</span>
+        <span>Prerequisites</span>
+        </a></li><li>
+        <a class="is-flex" href="#Ports-and-Adapters-In-Practice">
+        <span class="has-mr-6">7</span>
+        <span>Ports and Adapters In Practice</span>
+        </a><ul class="menu-list"><li>
+        <a class="is-flex" href="#Ports-In-Practice">
+        <span class="has-mr-6">7.1</span>
+        <span>Ports In Practice</span>
+        </a><ul class="menu-list"><li>
+        <a class="is-flex" href="#Driven-ports">
+        <span class="has-mr-6">7.1.1</span>
+        <span>Driven ports</span>
+        </a></li><li>
+        <a class="is-flex" href="#Driver-Ports-1">
+        <span class="has-mr-6">7.1.2</span>
+        <span>Driver Ports</span>
+        </a></li></ul></li><li>
+        <a class="is-flex" href="#Adapters-In-Practice">
+        <span class="has-mr-6">7.2</span>
+        <span>Adapters In Practice</span>
+        </a><ul class="menu-list"><li>
+        <a class="is-flex" href="#Driven-Adapters">
+        <span class="has-mr-6">7.2.1</span>
+        <span>Driven Adapters</span>
+        </a></li><li>
+        <a class="is-flex" href="#Driver-Adapter-1">
+        <span class="has-mr-6">7.2.2</span>
+        <span>Driver Adapter</span>
+        </a></li></ul></li></ul></li><li>
+        <a class="is-flex" href="#Summary">
+        <span class="has-mr-6">8</span>
+        <span>Summary</span>
+        </a></li></ul>
+        </div>
+    </div>
+</div>
+
+    
+        
+<div class="card widget">
+    <div class="card-content">
+        <div class="menu">
+            <h3 class="menu-label">
+                Categories
+            </h3>
+            <ul class="menu-list">
+            <li>
+        <a class="level is-marginless" href="/categories/Architecture/">
+            <span class="level-start">
+                <span class="level-item">Architecture</span>
+            </span>
+            <span class="level-end">
+                <span class="level-item tag">5</span>
+            </span>
+        </a></li><li>
+        <a class="level is-marginless" href="/categories/Paradigms/">
+            <span class="level-start">
+                <span class="level-item">Paradigms</span>
+            </span>
+            <span class="level-end">
+                <span class="level-item tag">1</span>
+            </span>
+        </a></li><li>
+        <a class="level is-marginless" href="/categories/Programming/">
+            <span class="level-start">
+                <span class="level-item">Programming</span>
+            </span>
+            <span class="level-end">
+                <span class="level-item tag">3</span>
+            </span>
+        </a></li>
+            </ul>
+        </div>
+    </div>
+</div>
+    
+        
+<div class="card widget">
+    <div class="card-content">
+        <h3 class="menu-label">
+            Tag Cloud
+        </h3>
+        <a href="/tags/API-Gateway/" style="font-size: 10px;">API Gateway</a> <a href="/tags/Actor-Model/" style="font-size: 10px;">Actor Model</a> <a href="/tags/Backend-For-Frontend/" style="font-size: 10px;">Backend For Frontend</a> <a href="/tags/Clean-Architecture/" style="font-size: 10px;">Clean Architecture</a> <a href="/tags/Context-Maps/" style="font-size: 10px;">Context Maps</a> <a href="/tags/DDD/" style="font-size: 13.33px;">DDD</a> <a href="/tags/Design/" style="font-size: 10px;">Design</a> <a href="/tags/Elixir/" style="font-size: 13.33px;">Elixir</a> <a href="/tags/Event-Loop/" style="font-size: 10px;">Event Loop</a> <a href="/tags/Functional/" style="font-size: 16.67px;">Functional</a> <a href="/tags/Golang/" style="font-size: 10px;">Golang</a> <a href="/tags/Hexagonal/" style="font-size: 10px;">Hexagonal</a> <a href="/tags/Javascript/" style="font-size: 10px;">Javascript</a> <a href="/tags/Maybe-a-rant/" style="font-size: 10px;">Maybe a rant</a> <a href="/tags/Microservices/" style="font-size: 13.33px;">Microservices</a> <a href="/tags/Node-js/" style="font-size: 20px;">Node.js</a> <a href="/tags/Ports-and-Adapters/" style="font-size: 10px;">Ports and Adapters</a> <a href="/tags/Programming-Paradigms/" style="font-size: 10px;">Programming Paradigms</a> <a href="/tags/Sidecar-Pattern/" style="font-size: 10px;">Sidecar Pattern</a> <a href="/tags/Software-Architecture/" style="font-size: 20px;">Software Architecture</a> <a href="/tags/Typescript/" style="font-size: 10px;">Typescript</a> <a href="/tags/Uncle-Bob/" style="font-size: 10px;">Uncle Bob</a> <a href="/tags/libuv/" style="font-size: 10px;">libuv</a>
+    </div>
+</div>
+
+    
+    
+        <div class="column-right-shadow is-hidden-widescreen ">
+        
+            
+<div class="card widget">
+    <div class="card-content">
+        <h3 class="menu-label">
+            Recent
+        </h3>
+        
+        <article class="media">
+            
+            <div class="media-content">
+                <div class="content">
+                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2020-02-01T16:15:21.000Z">2020-02-01</time></div>
+                    <a href="/2020/02/01/Implementing-Ports-and-Adapters/" class="has-link-black-ter is-size-6">Implementing Ports and Adapters</a>
+                    <p class="is-size-7 is-uppercase">
+                        <a class="has-link-grey -link" href="/categories/Architecture/">Architecture</a>
+                    </p>
+                </div>
+            </div>
+        </article>
+        
+        <article class="media">
+            
+            <div class="media-content">
+                <div class="content">
+                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2019-11-05T18:24:24.000Z">2019-11-05</time></div>
+                    <a href="/2019/11/05/what-are-microservices/" class="has-link-black-ter is-size-6">What Are Microservices</a>
+                    <p class="is-size-7 is-uppercase">
+                        <a class="has-link-grey -link" href="/categories/Architecture/">Architecture</a>
+                    </p>
+                </div>
+            </div>
+        </article>
+        
+        <article class="media">
+            
+            <div class="media-content">
+                <div class="content">
+                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2019-07-15T21:46:10.000Z">2019-07-16</time></div>
+                    <a href="/2019/07/16/Microservices-Epiphany/" class="has-link-black-ter is-size-6">Microservices Epiphany</a>
+                    <p class="is-size-7 is-uppercase">
+                        <a class="has-link-grey -link" href="/categories/Architecture/">Architecture</a>
+                    </p>
+                </div>
+            </div>
+        </article>
+        
+        <article class="media">
+            
+            <div class="media-content">
+                <div class="content">
+                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2019-07-10T12:52:33.000Z">2019-07-10</time></div>
+                    <a href="/2019/07/10/Context-Maps-In-Domain-Driven-Design/" class="has-link-black-ter is-size-6">Context Maps in Domain Driven Design</a>
+                    <p class="is-size-7 is-uppercase">
+                        <a class="has-link-grey -link" href="/categories/Architecture/">Architecture</a>
+                    </p>
+                </div>
+            </div>
+        </article>
+        
+        <article class="media">
+            
+            <div class="media-content">
+                <div class="content">
+                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2019-07-03T15:44:34.000Z">2019-07-03</time></div>
+                    <a href="/2019/07/03/Authentication-Middleware-In-Elixir/" class="has-link-black-ter is-size-6">Authentication Middleware in Elixir</a>
+                    <p class="is-size-7 is-uppercase">
+                        <a class="has-link-grey -link" href="/categories/Programming/">Programming</a>
+                    </p>
+                </div>
+            </div>
+        </article>
+        
+    </div>
+</div>
+
+        
+            <div class="card widget">
+    <div class="card-content">
+        <div class="menu">
+        <h3 class="menu-label">
+            Archives
+        </h3>
+        <ul class="menu-list">
+        
+        <li>
+            <a class="level is-marginless" href="/archives/2020/02/">
+                <span class="level-start">
+                    <span class="level-item">February 2020</span>
+                </span>
+                <span class="level-end">
+                    <span class="level-item tag">1</span>
+                </span>
+            </a>
+        </li>
+        
+        <li>
+            <a class="level is-marginless" href="/archives/2019/11/">
+                <span class="level-start">
+                    <span class="level-item">November 2019</span>
+                </span>
+                <span class="level-end">
+                    <span class="level-item tag">1</span>
+                </span>
+            </a>
+        </li>
+        
+        <li>
+            <a class="level is-marginless" href="/archives/2019/07/">
+                <span class="level-start">
+                    <span class="level-item">July 2019</span>
+                </span>
+                <span class="level-end">
+                    <span class="level-item tag">3</span>
+                </span>
+            </a>
+        </li>
+        
+        <li>
+            <a class="level is-marginless" href="/archives/2019/06/">
+                <span class="level-start">
+                    <span class="level-item">June 2019</span>
+                </span>
+                <span class="level-end">
+                    <span class="level-item tag">4</span>
+                </span>
+            </a>
+        </li>
+        
+        </ul>
+        </div>
+    </div>
+</div>
+        
+            <div class="card widget">
+    <div class="card-content">
+        <div class="menu">
+            <h3 class="menu-label">
+                Tags
+            </h3>
+            <div class="field is-grouped is-grouped-multiline">
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/API-Gateway/">
+                        <span class="tag">API Gateway</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/Actor-Model/">
+                        <span class="tag">Actor Model</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/Backend-For-Frontend/">
+                        <span class="tag">Backend For Frontend</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/Clean-Architecture/">
+                        <span class="tag">Clean Architecture</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/Context-Maps/">
+                        <span class="tag">Context Maps</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/DDD/">
+                        <span class="tag">DDD</span>
+                        <span class="tag is-grey">2</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/Design/">
+                        <span class="tag">Design</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/Elixir/">
+                        <span class="tag">Elixir</span>
+                        <span class="tag is-grey">2</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/Event-Loop/">
+                        <span class="tag">Event Loop</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/Functional/">
+                        <span class="tag">Functional</span>
+                        <span class="tag is-grey">3</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/Golang/">
+                        <span class="tag">Golang</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/Hexagonal/">
+                        <span class="tag">Hexagonal</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/Javascript/">
+                        <span class="tag">Javascript</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/Maybe-a-rant/">
+                        <span class="tag">Maybe a rant</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/Microservices/">
+                        <span class="tag">Microservices</span>
+                        <span class="tag is-grey">2</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/Node-js/">
+                        <span class="tag">Node.js</span>
+                        <span class="tag is-grey">4</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/Ports-and-Adapters/">
+                        <span class="tag">Ports and Adapters</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/Programming-Paradigms/">
+                        <span class="tag">Programming Paradigms</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/Sidecar-Pattern/">
+                        <span class="tag">Sidecar Pattern</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/Software-Architecture/">
+                        <span class="tag">Software Architecture</span>
+                        <span class="tag is-grey">4</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/Typescript/">
+                        <span class="tag">Typescript</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/Uncle-Bob/">
+                        <span class="tag">Uncle Bob</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/libuv/">
+                        <span class="tag">libuv</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+            </div>
+        </div>
+    </div>
+</div>
+        
+        </div>
+    
+</div>
+
+                
+
+
+
+
+<div class="column is-4-tablet is-4-desktop is-3-widescreen is-hidden-touch is-hidden-desktop-only has-order-3 column-right ">
+    
+        
+<div class="card widget">
+    <div class="card-content">
+        <h3 class="menu-label">
+            Recent
+        </h3>
+        
+        <article class="media">
+            
+            <div class="media-content">
+                <div class="content">
+                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2020-02-01T16:15:21.000Z">2020-02-01</time></div>
+                    <a href="/2020/02/01/Implementing-Ports-and-Adapters/" class="has-link-black-ter is-size-6">Implementing Ports and Adapters</a>
+                    <p class="is-size-7 is-uppercase">
+                        <a class="has-link-grey -link" href="/categories/Architecture/">Architecture</a>
+                    </p>
+                </div>
+            </div>
+        </article>
+        
+        <article class="media">
+            
+            <div class="media-content">
+                <div class="content">
+                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2019-11-05T18:24:24.000Z">2019-11-05</time></div>
+                    <a href="/2019/11/05/what-are-microservices/" class="has-link-black-ter is-size-6">What Are Microservices</a>
+                    <p class="is-size-7 is-uppercase">
+                        <a class="has-link-grey -link" href="/categories/Architecture/">Architecture</a>
+                    </p>
+                </div>
+            </div>
+        </article>
+        
+        <article class="media">
+            
+            <div class="media-content">
+                <div class="content">
+                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2019-07-15T21:46:10.000Z">2019-07-16</time></div>
+                    <a href="/2019/07/16/Microservices-Epiphany/" class="has-link-black-ter is-size-6">Microservices Epiphany</a>
+                    <p class="is-size-7 is-uppercase">
+                        <a class="has-link-grey -link" href="/categories/Architecture/">Architecture</a>
+                    </p>
+                </div>
+            </div>
+        </article>
+        
+        <article class="media">
+            
+            <div class="media-content">
+                <div class="content">
+                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2019-07-10T12:52:33.000Z">2019-07-10</time></div>
+                    <a href="/2019/07/10/Context-Maps-In-Domain-Driven-Design/" class="has-link-black-ter is-size-6">Context Maps in Domain Driven Design</a>
+                    <p class="is-size-7 is-uppercase">
+                        <a class="has-link-grey -link" href="/categories/Architecture/">Architecture</a>
+                    </p>
+                </div>
+            </div>
+        </article>
+        
+        <article class="media">
+            
+            <div class="media-content">
+                <div class="content">
+                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2019-07-03T15:44:34.000Z">2019-07-03</time></div>
+                    <a href="/2019/07/03/Authentication-Middleware-In-Elixir/" class="has-link-black-ter is-size-6">Authentication Middleware in Elixir</a>
+                    <p class="is-size-7 is-uppercase">
+                        <a class="has-link-grey -link" href="/categories/Programming/">Programming</a>
+                    </p>
+                </div>
+            </div>
+        </article>
+        
+    </div>
+</div>
+
+    
+        <div class="card widget">
+    <div class="card-content">
+        <div class="menu">
+        <h3 class="menu-label">
+            Archives
+        </h3>
+        <ul class="menu-list">
+        
+        <li>
+            <a class="level is-marginless" href="/archives/2020/02/">
+                <span class="level-start">
+                    <span class="level-item">February 2020</span>
+                </span>
+                <span class="level-end">
+                    <span class="level-item tag">1</span>
+                </span>
+            </a>
+        </li>
+        
+        <li>
+            <a class="level is-marginless" href="/archives/2019/11/">
+                <span class="level-start">
+                    <span class="level-item">November 2019</span>
+                </span>
+                <span class="level-end">
+                    <span class="level-item tag">1</span>
+                </span>
+            </a>
+        </li>
+        
+        <li>
+            <a class="level is-marginless" href="/archives/2019/07/">
+                <span class="level-start">
+                    <span class="level-item">July 2019</span>
+                </span>
+                <span class="level-end">
+                    <span class="level-item tag">3</span>
+                </span>
+            </a>
+        </li>
+        
+        <li>
+            <a class="level is-marginless" href="/archives/2019/06/">
+                <span class="level-start">
+                    <span class="level-item">June 2019</span>
+                </span>
+                <span class="level-end">
+                    <span class="level-item tag">4</span>
+                </span>
+            </a>
+        </li>
+        
+        </ul>
+        </div>
+    </div>
+</div>
+    
+        <div class="card widget">
+    <div class="card-content">
+        <div class="menu">
+            <h3 class="menu-label">
+                Tags
+            </h3>
+            <div class="field is-grouped is-grouped-multiline">
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/API-Gateway/">
+                        <span class="tag">API Gateway</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/Actor-Model/">
+                        <span class="tag">Actor Model</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/Backend-For-Frontend/">
+                        <span class="tag">Backend For Frontend</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/Clean-Architecture/">
+                        <span class="tag">Clean Architecture</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/Context-Maps/">
+                        <span class="tag">Context Maps</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/DDD/">
+                        <span class="tag">DDD</span>
+                        <span class="tag is-grey">2</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/Design/">
+                        <span class="tag">Design</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/Elixir/">
+                        <span class="tag">Elixir</span>
+                        <span class="tag is-grey">2</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/Event-Loop/">
+                        <span class="tag">Event Loop</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/Functional/">
+                        <span class="tag">Functional</span>
+                        <span class="tag is-grey">3</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/Golang/">
+                        <span class="tag">Golang</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/Hexagonal/">
+                        <span class="tag">Hexagonal</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/Javascript/">
+                        <span class="tag">Javascript</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/Maybe-a-rant/">
+                        <span class="tag">Maybe a rant</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/Microservices/">
+                        <span class="tag">Microservices</span>
+                        <span class="tag is-grey">2</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/Node-js/">
+                        <span class="tag">Node.js</span>
+                        <span class="tag is-grey">4</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/Ports-and-Adapters/">
+                        <span class="tag">Ports and Adapters</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/Programming-Paradigms/">
+                        <span class="tag">Programming Paradigms</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/Sidecar-Pattern/">
+                        <span class="tag">Sidecar Pattern</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/Software-Architecture/">
+                        <span class="tag">Software Architecture</span>
+                        <span class="tag is-grey">4</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/Typescript/">
+                        <span class="tag">Typescript</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/Uncle-Bob/">
+                        <span class="tag">Uncle Bob</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/libuv/">
+                        <span class="tag">libuv</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+            </div>
+        </div>
+    </div>
+</div>
+    
+    
+</div>
+
+            </div>
+        </div>
+    </section>
+    <footer class="footer">
+    <div class="container">
+        <div class="level">
+            <div class="level-start has-text-centered-mobile">
+                <p class="is-size-7">
+                &copy; 2020 Yuri Khomyakov&nbsp;
+                Powered by <a href="https://hexo.io/" target="_blank">Hexo</a> & <a href="https://github.com/ppoffice/hexo-theme-icarus" target="_blank">Icarus</a>
+                
+                </p>
+            </div>
+            <div class="level-end">
+            
+                <div class="field has-addons is-flex-center-mobile has-mt-5-mobile is-flex-wrap is-flex-middle">
+                
+                
+                <p class="control">
+                    <a class="button is-white is-large" target="_blank" title="GitHub" href="https://github.com/yuraxdrumz">
+                        
+                        <i class="fab fa-github"></i>
+                        
+                    </a>
+                </p>
+                
+                </div>
+            
+            </div>
+        </div>
+    </div>
+</footer>
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.3.1/dist/jquery.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/moment@2.22.2/min/moment-with-locales.min.js"></script>
+<script>moment.locale("en");</script>
+
+
+    
+    
+    
+    <script src="/js/animation.js"></script>
+    
+
+    
+    
+    
+    <script src="https://cdn.jsdelivr.net/npm/lightgallery@1.6.8/dist/js/lightgallery.min.js" defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/justifiedGallery@3.7.0/dist/js/jquery.justifiedGallery.min.js" defer></script>
+    <script src="/js/gallery.js" defer></script>
+    
+
+    
+    
+
+<div id="outdated">
+    <h6>Your browser is out-of-date!</h6>
+    <p>Update your browser to view this website correctly. <a id="btnUpdateBrowser" href="http://outdatedbrowser.com/">Update
+            my browser now </a></p>
+    <p class="last"><a href="#" id="btnCloseUpdateBrowser" title="Close">&times;</a></p>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/outdatedbrowser@1.1.5/outdatedbrowser/outdatedbrowser.min.js" defer></script>
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        outdatedBrowser({
+            bgColor: '#f25648',
+            color: '#ffffff',
+            lowerThan: 'flex'
+        });
+    });
+</script>
+
+
+    
+    
+<script src="https://cdn.jsdelivr.net/npm/mathjax@2.7.5/unpacked/MathJax.js?config=TeX-MML-AM_CHTML" defer></script>
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    MathJax.Hub.Config({
+        'HTML-CSS': {
+            matchFontHeight: false
+        },
+        SVG: {
+            matchFontHeight: false
+        },
+        CommonHTML: {
+            matchFontHeight: false
+        },
+        tex2jax: {
+            inlineMath: [
+                ['$','$'],
+                ['\\(','\\)']
+            ]
+        }
+    });
+});
+</script>
+
+    
+    
+
+<a id="back-to-top" title="Back to Top" href="javascript:;">
+    <i class="fas fa-chevron-up"></i>
+</a>
+<script src="/js/back-to-top.js" defer></script>
+
+
+    
+    
+
+    
+    
+    
+    
+
+    
+    
+    
+    
+    
+    <script src="https://cdn.jsdelivr.net/npm/clipboard@2.0.4/dist/clipboard.min.js" defer></script>
+    <script src="/js/clipboard.js" defer></script>
+    
+
+    
+    
+    
+
+
+<script src="/js/main.js" defer></script>
+
+    
+    <div class="searchbox ins-search">
+    <div class="searchbox-container ins-search-container">
+        <div class="searchbox-input-wrapper">
+            <input type="text" class="searchbox-input ins-search-input" placeholder="Type something...">
+            <span class="searchbox-close ins-close ins-selectable"><i class="fa fa-times-circle"></i></span>
+        </div>
+        <div class="searchbox-result-wrapper ins-section-wrapper">
+            <div class="ins-section-container"></div>
+        </div>
+    </div>
+</div>
+<script>
+    (function (window) {
+        var INSIGHT_CONFIG = {
+            TRANSLATION: {
+                POSTS: 'Posts',
+                PAGES: 'Pages',
+                CATEGORIES: 'Categories',
+                TAGS: 'Tags',
+                UNTITLED: '(Untitled)',
+            },
+            CONTENT_URL: '/content.json',
+        };
+        window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+    })(window);
+</script>
+<script src="/js/insight.js" defer></script>
+<link rel="stylesheet" href="/css/search.css">
+<link rel="stylesheet" href="/css/insight.css">
+    
+</body>
+</html>

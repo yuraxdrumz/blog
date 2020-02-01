@@ -1,0 +1,1354 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><meta name="generator" content="Hexo 3.8.0">
+    <meta charset="utf-8">
+<title>Implementing Clean Architecture - Yurik&#39;s Tech Blog</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta>
+<meta>
+<meta>
+<meta>
+
+    <meta name="description" content="Last year, I had the opportunity to design a new project at work and since I had just finished reading Robert Martin’s Clean Architecture I thought to myself, why not implement it on that project ? On">
+<meta name="keywords" content="Software Architecture,Node.js,Typescript,Clean Architecture,Uncle Bob">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Implementing Clean Architecture">
+<meta property="og:url" content="https://yuriktech.com/2019/06/11/Implementing-Clean-Architecture/index.html">
+<meta property="og:site_name" content="Yurik&#39;s Tech Blog">
+<meta property="og:description" content="Last year, I had the opportunity to design a new project at work and since I had just finished reading Robert Martin’s Clean Architecture I thought to myself, why not implement it on that project ? On">
+<meta property="og:locale" content="en">
+<meta property="og:image" content="https://yuriktech.com/images/og_image.png">
+<meta property="og:updated_time" content="2020-01-25T12:49:48.260Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Implementing Clean Architecture">
+<meta name="twitter:description" content="Last year, I had the opportunity to design a new project at work and since I had just finished reading Robert Martin’s Clean Architecture I thought to myself, why not implement it on that project ? On">
+<meta name="twitter:image" content="https://yuriktech.com/images/og_image.png">
+
+
+
+
+
+
+
+<link rel="icon" href="/favicon.ico">
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.7.2/css/bulma.css">
+<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.4.1/css/all.css">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Ubuntu:400,600|Source+Code+Pro">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@9.12.0/styles/monokai.css">
+
+
+    
+    
+    
+    <style>body>.footer,body>.navbar,body>.section{opacity:0}</style>
+    
+
+    
+    
+    
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/lightgallery@1.6.8/dist/css/lightgallery.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/justifiedGallery@3.7.0/dist/css/justifiedGallery.min.css">
+    
+
+    
+    
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/outdatedbrowser@1.1.5/outdatedbrowser/outdatedbrowser.min.css">
+
+
+    
+    
+    
+    
+
+<link rel="stylesheet" href="/css/back-to-top.css">
+
+
+    
+    
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-142167807-1"></script>
+<script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'UA-142167807-1');
+</script>
+
+
+    
+    
+    
+    
+
+    
+    
+<link rel="stylesheet" href="/css/progressbar.css">
+<script src="https://cdn.jsdelivr.net/npm/pace-js@1.0.2/pace.min.js"></script>
+
+    
+    
+    
+
+    
+    
+    
+
+
+<link rel="stylesheet" href="/css/style.css">
+</head>
+<body class="is-3-column">
+    <nav class="navbar navbar-main">
+    <div class="container">
+
+        <div class="navbar-menu">
+            
+            <div class="navbar-start">
+                
+                <a class="navbar-item" href="/">Home</a>
+                
+                <a class="navbar-item" href="/archives">Archives</a>
+                
+                <a class="navbar-item" href="/categories">Categories</a>
+                
+                <a class="navbar-item" href="/tags">Tags</a>
+                
+                <a class="navbar-item" href="/about">About</a>
+                
+            </div>
+            
+            <div class="navbar-end">
+                
+                    
+                    
+                    <a class="navbar-item" target="_blank" title="GitHub" href="https://github.com/yuraxdrumz">
+                        
+                        <i class="fab fa-github"></i>
+                        
+                    </a>
+                    
+                
+                
+                <a class="navbar-item is-hidden-tablet catalogue" title="Catalogue" href="javascript:;">
+                    <i class="fas fa-list-ul"></i>
+                </a>
+                
+                
+                <a class="navbar-item search" title="Search" href="javascript:;">
+                    <i class="fas fa-search"></i>
+                </a>
+                
+            </div>
+        </div>
+    </div>
+</nav>
+    
+    <section class="section">
+        <div class="container">
+            <div class="columns">
+                <div class="column is-8-tablet is-8-desktop is-6-widescreen has-order-2 column-main"><div class="card">
+    
+    <div class="card-content article ">
+        
+        <div class="level article-meta is-size-7 is-uppercase is-mobile is-overflow-x-auto">
+            <div class="level-left">
+                <time class="level-item has-text-grey" datetime="2019-06-11T18:31:56.000Z">2019-06-11</time>
+                
+                <div class="level-item">
+                <a class="has-link-grey -link" href="/categories/Architecture/">Architecture</a>
+                </div>
+                
+                
+                <span class="level-item has-text-grey">
+                    
+                    
+                    14 minutes read (About 2164 words)
+                </span>
+                
+                
+            </div>
+        </div>
+        
+        <h1 class="title is-size-3 is-size-4-mobile has-text-weight-normal">
+            
+                Implementing Clean Architecture
+            
+        </h1>
+        <div class="content">
+            <p>Last year, I had the opportunity to design a new project at work and since I had just finished reading Robert Martin’s <em>Clean Architecture</em> I thought to myself, why not implement it on that project ? One of the reasons, except my usual <em>I have to implement this cool thing right away!</em> was that working on legacy systems in the company was accompanied with the good ol’ <em>big ball of mud</em> code. The purpose of this post is to show you how can one implement <em>Clean Architecture</em> in practice and still understand it years from now, whether you work alone or in a team. Everything shown will be written in <em>Typescript</em> on <em>Node.js</em> using <em>Object Oriented</em> programming paradigm. All of the code will be available <a href="https://github.com/yuraxdrumz/clean-architecture-example" target="_blank" rel="noopener">here</a></p>
+<h1 id="Disclaimer"><a href="#Disclaimer" class="headerlink" title="Disclaimer"></a>Disclaimer</h1><p>Some of the things that I am going to write and show are my personal experiences and opinions, you may have read Robert Martin’s <em>Clean Architecture</em> and thought, interpreted or implemented otherwise. All the architectures have the same goals in the end. Implementing this in production has taught me a lot about how to build better software and expanded my toolbox as I hope it expands yours.</p>
+<h2 id="Core-Idea"><a href="#Core-Idea" class="headerlink" title="Core Idea"></a>Core Idea</h2><p>The idea behind <em>Clean Architecture</em> is that we have layers. Each layer is encapsulated by a higher level layer and the only way to communicate between the layers is with <em>The Dependency Rule</em>. </p>
+<h2 id="The-Dependency-Rule"><a href="#The-Dependency-Rule" class="headerlink" title="The Dependency Rule"></a>The Dependency Rule</h2><p> states that source code dependencies can only point inwards, meaning each layer can be dependant on the layer beneath it, but never the other way around. </p>
+<h2 id="Entities"><a href="#Entities" class="headerlink" title="Entities"></a>Entities</h2><p>The core of this architecture are your entities, which represent your classes/types/interfaces/basic methods.</p>
+<h2 id="Use-Cases"><a href="#Use-Cases" class="headerlink" title="Use-Cases"></a>Use-Cases</h2><p>A layer above the entities layer is your use-cases. Use-cases are your application specific business rules, for example, if we are talking about a shopping cart, then <code>addToCart</code> will be a use case, because it needs to recieve a type <code>product</code> and, for examples sake, check warehouse for availability and then insert new data to a DB and return response. Do not couple your use-cases to some input or output, instead pass a contract (interface) of some type in the constructor and pass the implementation itself at higher layers.</p>
+<h2 id="Repository-Pattern"><a href="#Repository-Pattern" class="headerlink" title="Repository Pattern"></a>Repository Pattern</h2><p>For database interactions it is recommended to use the <em>Repository Pattern</em> which encapsulates all your database interactions through an abstraction layer. The repository pattern does give you a bit freedom to replace databases with ease, but this rule only applies when your interactions are basic CRUD operations! If you have many to many relationships which require a graph database, switching to mongodb at the repository layer will not help you much as it is not built for that purpose, so take interactions into consideration at design level! </p>
+<h2 id="Interface-Adapters"><a href="#Interface-Adapters" class="headerlink" title="Interface Adapters"></a>Interface Adapters</h2><p>After the use-cases layer we have the Interface Adapters layer. Here, you convert your data from the form most convenient for entities and use cases, into the form most convenient for whatever persistence framework is being used, like the database, web or whatever you like. I like to call it, the implementations layer.</p>
+<h2 id="Frameworks-and-Drivers"><a href="#Frameworks-and-Drivers" class="headerlink" title="Frameworks and Drivers"></a>Frameworks and Drivers</h2><p>The last layer is the Frameworks and Drivers. Here you call all of your dependencies that abide the contracts you defined in your use-cases. That way you can replace dependencies without the use-cases knowing anything about it, according to the L in S.O.L.I.D, which is called the Liskov substitution principle.</p>
+<h2 id="Liskov-Substitution-Principle"><a href="#Liskov-Substitution-Principle" class="headerlink" title="Liskov Substitution Principle"></a>Liskov Substitution Principle</h2><p>Liskov’s substitution principle states that if a system is using a type <strong>T</strong> which is an implementation of type <strong>S</strong> and we switch the implementation to type <strong>Z</strong> which is also of type <strong>S</strong> , the behaviour of the program should not change.</p>
+<p>A small diagram to illustrate our layers, notice the arrows only pointing inward!
+Taken from:<br><a href="https://blog.cleancoder.com/uncle-bob/2012/08/13/the-clean-architecture.html" target="_blank" rel="noopener">https://blog.cleancoder.com/uncle-bob/2012/08/13/the-clean-architecture.html</a></p>
+<p><img src="/2019/06/11/Implementing-Clean-Architecture/CleanArchitecture.jpg" alt></p>
+<h2 id="Clean-Architecture-In-Practice"><a href="#Clean-Architecture-In-Practice" class="headerlink" title="Clean Architecture In Practice"></a>Clean Architecture In Practice</h2><p>lets build something overused, like a shopping cart. We will first decide what are our use cases and from that we would be able to conclude an initial data model - our entities. Later on, we will create Interface Adapters(implementations) and at the final layer we will simply glue all of our dependencies and implementations and see how clean architecture could benefit us in future projects. Last but not least, we will show how easy it is to switch implementations from a web server to a command line interface.</p>
+<h2 id="What-are-our-use-Cases"><a href="#What-are-our-use-Cases" class="headerlink" title="What are our use-Cases"></a>What are our use-Cases</h2><p>Because we chose a shopping cart, our use-cases will be pretty straight forward - <code>addToCart</code> and <code>removeFromCart</code>. Lets say <code>addToCart</code> needs to check our warehouse which is an external service, afterwards it will need to insert to our DB. <code>removeFromCart</code> will update warehouse and afterwards delete from our DB. After deciding on our business rules (use-cases), we can create an inital data model.</p>
+<h3 id="Defining-the-types"><a href="#Defining-the-types" class="headerlink" title="Defining the types"></a>Defining the types</h3><p><code>src\entities\types\AddedToCart.ts</code></p>
+<figure class="highlight typescript hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-keyword">type</span> AddedToCart = <span class="hljs-built_in">boolean</span></span><br><span class="line"><span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> AddedToCart</span><br></pre></td></tr></table></figure>
+
+<p><code>src\entities\types\RemovedFromCart.ts</code></p>
+<figure class="highlight typescript hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-keyword">type</span> RemovedFromCart = <span class="hljs-built_in">boolean</span></span><br><span class="line"><span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> RemovedFromCart</span><br></pre></td></tr></table></figure>
+
+<p><code>src\entities\types\Product.ts</code></p>
+<figure class="highlight typescript hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-keyword">type</span> Product = &#123;&#125;</span><br><span class="line"><span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> Product</span><br></pre></td></tr></table></figure>
+
+<p><code>src\entities\types\ItemInWareHouse.ts</code></p>
+<figure class="highlight typescript hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-keyword">type</span> ItemInWareHouse = <span class="hljs-built_in">boolean</span></span><br><span class="line"><span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> ItemInWareHouse</span><br></pre></td></tr></table></figure>
+
+<h3 id="Defining-the-contracts-interfaces"><a href="#Defining-the-contracts-interfaces" class="headerlink" title="Defining the contracts (interfaces)"></a>Defining the contracts (interfaces)</h3><p><code>src\entities\interfaces\addToCart.ts</code></p>
+<figure class="highlight typescript hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-keyword">import</span> AddedToCart <span class="hljs-keyword">from</span> <span class="hljs-string">'../types/AddedToCart'</span></span><br><span class="line"><span class="hljs-keyword">import</span> Product <span class="hljs-keyword">from</span> <span class="hljs-string">'../types/Product'</span></span><br><span class="line"><span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> <span class="hljs-keyword">interface</span> IAddToCart &#123;</span><br><span class="line">  add(item: Product): <span class="hljs-built_in">Promise</span>&lt;AddedToCart&gt;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><code>src\entities\interfaces\removeFromCart.ts</code></p>
+<figure class="highlight typescript hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-keyword">import</span> RemovedFromCart <span class="hljs-keyword">from</span> <span class="hljs-string">'../types/RemovedFromCart'</span></span><br><span class="line"><span class="hljs-keyword">import</span> Product <span class="hljs-keyword">from</span> <span class="hljs-string">'../types/Product'</span></span><br><span class="line"><span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> <span class="hljs-keyword">interface</span> IRemoveFromCart &#123;</span><br><span class="line">  remove(item: Product): <span class="hljs-built_in">Promise</span>&lt;RemovedFromCart&gt;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><code>src\entities\interfaces\cartRepository.ts</code></p>
+<figure class="highlight typescript hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-keyword">import</span> AddedToCart <span class="hljs-keyword">from</span> <span class="hljs-string">'../types/AddedToCart'</span></span><br><span class="line"><span class="hljs-keyword">import</span> RemovedFromCart <span class="hljs-keyword">from</span> <span class="hljs-string">'../types/RemovedFromCart'</span></span><br><span class="line"><span class="hljs-keyword">import</span> Product <span class="hljs-keyword">from</span> <span class="hljs-string">'../types/Product'</span></span><br><span class="line"></span><br><span class="line"><span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> <span class="hljs-keyword">interface</span> ICartRepository &#123;</span><br><span class="line">  add(item: Product): <span class="hljs-built_in">Promise</span>&lt;AddedToCart&gt;</span><br><span class="line">  remove(item: Product): <span class="hljs-built_in">Promise</span>&lt;RemovedFromCart&gt;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><code>src\entities\interfaces\warehouse.ts</code></p>
+<figure class="highlight typescript hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-keyword">import</span> Product <span class="hljs-keyword">from</span> <span class="hljs-string">'../types/Product'</span></span><br><span class="line"><span class="hljs-keyword">import</span> ItemInWareHouse <span class="hljs-keyword">from</span> <span class="hljs-string">'../types/ItemInWareHouse'</span></span><br><span class="line"></span><br><span class="line"><span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> <span class="hljs-keyword">interface</span> IWarehouse &#123;</span><br><span class="line">  checkItemInWarehouse(item: Product): <span class="hljs-built_in">Promise</span>&lt;ItemInWareHouse&gt;</span><br><span class="line">  returnItemToWarehouse(item: Product): <span class="hljs-built_in">Promise</span>&lt;ItemInWareHouse&gt;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="Defining-the-use-cases"><a href="#Defining-the-use-cases" class="headerlink" title="Defining the use-cases"></a>Defining the use-cases</h3><p>Note how we expect to receive implementations of the warehouse and cartRepository interfaces in the code snippet below. The implementations themselves can be anything as long as they implement our interfaces.<br>The implementations will be passed in the constructor as well as other 3rd party dependencies/modules. If we used/imported the dependencies/implementations directly, we would not adhere to the <code>Clean Architecture&#39;s</code> inwards dependency (arrows we saw in the diagram above) as we would create a dependency of a higher level module to a lower level detail, also called <code>dependency inversion</code>. </p>
+<p><code>src\use-cases\addToCart.ts</code></p>
+<figure class="highlight typescript hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-keyword">import</span> AddedToCart <span class="hljs-keyword">from</span> <span class="hljs-string">'../entities/types/AddedToCart'</span></span><br><span class="line"><span class="hljs-keyword">import</span> Product <span class="hljs-keyword">from</span> <span class="hljs-string">'../entities/types/Product'</span></span><br><span class="line"></span><br><span class="line"><span class="hljs-keyword">import</span> IWarehouse <span class="hljs-keyword">from</span> <span class="hljs-string">'../entities/interfaces/warehouse'</span></span><br><span class="line"><span class="hljs-keyword">import</span> ICartRepository <span class="hljs-keyword">from</span> <span class="hljs-string">'../entities/interfaces/cartRepository'</span></span><br><span class="line"><span class="hljs-keyword">import</span> IAddToCart <span class="hljs-keyword">from</span> <span class="hljs-string">'../entities/interfaces/addToCart'</span></span><br><span class="line"></span><br><span class="line"><span class="hljs-keyword">abstract</span> <span class="hljs-keyword">class</span> AddToCart <span class="hljs-keyword">implements</span> IAddToCart &#123;</span><br><span class="line">  <span class="hljs-keyword">protected</span> cartRepository: ICartRepository</span><br><span class="line">  <span class="hljs-keyword">protected</span> warehouseService: IWarehouse</span><br><span class="line">  <span class="hljs-keyword">constructor</span>(<span class="hljs-params">cartRepository: ICartRepository, warehouseService: IWarehouse</span>)&#123;</span><br><span class="line">    <span class="hljs-keyword">this</span>.cartRepository = cartRepository</span><br><span class="line">    <span class="hljs-keyword">this</span>.warehouseService = warehouseService</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="hljs-keyword">async</span> add(item: Product): <span class="hljs-built_in">Promise</span>&lt;AddedToCart&gt; &#123;</span><br><span class="line">    <span class="hljs-keyword">const</span> isItemInWarehouse = <span class="hljs-keyword">await</span> <span class="hljs-keyword">this</span>.warehouseService.checkItemInWarehouse(item)</span><br><span class="line">    <span class="hljs-keyword">if</span>(!isItemInWarehouse) <span class="hljs-keyword">return</span> <span class="hljs-literal">false</span></span><br><span class="line">    <span class="hljs-keyword">const</span> isSaved = <span class="hljs-keyword">await</span> <span class="hljs-keyword">this</span>.cartRepository.add(item)</span><br><span class="line">    <span class="hljs-keyword">if</span>(!isSaved) <span class="hljs-keyword">return</span> <span class="hljs-literal">false</span></span><br><span class="line">    <span class="hljs-keyword">return</span> <span class="hljs-literal">true</span></span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> AddToCart</span><br></pre></td></tr></table></figure>
+
+<p><code>src\use-cases\removeFromCart.ts</code></p>
+<figure class="highlight typescript hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-keyword">import</span> RemovedFromCart <span class="hljs-keyword">from</span> <span class="hljs-string">'../entities/types/RemovedFromCart'</span></span><br><span class="line"><span class="hljs-keyword">import</span> Product <span class="hljs-keyword">from</span> <span class="hljs-string">'../entities/types/Product'</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="hljs-keyword">import</span> IRemoveFromCart <span class="hljs-keyword">from</span> <span class="hljs-string">'../entities/interfaces/removeFromCart'</span></span><br><span class="line"><span class="hljs-keyword">import</span> IWarehouse <span class="hljs-keyword">from</span> <span class="hljs-string">'../entities/interfaces/warehouse'</span></span><br><span class="line"><span class="hljs-keyword">import</span> ICartRepository <span class="hljs-keyword">from</span> <span class="hljs-string">'../entities/interfaces/cartRepository'</span></span><br><span class="line"></span><br><span class="line"><span class="hljs-keyword">abstract</span> <span class="hljs-keyword">class</span> RemoveFromCart <span class="hljs-keyword">implements</span> IRemoveFromCart &#123;</span><br><span class="line">  <span class="hljs-keyword">protected</span> cartRepository: ICartRepository</span><br><span class="line">  <span class="hljs-keyword">protected</span> warehouseService: IWarehouse</span><br><span class="line">  <span class="hljs-keyword">constructor</span>(<span class="hljs-params">cartRepository, warehouseService</span>)&#123;</span><br><span class="line">    <span class="hljs-keyword">this</span>.cartRepository = cartRepository</span><br><span class="line">    <span class="hljs-keyword">this</span>.warehouseService = warehouseService</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="hljs-keyword">async</span> remove(item: Product): <span class="hljs-built_in">Promise</span>&lt;RemovedFromCart&gt; &#123;</span><br><span class="line">    <span class="hljs-keyword">const</span> isItemReturned = <span class="hljs-keyword">await</span> <span class="hljs-keyword">this</span>.warehouseService.returnItemToWarehouse(item)</span><br><span class="line">    <span class="hljs-keyword">if</span>(!isItemReturned) <span class="hljs-keyword">return</span> <span class="hljs-literal">false</span></span><br><span class="line">    <span class="hljs-keyword">const</span> isItemDeleted = <span class="hljs-keyword">await</span> <span class="hljs-keyword">this</span>.cartRepository.remove(item)</span><br><span class="line">    <span class="hljs-keyword">if</span>(!isItemDeleted) <span class="hljs-keyword">return</span> <span class="hljs-literal">false</span></span><br><span class="line">    <span class="hljs-keyword">return</span> <span class="hljs-literal">true</span></span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> RemoveFromCart</span><br></pre></td></tr></table></figure>
+
+<h3 id="Defining-the-implementations"><a href="#Defining-the-implementations" class="headerlink" title="Defining the implementations"></a>Defining the implementations</h3><p>Now lets first create implementations of add / remove / cartRepository and warehouse for a web server.</p>
+<p><code>src\implementations\addToCart\web.ts</code></p>
+<figure class="highlight typescript hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-keyword">import</span> AddToCart <span class="hljs-keyword">from</span> <span class="hljs-string">'../../use-cases/addToCart'</span></span><br><span class="line"></span><br><span class="line"><span class="hljs-keyword">class</span> ConcreteAddToCart <span class="hljs-keyword">extends</span> AddToCart &#123;</span><br><span class="line">  <span class="hljs-keyword">async</span> receiveProductFromWeb(request, response)&#123;</span><br><span class="line">    <span class="hljs-keyword">if</span>(request &amp;&amp; request.body &amp;&amp; request.body[<span class="hljs-string">"item"</span>])&#123;</span><br><span class="line">      <span class="hljs-keyword">const</span> isAdded = <span class="hljs-keyword">await</span> <span class="hljs-keyword">this</span>.add(request.body[<span class="hljs-string">"item"</span>])</span><br><span class="line">      response.json(isAdded)</span><br><span class="line">    &#125; <span class="hljs-keyword">else</span> &#123;</span><br><span class="line">      <span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> <span class="hljs-built_in">Error</span>(<span class="hljs-string">"body is missing required field item"</span>)</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> ConcreteAddToCart</span><br></pre></td></tr></table></figure>
+
+<p><code>src\implementations\addToCart\web.ts</code></p>
+<figure class="highlight typescript hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-keyword">import</span> RemoveFromCart <span class="hljs-keyword">from</span> <span class="hljs-string">'../../use-cases/removeFromCart'</span></span><br><span class="line"></span><br><span class="line"><span class="hljs-keyword">class</span> ConcreteRemoveFromCart <span class="hljs-keyword">extends</span> RemoveFromCart &#123;</span><br><span class="line">  <span class="hljs-keyword">async</span> removeProductFromWeb(request, response)&#123;</span><br><span class="line">    <span class="hljs-keyword">if</span>(request &amp;&amp; request.body &amp;&amp; request.body[<span class="hljs-string">"item"</span>])&#123;</span><br><span class="line">      <span class="hljs-keyword">const</span> isRemoved = <span class="hljs-keyword">await</span> <span class="hljs-keyword">this</span>.remove(request.body[<span class="hljs-string">"item"</span>])</span><br><span class="line">      response.json(isRemoved)</span><br><span class="line">    &#125; <span class="hljs-keyword">else</span> &#123;</span><br><span class="line">      <span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> <span class="hljs-built_in">Error</span>(<span class="hljs-string">"body is missing required field item"</span>)</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> ConcreteRemoveFromCart</span><br></pre></td></tr></table></figure>
+
+<p>I added a console implementation of cartRepository, which simply logs to stdout.</p>
+<p><code>src\implementations\cartRepository\console.ts</code></p>
+<figure class="highlight typescript hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-keyword">import</span> ICartRepository <span class="hljs-keyword">from</span> <span class="hljs-string">'../../entities/interfaces/cartRepository'</span></span><br><span class="line"><span class="hljs-keyword">import</span> Product <span class="hljs-keyword">from</span> <span class="hljs-string">'../../entities/types/Product'</span></span><br><span class="line"><span class="hljs-keyword">import</span> AddedToCart <span class="hljs-keyword">from</span> <span class="hljs-string">'../../entities/types/AddedToCart'</span></span><br><span class="line"><span class="hljs-keyword">import</span> RemovedFromCart <span class="hljs-keyword">from</span> <span class="hljs-string">'../../entities/types/RemovedFromCart'</span></span><br><span class="line"></span><br><span class="line"><span class="hljs-keyword">class</span> ConcreteCartRepository <span class="hljs-keyword">implements</span> ICartRepository &#123;</span><br><span class="line">  <span class="hljs-keyword">async</span> add(item: Product): <span class="hljs-built_in">Promise</span>&lt;AddedToCart&gt; &#123;</span><br><span class="line">    <span class="hljs-built_in">console</span>.log(<span class="hljs-string">'adding item to database'</span>)</span><br><span class="line">    <span class="hljs-keyword">return</span> <span class="hljs-literal">true</span></span><br><span class="line">  &#125;</span><br><span class="line">  <span class="hljs-keyword">async</span> remove(item: Product): <span class="hljs-built_in">Promise</span>&lt;RemovedFromCart&gt; &#123;</span><br><span class="line">    <span class="hljs-built_in">console</span>.log(<span class="hljs-string">'removing item from database'</span>)</span><br><span class="line">    <span class="hljs-keyword">return</span> <span class="hljs-literal">true</span></span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> ConcreteCartRepository</span><br></pre></td></tr></table></figure>
+
+<p>I added a console implementation of warehouse, which simply logs to stdout.</p>
+<p><code>src\implementations\warehouse\console.ts</code></p>
+<figure class="highlight typescript hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-keyword">import</span> IWarehouse <span class="hljs-keyword">from</span> <span class="hljs-string">'../../entities/interfaces/warehouse'</span></span><br><span class="line"><span class="hljs-keyword">import</span> Product <span class="hljs-keyword">from</span> <span class="hljs-string">'../../entities/types/Product'</span></span><br><span class="line"><span class="hljs-keyword">import</span> AddedToCart <span class="hljs-keyword">from</span> <span class="hljs-string">'../../entities/types/AddedToCart'</span></span><br><span class="line"><span class="hljs-keyword">import</span> RemovedFromCart <span class="hljs-keyword">from</span> <span class="hljs-string">'../../entities/types/RemovedFromCart'</span></span><br><span class="line"></span><br><span class="line"><span class="hljs-keyword">class</span> ConcreteWarehouse <span class="hljs-keyword">implements</span> IWarehouse &#123;</span><br><span class="line">  <span class="hljs-keyword">async</span> checkItemInWarehouse(item: Product): <span class="hljs-built_in">Promise</span>&lt;AddedToCart&gt; &#123;</span><br><span class="line">    <span class="hljs-built_in">console</span>.log(<span class="hljs-string">'adding item to warehouse'</span>)</span><br><span class="line">    <span class="hljs-keyword">return</span> <span class="hljs-literal">true</span></span><br><span class="line">  &#125;</span><br><span class="line">  <span class="hljs-keyword">async</span> returnItemToWarehouse(item: Product): <span class="hljs-built_in">Promise</span>&lt;RemovedFromCart&gt; &#123;</span><br><span class="line">    <span class="hljs-built_in">console</span>.log(<span class="hljs-string">'returning item to warehouse'</span>)</span><br><span class="line">    <span class="hljs-keyword">return</span> <span class="hljs-literal">true</span></span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> ConcreteWarehouse</span><br></pre></td></tr></table></figure>
+
+<p>We chose a web implementation for <code>addToCart</code> and <code>removeFromCart</code> and a console implementation for <code>warehouse</code> and <code>cartRepository</code>.
+We wrapped each use-case with a handler which will be part of a web server, in other words, we prepared the data in this layer for the next layer to use, which is the <code>frameworks and drivers</code> layer.</p>
+<h3 id="Defining-the-frameworks-and-drivers"><a href="#Defining-the-frameworks-and-drivers" class="headerlink" title="Defining the frameworks and drivers"></a>Defining the frameworks and drivers</h3><p>Now, the last glue layer looks like this:<br>We could make it prettier, but I will leave that to you, after we learn this cool new architecture!</p>
+<p><code>src\frameworks-drivers\web.ts</code></p>
+<figure class="highlight typescript hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-keyword">import</span> express <span class="hljs-keyword">from</span> <span class="hljs-string">'express'</span></span><br><span class="line"><span class="hljs-keyword">import</span> bodyParser <span class="hljs-keyword">from</span> <span class="hljs-string">'body-parser'</span></span><br><span class="line"></span><br><span class="line"><span class="hljs-keyword">import</span> CartRepositoryImpl <span class="hljs-keyword">from</span> <span class="hljs-string">'../implementations/cartRepository/console'</span></span><br><span class="line"><span class="hljs-keyword">import</span> WarehouseImpl <span class="hljs-keyword">from</span> <span class="hljs-string">'../implementations/warehouse/console'</span></span><br><span class="line"><span class="hljs-keyword">import</span> AddToCartWebImpl <span class="hljs-keyword">from</span> <span class="hljs-string">'../implementations/addToCart/web'</span></span><br><span class="line"><span class="hljs-keyword">import</span> RemoveFromCartWebImpl <span class="hljs-keyword">from</span> <span class="hljs-string">'../implementations/removeFromCart/web'</span></span><br><span class="line"></span><br><span class="line"><span class="hljs-keyword">const</span> app = express()</span><br><span class="line"><span class="hljs-keyword">const</span> cartRepo = <span class="hljs-keyword">new</span> CartRepositoryImpl()</span><br><span class="line"><span class="hljs-keyword">const</span> warehouse = <span class="hljs-keyword">new</span> WarehouseImpl()</span><br><span class="line"><span class="hljs-keyword">const</span> addToCartInstance = <span class="hljs-keyword">new</span> AddToCartWebImpl(cartRepo, warehouse)</span><br><span class="line"><span class="hljs-keyword">const</span> removeFromCartInstance = <span class="hljs-keyword">new</span> RemoveFromCartWebImpl(cartRepo, warehouse)</span><br><span class="line"></span><br><span class="line">app.use(bodyParser.json())</span><br><span class="line"></span><br><span class="line">app.post(<span class="hljs-string">'/item'</span>, <span class="hljs-keyword">async</span> (req,res,next)=&gt;&#123;</span><br><span class="line">  <span class="hljs-keyword">try</span>&#123;</span><br><span class="line">    <span class="hljs-keyword">await</span> addToCartInstance.receiveProductFromWeb(req, res)</span><br><span class="line">  &#125;<span class="hljs-keyword">catch</span>(e)&#123;</span><br><span class="line">    next(e)</span><br><span class="line">  &#125;</span><br><span class="line">&#125;)</span><br><span class="line"></span><br><span class="line">app.delete(<span class="hljs-string">'/item'</span>, <span class="hljs-keyword">async</span> (req,res,next)=&gt;&#123;</span><br><span class="line">  <span class="hljs-keyword">try</span>&#123;</span><br><span class="line">    <span class="hljs-keyword">await</span> removeFromCartInstance.removeProductFromWeb(req, res)</span><br><span class="line">  &#125;<span class="hljs-keyword">catch</span>(e)&#123;</span><br><span class="line">    next(e)</span><br><span class="line">  &#125;</span><br><span class="line">&#125;)</span><br><span class="line"></span><br><span class="line">app.listen(process.env.PORT, <span class="hljs-function"><span class="hljs-params">()</span>=&gt;</span>&#123;</span><br><span class="line">  <span class="hljs-built_in">console</span>.log(<span class="hljs-string">`listening on port <span class="hljs-subst">$&#123;process.env.PORT&#125;</span>`</span>)</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
+
+<p>We initiated all dependencies, created all instances and passed everything along, if all interfaces are adhered, the code will compile and we can run <code>web.ts</code>. Try and run this example and send a POST to <code>/item</code> and a DELETE to <code>/item</code>, you will see our warehouse and database console implementations writing to stdout like we planned to.</p>
+<h2 id="Creating-another-implementation"><a href="#Creating-another-implementation" class="headerlink" title="Creating another implementation"></a>Creating another implementation</h2><p>Now, lets create a command line interface implementation for <code>addToCart</code> and <code>removeFromCart</code>. We will leave the <code>warehouse</code> and <code>cartRepository</code> as is but you can play with them as you wish.</p>
+<p>lets create a new <code>cli.ts</code> under <code>implementations\addToCart</code><br><code>src\implementations\addToCart\cli.ts</code></p>
+<figure class="highlight typescript hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-keyword">import</span> AddToCart <span class="hljs-keyword">from</span> <span class="hljs-string">'../../use-cases/addToCart'</span></span><br><span class="line"></span><br><span class="line"><span class="hljs-keyword">class</span> ConcreteAddToCart <span class="hljs-keyword">extends</span> AddToCart &#123;</span><br><span class="line">  <span class="hljs-keyword">async</span> receiveProductFromCli(product)&#123;</span><br><span class="line">    <span class="hljs-keyword">if</span>(product)&#123;</span><br><span class="line">      <span class="hljs-keyword">const</span> isAdded = <span class="hljs-keyword">await</span> <span class="hljs-keyword">this</span>.add(product)</span><br><span class="line">      <span class="hljs-built_in">console</span>.log(<span class="hljs-string">`isAdded: <span class="hljs-subst">$&#123;isAdded&#125;</span>`</span>)</span><br><span class="line">    &#125; <span class="hljs-keyword">else</span> &#123;</span><br><span class="line">      <span class="hljs-built_in">console</span>.error(<span class="hljs-string">"commandLineOptions require product to be passed"</span>)</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> ConcreteAddToCart</span><br></pre></td></tr></table></figure>
+
+<p><code>src\implementations\removeFromCart\cli.ts</code></p>
+<figure class="highlight typescript hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-keyword">import</span> RemoveFromCart <span class="hljs-keyword">from</span> <span class="hljs-string">'../../use-cases/removeFromCart'</span></span><br><span class="line"></span><br><span class="line"><span class="hljs-keyword">class</span> ConcreteRemoveFromCart <span class="hljs-keyword">extends</span> RemoveFromCart &#123;</span><br><span class="line">  <span class="hljs-keyword">async</span> removeProductFromCli(product)&#123;</span><br><span class="line">    <span class="hljs-keyword">if</span>(product)&#123;</span><br><span class="line">      <span class="hljs-keyword">const</span> isRemoved = <span class="hljs-keyword">await</span> <span class="hljs-keyword">this</span>.remove(product)</span><br><span class="line">      <span class="hljs-built_in">console</span>.log(<span class="hljs-string">`isRemoved: <span class="hljs-subst">$&#123;isRemoved&#125;</span>`</span>)</span><br><span class="line">    &#125; <span class="hljs-keyword">else</span> &#123;</span><br><span class="line">      <span class="hljs-built_in">console</span>.error(<span class="hljs-string">"commandLineOptions require product to be passed"</span>)</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> ConcreteRemoveFromCart</span><br></pre></td></tr></table></figure>
+
+<p>Now, all we have left to do is create a new <code>cli.ts</code> under <code>frameworks-drivers</code> and call the corresponding cli implementations.</p>
+<p><code>src\frameworks-drivers\cli.ts</code></p>
+<figure class="highlight typescript hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-keyword">import</span> program <span class="hljs-keyword">from</span> <span class="hljs-string">'commander'</span></span><br><span class="line"></span><br><span class="line"><span class="hljs-keyword">import</span> CartRepositoryImpl <span class="hljs-keyword">from</span> <span class="hljs-string">'../implementations/cartRepository/console'</span></span><br><span class="line"><span class="hljs-keyword">import</span> WarehouseImpl <span class="hljs-keyword">from</span> <span class="hljs-string">'../implementations/warehouse/console'</span></span><br><span class="line"><span class="hljs-keyword">import</span> AddToCartCliImpl <span class="hljs-keyword">from</span> <span class="hljs-string">'../implementations/addToCart/cli'</span></span><br><span class="line"><span class="hljs-keyword">import</span> RemoveFromCartCliImpl <span class="hljs-keyword">from</span> <span class="hljs-string">'../implementations/removeFromCart/cli'</span></span><br><span class="line"></span><br><span class="line">program</span><br><span class="line">  .option(<span class="hljs-string">'-p, --product &lt;name&gt;'</span>, <span class="hljs-string">'product name'</span>)</span><br><span class="line">  .option(<span class="hljs-string">'-a, --add'</span>, <span class="hljs-string">'action'</span>)</span><br><span class="line">  .option(<span class="hljs-string">'-r, --remove'</span>, <span class="hljs-string">'action'</span>)</span><br><span class="line"></span><br><span class="line">program.parse(process.argv);</span><br><span class="line"></span><br><span class="line"><span class="hljs-comment">/**</span></span><br><span class="line"><span class="hljs-comment"> * to run this from typescript first run npm run dist and then node dist\index.js -p "test product name" -a or node dist\index.js -p "test product name" -r</span></span><br><span class="line"><span class="hljs-comment"> */</span></span><br><span class="line"></span><br><span class="line">(<span class="hljs-keyword">async</span> ()=&gt;&#123;</span><br><span class="line">  <span class="hljs-keyword">const</span> cartRepo = <span class="hljs-keyword">new</span> CartRepositoryImpl()</span><br><span class="line">  <span class="hljs-keyword">const</span> warehouse = <span class="hljs-keyword">new</span> WarehouseImpl()</span><br><span class="line">  <span class="hljs-keyword">const</span> addToCartInstance = <span class="hljs-keyword">new</span> AddToCartCliImpl(cartRepo, warehouse)</span><br><span class="line">  <span class="hljs-keyword">const</span> removeFromCartInstance = <span class="hljs-keyword">new</span> RemoveFromCartCliImpl(cartRepo, warehouse)</span><br><span class="line"></span><br><span class="line">  <span class="hljs-keyword">if</span>(!program.product)&#123;</span><br><span class="line">    <span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> <span class="hljs-built_in">Error</span>(<span class="hljs-string">"-p is required"</span>)</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="hljs-keyword">if</span>(program.add)&#123;</span><br><span class="line">    <span class="hljs-keyword">await</span> addToCartInstance.receiveProductFromCli(program.product)</span><br><span class="line">  &#125; <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> (program.remove)&#123;</span><br><span class="line">    <span class="hljs-keyword">await</span> removeFromCartInstance.removeProductFromCli(program.product)</span><br><span class="line">  &#125; <span class="hljs-keyword">else</span> &#123;</span><br><span class="line">    <span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> <span class="hljs-built_in">Error</span>(<span class="hljs-string">"-a or -r are required"</span>)</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">&#125;)()</span><br></pre></td></tr></table></figure>
+
+<h2 id="Summary"><a href="#Summary" class="headerlink" title="Summary"></a>Summary</h2><p>We first looked at what <em>Clean Architecture</em> is, as defined by Robert Martin, later, we saw what each layer does and provided detailed examples. In the end, we created a new implementation without touching the core business rules (addToCart, removeFromCart).<br>We saw how this architecture encourages seperation of concerns out of the box, gives a guideline on how to structure your code, defines interactions between layers and allows rapid changes regardless of the size of your codebase.</p>
+
+        </div>
+        
+        <div class="level is-size-7 is-uppercase">
+            <div class="level-start">
+                <div class="level-item">
+                    <span class="is-size-6 has-text-grey has-mr-7">#</span>
+                    <a class="has-link-grey -link" href="/tags/Clean-Architecture/">Clean Architecture</a>, <a class="has-link-grey -link" href="/tags/Node-js/">Node.js</a>, <a class="has-link-grey -link" href="/tags/Software-Architecture/">Software Architecture</a>, <a class="has-link-grey -link" href="/tags/Typescript/">Typescript</a>, <a class="has-link-grey -link" href="/tags/Uncle-Bob/">Uncle Bob</a>
+                </div>
+            </div>
+        </div>
+        
+        
+        
+    </div>
+</div>
+
+
+
+
+
+<div class="card card-transparent">
+    <div class="level post-navigation is-flex-wrap is-mobile">
+        
+        <div class="level-start">
+            <a class="level level-item has-link-grey  article-nav-prev" href="/2019/06/17/Switching-From-Node.js-To-Elixir/">
+                <i class="level-item fas fa-chevron-left"></i>
+                <span class="level-item">Switching From Node.js to Elixir</span>
+            </a>
+        </div>
+        
+        
+        <div class="level-end">
+            <a class="level level-item has-link-grey  article-nav-next" href="/2019/06/09/Node-JS-Event-Loop-0/">
+                <span class="level-item">How the Event Loop Really Works</span>
+                <i class="level-item fas fa-chevron-right"></i>
+            </a>
+        </div>
+        
+    </div>
+</div>
+
+
+
+<div class="card">
+    <div class="card-content">
+        <h3 class="title is-5 has-text-weight-normal">Comments</h3>
+        
+<script>
+    var disqus_config = function () {
+        this.page.url = 'https://yuriktech.com/2019/06/11/Implementing-Clean-Architecture/';
+        this.page.identifier = '2019/06/11/Implementing-Clean-Architecture/';
+    };
+    (function() {
+        var d = document, s = d.createElement('script');  
+        s.src = '//' + 'yuritech' + '.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', +new Date());
+        (d.head || d.body).appendChild(s);
+    })();
+</script>
+
+<div id="disqus_thread">
+    
+    <noscript>Please enable JavaScript to view the <a href="//disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+    </div>
+</div>
+</div>
+                
+
+
+
+
+<div class="column is-4-tablet is-4-desktop is-3-widescreen  has-order-1 column-left ">
+    
+        
+<div class="card widget">
+    <div class="card-content">
+        <nav class="level">
+            <div class="level-item has-text-centered" style="flex-shrink: 1">
+                <div>
+                    
+                        <img class="image is-128x128 has-mb-6" src="/about/index/avatar.png" alt="Yuri Khomyakov">
+                    
+                    
+                    <p class="is-size-4 is-block">
+                        Yuri Khomyakov
+                    </p>
+                    
+                    
+                    <p class="is-size-6 is-block">
+                        Software Developer
+                    </p>
+                    
+                    
+                </div>
+            </div>
+        </nav>
+        <nav class="level is-mobile">
+            <div class="level-item has-text-centered is-marginless">
+                <div>
+                    <p class="heading">
+                        Posts
+                    </p>
+                    <p class="title has-text-weight-normal">
+                        9
+                    </p>
+                </div>
+            </div>
+            <div class="level-item has-text-centered is-marginless">
+                <div>
+                    <p class="heading">
+                        Categories
+                    </p>
+                    <p class="title has-text-weight-normal">
+                        3
+                    </p>
+                </div>
+            </div>
+            <div class="level-item has-text-centered is-marginless">
+                <div>
+                    <p class="heading">
+                        Tags
+                    </p>
+                    <p class="title has-text-weight-normal">
+                        23
+                    </p>
+                </div>
+            </div>
+        </nav>
+        <div class="level">
+            <a class="level-item button is-link is-rounded" href="https://github.com/yuraxdrumz" target="_blank">
+                Follow</a>
+        </div>
+        
+        
+        <div class="level is-mobile">
+            
+            <a class="level-item button is-white is-marginless" target="_blank" title="Email" href="mailto:yurik1776@gmail.com">
+                
+                <i class="far fa-envelope"></i>
+                
+            </a>
+            
+            <a class="level-item button is-white is-marginless" target="_blank" title="LinkedIn" href="https://www.linkedin.com/in/yuri-khomyakov-383278125/">
+                
+                <i class="fab fa-linkedin"></i>
+                
+            </a>
+            
+            <a class="level-item button is-white is-marginless" target="_blank" title="Github" href="https://github.com/yuraxdrumz">
+                
+                <i class="fab fa-github"></i>
+                
+            </a>
+            
+            <a class="level-item button is-white is-marginless" target="_blank" title="RSS" href="/atom.xml">
+                
+                <i class="fas fa-rss"></i>
+                
+            </a>
+            
+        </div>
+        
+    </div>
+</div>
+    
+        
+<div class="card widget" id="toc">
+    <div class="card-content">
+        <div class="menu">
+            <h3 class="menu-label">
+                Catalogue
+            </h3>
+            <ul class="menu-list"><li>
+        <a class="is-flex" href="#Disclaimer">
+        <span class="has-mr-6">1</span>
+        <span>Disclaimer</span>
+        </a><ul class="menu-list"><li>
+        <a class="is-flex" href="#Core-Idea">
+        <span class="has-mr-6">1.1</span>
+        <span>Core Idea</span>
+        </a></li><li>
+        <a class="is-flex" href="#The-Dependency-Rule">
+        <span class="has-mr-6">1.2</span>
+        <span>The Dependency Rule</span>
+        </a></li><li>
+        <a class="is-flex" href="#Entities">
+        <span class="has-mr-6">1.3</span>
+        <span>Entities</span>
+        </a></li><li>
+        <a class="is-flex" href="#Use-Cases">
+        <span class="has-mr-6">1.4</span>
+        <span>Use-Cases</span>
+        </a></li><li>
+        <a class="is-flex" href="#Repository-Pattern">
+        <span class="has-mr-6">1.5</span>
+        <span>Repository Pattern</span>
+        </a></li><li>
+        <a class="is-flex" href="#Interface-Adapters">
+        <span class="has-mr-6">1.6</span>
+        <span>Interface Adapters</span>
+        </a></li><li>
+        <a class="is-flex" href="#Frameworks-and-Drivers">
+        <span class="has-mr-6">1.7</span>
+        <span>Frameworks and Drivers</span>
+        </a></li><li>
+        <a class="is-flex" href="#Liskov-Substitution-Principle">
+        <span class="has-mr-6">1.8</span>
+        <span>Liskov Substitution Principle</span>
+        </a></li><li>
+        <a class="is-flex" href="#Clean-Architecture-In-Practice">
+        <span class="has-mr-6">1.9</span>
+        <span>Clean Architecture In Practice</span>
+        </a></li><li>
+        <a class="is-flex" href="#What-are-our-use-Cases">
+        <span class="has-mr-6">1.10</span>
+        <span>What are our use-Cases</span>
+        </a><ul class="menu-list"><li>
+        <a class="is-flex" href="#Defining-the-types">
+        <span class="has-mr-6">1.10.1</span>
+        <span>Defining the types</span>
+        </a></li><li>
+        <a class="is-flex" href="#Defining-the-contracts-interfaces">
+        <span class="has-mr-6">1.10.2</span>
+        <span>Defining the contracts (interfaces)</span>
+        </a></li><li>
+        <a class="is-flex" href="#Defining-the-use-cases">
+        <span class="has-mr-6">1.10.3</span>
+        <span>Defining the use-cases</span>
+        </a></li><li>
+        <a class="is-flex" href="#Defining-the-implementations">
+        <span class="has-mr-6">1.10.4</span>
+        <span>Defining the implementations</span>
+        </a></li><li>
+        <a class="is-flex" href="#Defining-the-frameworks-and-drivers">
+        <span class="has-mr-6">1.10.5</span>
+        <span>Defining the frameworks and drivers</span>
+        </a></li></ul></li><li>
+        <a class="is-flex" href="#Creating-another-implementation">
+        <span class="has-mr-6">1.11</span>
+        <span>Creating another implementation</span>
+        </a></li><li>
+        <a class="is-flex" href="#Summary">
+        <span class="has-mr-6">1.12</span>
+        <span>Summary</span>
+        </a></li></ul></li></ul>
+        </div>
+    </div>
+</div>
+
+    
+        
+<div class="card widget">
+    <div class="card-content">
+        <div class="menu">
+            <h3 class="menu-label">
+                Categories
+            </h3>
+            <ul class="menu-list">
+            <li>
+        <a class="level is-marginless" href="/categories/Architecture/">
+            <span class="level-start">
+                <span class="level-item">Architecture</span>
+            </span>
+            <span class="level-end">
+                <span class="level-item tag">5</span>
+            </span>
+        </a></li><li>
+        <a class="level is-marginless" href="/categories/Paradigms/">
+            <span class="level-start">
+                <span class="level-item">Paradigms</span>
+            </span>
+            <span class="level-end">
+                <span class="level-item tag">1</span>
+            </span>
+        </a></li><li>
+        <a class="level is-marginless" href="/categories/Programming/">
+            <span class="level-start">
+                <span class="level-item">Programming</span>
+            </span>
+            <span class="level-end">
+                <span class="level-item tag">3</span>
+            </span>
+        </a></li>
+            </ul>
+        </div>
+    </div>
+</div>
+    
+        
+<div class="card widget">
+    <div class="card-content">
+        <h3 class="menu-label">
+            Tag Cloud
+        </h3>
+        <a href="/tags/API-Gateway/" style="font-size: 10px;">API Gateway</a> <a href="/tags/Actor-Model/" style="font-size: 10px;">Actor Model</a> <a href="/tags/Backend-For-Frontend/" style="font-size: 10px;">Backend For Frontend</a> <a href="/tags/Clean-Architecture/" style="font-size: 10px;">Clean Architecture</a> <a href="/tags/Context-Maps/" style="font-size: 10px;">Context Maps</a> <a href="/tags/DDD/" style="font-size: 13.33px;">DDD</a> <a href="/tags/Design/" style="font-size: 10px;">Design</a> <a href="/tags/Elixir/" style="font-size: 13.33px;">Elixir</a> <a href="/tags/Event-Loop/" style="font-size: 10px;">Event Loop</a> <a href="/tags/Functional/" style="font-size: 16.67px;">Functional</a> <a href="/tags/Golang/" style="font-size: 10px;">Golang</a> <a href="/tags/Hexagonal/" style="font-size: 10px;">Hexagonal</a> <a href="/tags/Javascript/" style="font-size: 10px;">Javascript</a> <a href="/tags/Maybe-a-rant/" style="font-size: 10px;">Maybe a rant</a> <a href="/tags/Microservices/" style="font-size: 13.33px;">Microservices</a> <a href="/tags/Node-js/" style="font-size: 20px;">Node.js</a> <a href="/tags/Ports-and-Adapters/" style="font-size: 10px;">Ports and Adapters</a> <a href="/tags/Programming-Paradigms/" style="font-size: 10px;">Programming Paradigms</a> <a href="/tags/Sidecar-Pattern/" style="font-size: 10px;">Sidecar Pattern</a> <a href="/tags/Software-Architecture/" style="font-size: 20px;">Software Architecture</a> <a href="/tags/Typescript/" style="font-size: 10px;">Typescript</a> <a href="/tags/Uncle-Bob/" style="font-size: 10px;">Uncle Bob</a> <a href="/tags/libuv/" style="font-size: 10px;">libuv</a>
+    </div>
+</div>
+
+    
+    
+        <div class="column-right-shadow is-hidden-widescreen ">
+        
+            
+<div class="card widget">
+    <div class="card-content">
+        <h3 class="menu-label">
+            Recent
+        </h3>
+        
+        <article class="media">
+            
+            <div class="media-content">
+                <div class="content">
+                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2020-02-01T16:15:21.000Z">2020-02-01</time></div>
+                    <a href="/2020/02/01/Implementing-Ports-and-Adapters/" class="has-link-black-ter is-size-6">Implementing Ports and Adapters</a>
+                    <p class="is-size-7 is-uppercase">
+                        <a class="has-link-grey -link" href="/categories/Architecture/">Architecture</a>
+                    </p>
+                </div>
+            </div>
+        </article>
+        
+        <article class="media">
+            
+            <div class="media-content">
+                <div class="content">
+                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2019-11-05T18:24:24.000Z">2019-11-05</time></div>
+                    <a href="/2019/11/05/what-are-microservices/" class="has-link-black-ter is-size-6">What Are Microservices</a>
+                    <p class="is-size-7 is-uppercase">
+                        <a class="has-link-grey -link" href="/categories/Architecture/">Architecture</a>
+                    </p>
+                </div>
+            </div>
+        </article>
+        
+        <article class="media">
+            
+            <div class="media-content">
+                <div class="content">
+                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2019-07-15T21:46:10.000Z">2019-07-16</time></div>
+                    <a href="/2019/07/16/Microservices-Epiphany/" class="has-link-black-ter is-size-6">Microservices Epiphany</a>
+                    <p class="is-size-7 is-uppercase">
+                        <a class="has-link-grey -link" href="/categories/Architecture/">Architecture</a>
+                    </p>
+                </div>
+            </div>
+        </article>
+        
+        <article class="media">
+            
+            <div class="media-content">
+                <div class="content">
+                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2019-07-10T12:52:33.000Z">2019-07-10</time></div>
+                    <a href="/2019/07/10/Context-Maps-In-Domain-Driven-Design/" class="has-link-black-ter is-size-6">Context Maps in Domain Driven Design</a>
+                    <p class="is-size-7 is-uppercase">
+                        <a class="has-link-grey -link" href="/categories/Architecture/">Architecture</a>
+                    </p>
+                </div>
+            </div>
+        </article>
+        
+        <article class="media">
+            
+            <div class="media-content">
+                <div class="content">
+                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2019-07-03T15:44:34.000Z">2019-07-03</time></div>
+                    <a href="/2019/07/03/Authentication-Middleware-In-Elixir/" class="has-link-black-ter is-size-6">Authentication Middleware in Elixir</a>
+                    <p class="is-size-7 is-uppercase">
+                        <a class="has-link-grey -link" href="/categories/Programming/">Programming</a>
+                    </p>
+                </div>
+            </div>
+        </article>
+        
+    </div>
+</div>
+
+        
+            <div class="card widget">
+    <div class="card-content">
+        <div class="menu">
+        <h3 class="menu-label">
+            Archives
+        </h3>
+        <ul class="menu-list">
+        
+        <li>
+            <a class="level is-marginless" href="/archives/2020/02/">
+                <span class="level-start">
+                    <span class="level-item">February 2020</span>
+                </span>
+                <span class="level-end">
+                    <span class="level-item tag">1</span>
+                </span>
+            </a>
+        </li>
+        
+        <li>
+            <a class="level is-marginless" href="/archives/2019/11/">
+                <span class="level-start">
+                    <span class="level-item">November 2019</span>
+                </span>
+                <span class="level-end">
+                    <span class="level-item tag">1</span>
+                </span>
+            </a>
+        </li>
+        
+        <li>
+            <a class="level is-marginless" href="/archives/2019/07/">
+                <span class="level-start">
+                    <span class="level-item">July 2019</span>
+                </span>
+                <span class="level-end">
+                    <span class="level-item tag">3</span>
+                </span>
+            </a>
+        </li>
+        
+        <li>
+            <a class="level is-marginless" href="/archives/2019/06/">
+                <span class="level-start">
+                    <span class="level-item">June 2019</span>
+                </span>
+                <span class="level-end">
+                    <span class="level-item tag">4</span>
+                </span>
+            </a>
+        </li>
+        
+        </ul>
+        </div>
+    </div>
+</div>
+        
+            <div class="card widget">
+    <div class="card-content">
+        <div class="menu">
+            <h3 class="menu-label">
+                Tags
+            </h3>
+            <div class="field is-grouped is-grouped-multiline">
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/API-Gateway/">
+                        <span class="tag">API Gateway</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/Actor-Model/">
+                        <span class="tag">Actor Model</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/Backend-For-Frontend/">
+                        <span class="tag">Backend For Frontend</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/Clean-Architecture/">
+                        <span class="tag">Clean Architecture</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/Context-Maps/">
+                        <span class="tag">Context Maps</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/DDD/">
+                        <span class="tag">DDD</span>
+                        <span class="tag is-grey">2</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/Design/">
+                        <span class="tag">Design</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/Elixir/">
+                        <span class="tag">Elixir</span>
+                        <span class="tag is-grey">2</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/Event-Loop/">
+                        <span class="tag">Event Loop</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/Functional/">
+                        <span class="tag">Functional</span>
+                        <span class="tag is-grey">3</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/Golang/">
+                        <span class="tag">Golang</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/Hexagonal/">
+                        <span class="tag">Hexagonal</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/Javascript/">
+                        <span class="tag">Javascript</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/Maybe-a-rant/">
+                        <span class="tag">Maybe a rant</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/Microservices/">
+                        <span class="tag">Microservices</span>
+                        <span class="tag is-grey">2</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/Node-js/">
+                        <span class="tag">Node.js</span>
+                        <span class="tag is-grey">4</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/Ports-and-Adapters/">
+                        <span class="tag">Ports and Adapters</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/Programming-Paradigms/">
+                        <span class="tag">Programming Paradigms</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/Sidecar-Pattern/">
+                        <span class="tag">Sidecar Pattern</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/Software-Architecture/">
+                        <span class="tag">Software Architecture</span>
+                        <span class="tag is-grey">4</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/Typescript/">
+                        <span class="tag">Typescript</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/Uncle-Bob/">
+                        <span class="tag">Uncle Bob</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/libuv/">
+                        <span class="tag">libuv</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+            </div>
+        </div>
+    </div>
+</div>
+        
+        </div>
+    
+</div>
+
+                
+
+
+
+
+<div class="column is-4-tablet is-4-desktop is-3-widescreen is-hidden-touch is-hidden-desktop-only has-order-3 column-right ">
+    
+        
+<div class="card widget">
+    <div class="card-content">
+        <h3 class="menu-label">
+            Recent
+        </h3>
+        
+        <article class="media">
+            
+            <div class="media-content">
+                <div class="content">
+                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2020-02-01T16:15:21.000Z">2020-02-01</time></div>
+                    <a href="/2020/02/01/Implementing-Ports-and-Adapters/" class="has-link-black-ter is-size-6">Implementing Ports and Adapters</a>
+                    <p class="is-size-7 is-uppercase">
+                        <a class="has-link-grey -link" href="/categories/Architecture/">Architecture</a>
+                    </p>
+                </div>
+            </div>
+        </article>
+        
+        <article class="media">
+            
+            <div class="media-content">
+                <div class="content">
+                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2019-11-05T18:24:24.000Z">2019-11-05</time></div>
+                    <a href="/2019/11/05/what-are-microservices/" class="has-link-black-ter is-size-6">What Are Microservices</a>
+                    <p class="is-size-7 is-uppercase">
+                        <a class="has-link-grey -link" href="/categories/Architecture/">Architecture</a>
+                    </p>
+                </div>
+            </div>
+        </article>
+        
+        <article class="media">
+            
+            <div class="media-content">
+                <div class="content">
+                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2019-07-15T21:46:10.000Z">2019-07-16</time></div>
+                    <a href="/2019/07/16/Microservices-Epiphany/" class="has-link-black-ter is-size-6">Microservices Epiphany</a>
+                    <p class="is-size-7 is-uppercase">
+                        <a class="has-link-grey -link" href="/categories/Architecture/">Architecture</a>
+                    </p>
+                </div>
+            </div>
+        </article>
+        
+        <article class="media">
+            
+            <div class="media-content">
+                <div class="content">
+                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2019-07-10T12:52:33.000Z">2019-07-10</time></div>
+                    <a href="/2019/07/10/Context-Maps-In-Domain-Driven-Design/" class="has-link-black-ter is-size-6">Context Maps in Domain Driven Design</a>
+                    <p class="is-size-7 is-uppercase">
+                        <a class="has-link-grey -link" href="/categories/Architecture/">Architecture</a>
+                    </p>
+                </div>
+            </div>
+        </article>
+        
+        <article class="media">
+            
+            <div class="media-content">
+                <div class="content">
+                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2019-07-03T15:44:34.000Z">2019-07-03</time></div>
+                    <a href="/2019/07/03/Authentication-Middleware-In-Elixir/" class="has-link-black-ter is-size-6">Authentication Middleware in Elixir</a>
+                    <p class="is-size-7 is-uppercase">
+                        <a class="has-link-grey -link" href="/categories/Programming/">Programming</a>
+                    </p>
+                </div>
+            </div>
+        </article>
+        
+    </div>
+</div>
+
+    
+        <div class="card widget">
+    <div class="card-content">
+        <div class="menu">
+        <h3 class="menu-label">
+            Archives
+        </h3>
+        <ul class="menu-list">
+        
+        <li>
+            <a class="level is-marginless" href="/archives/2020/02/">
+                <span class="level-start">
+                    <span class="level-item">February 2020</span>
+                </span>
+                <span class="level-end">
+                    <span class="level-item tag">1</span>
+                </span>
+            </a>
+        </li>
+        
+        <li>
+            <a class="level is-marginless" href="/archives/2019/11/">
+                <span class="level-start">
+                    <span class="level-item">November 2019</span>
+                </span>
+                <span class="level-end">
+                    <span class="level-item tag">1</span>
+                </span>
+            </a>
+        </li>
+        
+        <li>
+            <a class="level is-marginless" href="/archives/2019/07/">
+                <span class="level-start">
+                    <span class="level-item">July 2019</span>
+                </span>
+                <span class="level-end">
+                    <span class="level-item tag">3</span>
+                </span>
+            </a>
+        </li>
+        
+        <li>
+            <a class="level is-marginless" href="/archives/2019/06/">
+                <span class="level-start">
+                    <span class="level-item">June 2019</span>
+                </span>
+                <span class="level-end">
+                    <span class="level-item tag">4</span>
+                </span>
+            </a>
+        </li>
+        
+        </ul>
+        </div>
+    </div>
+</div>
+    
+        <div class="card widget">
+    <div class="card-content">
+        <div class="menu">
+            <h3 class="menu-label">
+                Tags
+            </h3>
+            <div class="field is-grouped is-grouped-multiline">
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/API-Gateway/">
+                        <span class="tag">API Gateway</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/Actor-Model/">
+                        <span class="tag">Actor Model</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/Backend-For-Frontend/">
+                        <span class="tag">Backend For Frontend</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/Clean-Architecture/">
+                        <span class="tag">Clean Architecture</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/Context-Maps/">
+                        <span class="tag">Context Maps</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/DDD/">
+                        <span class="tag">DDD</span>
+                        <span class="tag is-grey">2</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/Design/">
+                        <span class="tag">Design</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/Elixir/">
+                        <span class="tag">Elixir</span>
+                        <span class="tag is-grey">2</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/Event-Loop/">
+                        <span class="tag">Event Loop</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/Functional/">
+                        <span class="tag">Functional</span>
+                        <span class="tag is-grey">3</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/Golang/">
+                        <span class="tag">Golang</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/Hexagonal/">
+                        <span class="tag">Hexagonal</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/Javascript/">
+                        <span class="tag">Javascript</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/Maybe-a-rant/">
+                        <span class="tag">Maybe a rant</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/Microservices/">
+                        <span class="tag">Microservices</span>
+                        <span class="tag is-grey">2</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/Node-js/">
+                        <span class="tag">Node.js</span>
+                        <span class="tag is-grey">4</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/Ports-and-Adapters/">
+                        <span class="tag">Ports and Adapters</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/Programming-Paradigms/">
+                        <span class="tag">Programming Paradigms</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/Sidecar-Pattern/">
+                        <span class="tag">Sidecar Pattern</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/Software-Architecture/">
+                        <span class="tag">Software Architecture</span>
+                        <span class="tag is-grey">4</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/Typescript/">
+                        <span class="tag">Typescript</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/Uncle-Bob/">
+                        <span class="tag">Uncle Bob</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/libuv/">
+                        <span class="tag">libuv</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+            </div>
+        </div>
+    </div>
+</div>
+    
+    
+</div>
+
+            </div>
+        </div>
+    </section>
+    <footer class="footer">
+    <div class="container">
+        <div class="level">
+            <div class="level-start has-text-centered-mobile">
+                <p class="is-size-7">
+                &copy; 2020 Yuri Khomyakov&nbsp;
+                Powered by <a href="https://hexo.io/" target="_blank">Hexo</a> & <a href="https://github.com/ppoffice/hexo-theme-icarus" target="_blank">Icarus</a>
+                
+                </p>
+            </div>
+            <div class="level-end">
+            
+                <div class="field has-addons is-flex-center-mobile has-mt-5-mobile is-flex-wrap is-flex-middle">
+                
+                
+                <p class="control">
+                    <a class="button is-white is-large" target="_blank" title="GitHub" href="https://github.com/yuraxdrumz">
+                        
+                        <i class="fab fa-github"></i>
+                        
+                    </a>
+                </p>
+                
+                </div>
+            
+            </div>
+        </div>
+    </div>
+</footer>
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.3.1/dist/jquery.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/moment@2.22.2/min/moment-with-locales.min.js"></script>
+<script>moment.locale("en");</script>
+
+
+    
+    
+    
+    <script src="/js/animation.js"></script>
+    
+
+    
+    
+    
+    <script src="https://cdn.jsdelivr.net/npm/lightgallery@1.6.8/dist/js/lightgallery.min.js" defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/justifiedGallery@3.7.0/dist/js/jquery.justifiedGallery.min.js" defer></script>
+    <script src="/js/gallery.js" defer></script>
+    
+
+    
+    
+
+<div id="outdated">
+    <h6>Your browser is out-of-date!</h6>
+    <p>Update your browser to view this website correctly. <a id="btnUpdateBrowser" href="http://outdatedbrowser.com/">Update
+            my browser now </a></p>
+    <p class="last"><a href="#" id="btnCloseUpdateBrowser" title="Close">&times;</a></p>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/outdatedbrowser@1.1.5/outdatedbrowser/outdatedbrowser.min.js" defer></script>
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        outdatedBrowser({
+            bgColor: '#f25648',
+            color: '#ffffff',
+            lowerThan: 'flex'
+        });
+    });
+</script>
+
+
+    
+    
+<script src="https://cdn.jsdelivr.net/npm/mathjax@2.7.5/unpacked/MathJax.js?config=TeX-MML-AM_CHTML" defer></script>
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    MathJax.Hub.Config({
+        'HTML-CSS': {
+            matchFontHeight: false
+        },
+        SVG: {
+            matchFontHeight: false
+        },
+        CommonHTML: {
+            matchFontHeight: false
+        },
+        tex2jax: {
+            inlineMath: [
+                ['$','$'],
+                ['\\(','\\)']
+            ]
+        }
+    });
+});
+</script>
+
+    
+    
+
+<a id="back-to-top" title="Back to Top" href="javascript:;">
+    <i class="fas fa-chevron-up"></i>
+</a>
+<script src="/js/back-to-top.js" defer></script>
+
+
+    
+    
+
+    
+    
+    
+    
+
+    
+    
+    
+    
+    
+    <script src="https://cdn.jsdelivr.net/npm/clipboard@2.0.4/dist/clipboard.min.js" defer></script>
+    <script src="/js/clipboard.js" defer></script>
+    
+
+    
+    
+    
+
+
+<script src="/js/main.js" defer></script>
+
+    
+    <div class="searchbox ins-search">
+    <div class="searchbox-container ins-search-container">
+        <div class="searchbox-input-wrapper">
+            <input type="text" class="searchbox-input ins-search-input" placeholder="Type something...">
+            <span class="searchbox-close ins-close ins-selectable"><i class="fa fa-times-circle"></i></span>
+        </div>
+        <div class="searchbox-result-wrapper ins-section-wrapper">
+            <div class="ins-section-container"></div>
+        </div>
+    </div>
+</div>
+<script>
+    (function (window) {
+        var INSIGHT_CONFIG = {
+            TRANSLATION: {
+                POSTS: 'Posts',
+                PAGES: 'Pages',
+                CATEGORIES: 'Categories',
+                TAGS: 'Tags',
+                UNTITLED: '(Untitled)',
+            },
+            CONTENT_URL: '/content.json',
+        };
+        window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+    })(window);
+</script>
+<script src="/js/insight.js" defer></script>
+<link rel="stylesheet" href="/css/search.css">
+<link rel="stylesheet" href="/css/insight.css">
+    
+</body>
+</html>

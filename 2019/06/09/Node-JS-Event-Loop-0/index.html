@@ -1,0 +1,1389 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><meta name="generator" content="Hexo 3.8.0">
+    <meta charset="utf-8">
+<title>How the Event Loop Really Works - Yurik&#39;s Tech Blog</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta>
+<meta>
+<meta>
+<meta>
+
+    <meta name="description" content="After writing in Node.js for 3 years, I felt that the majority of the posts about it were lacking deeper knowledge, especially about the event loops internals, so, I decided to dig deep and give you m">
+<meta name="keywords" content="Node.js,Javascript,Event Loop,libuv">
+<meta property="og:type" content="article">
+<meta property="og:title" content="How the Event Loop Really Works">
+<meta property="og:url" content="https://yuriktech.com/2019/06/09/Node-JS-Event-Loop-0/index.html">
+<meta property="og:site_name" content="Yurik&#39;s Tech Blog">
+<meta property="og:description" content="After writing in Node.js for 3 years, I felt that the majority of the posts about it were lacking deeper knowledge, especially about the event loops internals, so, I decided to dig deep and give you m">
+<meta property="og:locale" content="en">
+<meta property="og:image" content="https://yuriktech.com/images/og_image.png">
+<meta property="og:updated_time" content="2020-01-25T12:49:48.265Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="How the Event Loop Really Works">
+<meta name="twitter:description" content="After writing in Node.js for 3 years, I felt that the majority of the posts about it were lacking deeper knowledge, especially about the event loops internals, so, I decided to dig deep and give you m">
+<meta name="twitter:image" content="https://yuriktech.com/images/og_image.png">
+
+
+
+
+
+
+
+<link rel="icon" href="/favicon.ico">
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.7.2/css/bulma.css">
+<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.4.1/css/all.css">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Ubuntu:400,600|Source+Code+Pro">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@9.12.0/styles/monokai.css">
+
+
+    
+    
+    
+    <style>body>.footer,body>.navbar,body>.section{opacity:0}</style>
+    
+
+    
+    
+    
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/lightgallery@1.6.8/dist/css/lightgallery.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/justifiedGallery@3.7.0/dist/css/justifiedGallery.min.css">
+    
+
+    
+    
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/outdatedbrowser@1.1.5/outdatedbrowser/outdatedbrowser.min.css">
+
+
+    
+    
+    
+    
+
+<link rel="stylesheet" href="/css/back-to-top.css">
+
+
+    
+    
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-142167807-1"></script>
+<script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'UA-142167807-1');
+</script>
+
+
+    
+    
+    
+    
+
+    
+    
+<link rel="stylesheet" href="/css/progressbar.css">
+<script src="https://cdn.jsdelivr.net/npm/pace-js@1.0.2/pace.min.js"></script>
+
+    
+    
+    
+
+    
+    
+    
+
+
+<link rel="stylesheet" href="/css/style.css">
+</head>
+<body class="is-3-column">
+    <nav class="navbar navbar-main">
+    <div class="container">
+
+        <div class="navbar-menu">
+            
+            <div class="navbar-start">
+                
+                <a class="navbar-item" href="/">Home</a>
+                
+                <a class="navbar-item" href="/archives">Archives</a>
+                
+                <a class="navbar-item" href="/categories">Categories</a>
+                
+                <a class="navbar-item" href="/tags">Tags</a>
+                
+                <a class="navbar-item" href="/about">About</a>
+                
+            </div>
+            
+            <div class="navbar-end">
+                
+                    
+                    
+                    <a class="navbar-item" target="_blank" title="GitHub" href="https://github.com/yuraxdrumz">
+                        
+                        <i class="fab fa-github"></i>
+                        
+                    </a>
+                    
+                
+                
+                <a class="navbar-item is-hidden-tablet catalogue" title="Catalogue" href="javascript:;">
+                    <i class="fas fa-list-ul"></i>
+                </a>
+                
+                
+                <a class="navbar-item search" title="Search" href="javascript:;">
+                    <i class="fas fa-search"></i>
+                </a>
+                
+            </div>
+        </div>
+    </div>
+</nav>
+    
+    <section class="section">
+        <div class="container">
+            <div class="columns">
+                <div class="column is-8-tablet is-8-desktop is-6-widescreen has-order-2 column-main"><div class="card">
+    
+    <div class="card-content article ">
+        
+        <div class="level article-meta is-size-7 is-uppercase is-mobile is-overflow-x-auto">
+            <div class="level-left">
+                <time class="level-item has-text-grey" datetime="2019-06-09T12:50:22.000Z">2019-06-09</time>
+                
+                <div class="level-item">
+                <a class="has-link-grey -link" href="/categories/Programming/">Programming</a>
+                </div>
+                
+                
+                <span class="level-item has-text-grey">
+                    
+                    
+                    21 minutes read (About 3208 words)
+                </span>
+                
+                
+            </div>
+        </div>
+        
+        <h1 class="title is-size-3 is-size-4-mobile has-text-weight-normal">
+            
+                How the Event Loop Really Works
+            
+        </h1>
+        <div class="content">
+            <p>After writing in Node.js for 3 years, I felt that the majority of the posts about it were lacking deeper knowledge, especially about the event loops internals, so, I decided to dig deep and give you my insights. Node.js seems like a simple beast to handle but in reality, there are a lot of layers of abstraction behind it. From one perspective, this abstraction is great, but, like everything else in software, abstraction comes at a cost.<br>The purpose of this post is to show you a broader picture of how the Node core handles the event loop, what it really is and how it coexists with the JS runtime.</p>
+<p> Lets start with asking a few simple questions and then answer them with detailed examples.</p>
+<ol>
+<li>What is the event loop?</li>
+<li>What are the phases of the event loop?</li>
+<li>What are the differences between the phases of the event loop and Node.js?</li>
+<li>How is it implemented in practice?</li>
+<li>Is Node.js really single threaded?</li>
+<li>Why do we have a thread pool if we already have the event loop that does all the async operations?</li>
+</ol>
+<h2 id="What-is-the-event-loop"><a href="#What-is-the-event-loop" class="headerlink" title="What is the event loop??"></a>What is the event loop??</h2><p>From the Node.js website, summarized:</p>
+<blockquote>
+<p>Node.js is an event-based platform. This means that everything that happens in Node is the reaction to an event. Abstracted away from the developer, the reactions to events are all handled by a library called <strong>libuv</strong>.</p>
+</blockquote>
+<blockquote>
+<p><strong>libuv</strong> is cross-platform support library which was originally written for Node.js. It is designed around the event-driven asynchronous I/O model.</p>
+</blockquote>
+<blockquote>
+<p><strong>libuv</strong> provides 2 mechanisms. One is a called an <strong>event loop</strong>, which runs on one thread and the other mechanism is called a <strong>thread pool</strong>.</p>
+</blockquote>
+<p>It is important to note that the <strong>event loop</strong> and the JS runtime run on the <strong>same</strong> thread and the <strong>thread pool</strong> is initiated with <strong>4</strong> threads by default. Also, <strong>libuv</strong> can be used not only in Node.js, that is why I will show the differences between the event loop itself and the event loop in Node.js context.</p>
+<h2 id="What-are-the-phases-in-libuv"><a href="#What-are-the-phases-in-libuv" class="headerlink" title="What are the phases in libuv?"></a>What are the phases in libuv?</h2><p>The phases of <strong>libuv</strong> are:</p>
+<ul>
+<li>update loop time - it is the starting point to know time from now on</li>
+<li>check loop alive - Loop is considered alive if it has active and ref’d handles, active requests or closing handles.</li>
+<li>Run due timers - the timers we pass to <strong>libuv</strong>, that are past the definition of <strong>now</strong>, we defined in the first phase, are getting called. The timers are held in a min heap data structure, for efficiency. If the first timer is not expired than we know that all others below it were created later in time.</li>
+<li>Call pending callbacks - There are cases in which the callbacks are deffered to next iteration, this is where they are called.</li>
+<li>Run idle handles - internal</li>
+<li>Run prepare handles - internal</li>
+<li>Poll for IO - this is where the loop handles any incoming TCP connections. The time for how long the loop is waiting in each iteration will be explained later on.</li>
+<li>Run check handles - All check handles are run here, for example <code>setImmediate</code> if we are in the context of Node.js</li>
+<li>Run close callbacks - all <code>.on(&#39;close&#39;)</code> events are called here, if something happened we want that the timers+poll+check callbacks will complete and afterwards the close callbacks are called, for example, the <code>socket.destroy()</code> in Node.js.</li>
+<li>Repeat</li>
+</ul>
+<p>The visual diagram of the phases looks like this, do not worry if you still do not get the full picture, we still have things to cover!</p>
+<p><img src="/2019/06/09/Node-JS-Event-Loop-0/loop_iteration.png" alt></p>
+<h2 id="What-are-the-differences-between-the-phases-of-libuv-and-Node-js"><a href="#What-are-the-differences-between-the-phases-of-libuv-and-Node-js" class="headerlink" title="What are the differences between the phases of libuv and Node.js"></a>What are the differences between the phases of libuv and Node.js</h2><p>Node.js uses all of the above mentioned phases and adds 2 more: the <code>process.nextTick</code> and <code>microTaskQueue</code>.
+ the differences in Node.js are:</p>
+<ul>
+<li><p>Process.nextTick() is not technically part of the event loop. Instead, the nextTickQueue will be processed after the current operation is completed, regardless of the current phase of the event loop. Here, an operation is defined as a transition from the underlying C/C++ handler, and handling the JavaScript that needs to be executed.<br>Any time you call process.nextTick() in a given phase, all callbacks passed to process.nextTick() will be resolved before the event loop continues. This can create some bad situations because it allows you to “starve” your I/O by making recursive process.nextTick() calls, which prevents the event loop from reaching the poll phase.</p>
+</li>
+<li><p>In the context of native promises, a promise callback is considered as a microtask and queued in a microtask queue which will be processed right after the next tick queue. It is also dangerous as recursive calls to promises in theory will never reach the next tick.</p>
+</li>
+<li><p>When the event loop enters the poll phase and there are no timers scheduled, one of two things will happen:<br>If the poll queue is not empty, the event loop will iterate through its queue of callbacks executing them synchronously until either the queue has been exhausted, or the system-dependent hard limit is reached.<br>If the poll queue is empty, one of two more things will happen:<br>If scripts have been scheduled by setImmediate(), the event loop will end the poll phase and continue to the check phase to execute those scheduled scripts.<br>If scripts have not been scheduled by setImmediate(), the event loop will wait for callbacks to be added to the queue, then execute them immediately.<br>Once the poll queue is empty the event loop will check for timers whose time thresholds have been reached. If one or more timers are ready, the event loop will wrap back to the timers phase to execute those timers’ callbacks</p>
+</li>
+</ul>
+<p>Before we continue, it is important to note that all phases we mentioned(timers, pending, poll, close) always call <strong>1</strong> callback which is a macro operation that is sent to JS land and afterwards the <code>nextTickQueue</code> + <code>microTaskQueue</code> are run, no matter where we are in the event loop. <strong>Each macro operation combined with the <code>nextTickQueue</code> and <code>microTaskQueue</code> is called an event loop tick.</strong> </p>
+<p>Here is the diagram for Node.js event loop, notice there is not much difference except the 2 queues we talked about(nextTickQueue and microTaskQueue).</p>
+<p><img src="/2019/06/09/Node-JS-Event-Loop-0/nodejs-event-loop-workflow.png" alt></p>
+<p>Did you notice something interesting we learned about the callback queue<strong>s</strong>? Every one talks about <strong>a callback queue</strong> but in reality <strong>each phase has its own callback queue</strong>.</p>
+<h2 id="How-is-the-event-loop-implemented-in-practice"><a href="#How-is-the-event-loop-implemented-in-practice" class="headerlink" title="How is the event loop implemented in practice?"></a>How is the event loop implemented in practice?</h2><p>Here is the c++ code from the libuv github, I am sure you can figure the phases out by yourself and if you look carefully, you will see that the timeout for the poll phase is calculated. Also, we have a special mode of RUN_ONCE which dictates that if no callbacks were called in current poll phase, it means we have no work to do except the timers, so just update time and run timers phase before exiting.</p>
+<figure class="highlight c++ hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-function"><span class="hljs-keyword">int</span> <span class="hljs-title">uv_run</span><span class="hljs-params">(<span class="hljs-keyword">uv_loop_t</span>* loop, uv_run_mode mode)</span> </span>&#123;</span><br><span class="line">  <span class="hljs-keyword">int</span> timeout;</span><br><span class="line">  <span class="hljs-keyword">int</span> r;</span><br><span class="line">  <span class="hljs-keyword">int</span> ran_pending;</span><br><span class="line"></span><br><span class="line">  r = uv__loop_alive(loop);</span><br><span class="line">  <span class="hljs-keyword">if</span> (!r)</span><br><span class="line">    uv__update_time(loop);</span><br><span class="line"></span><br><span class="line">  <span class="hljs-keyword">while</span> (r != <span class="hljs-number">0</span> &amp;&amp; loop-&gt;stop_flag == <span class="hljs-number">0</span>) &#123;</span><br><span class="line">    uv__update_time(loop);</span><br><span class="line">    uv__run_timers(loop);</span><br><span class="line">    ran_pending = uv__run_pending(loop);</span><br><span class="line">    uv__run_idle(loop);</span><br><span class="line">    uv__run_prepare(loop);</span><br><span class="line"></span><br><span class="line">    timeout = <span class="hljs-number">0</span>;</span><br><span class="line">    <span class="hljs-keyword">if</span> ((mode == UV_RUN_ONCE &amp;&amp; !ran_pending) || mode == UV_RUN_DEFAULT)</span><br><span class="line">      timeout = uv_backend_timeout(loop);</span><br><span class="line"></span><br><span class="line">    uv__io_poll(loop, timeout);</span><br><span class="line">    uv__run_check(loop);</span><br><span class="line">    uv__run_closing_handles(loop);</span><br><span class="line"></span><br><span class="line">    <span class="hljs-keyword">if</span> (mode == UV_RUN_ONCE) &#123;</span><br><span class="line">      <span class="hljs-comment">/* UV_RUN_ONCE implies forward progress: at least one callback must have</span></span><br><span class="line"><span class="hljs-comment">       * been invoked when it returns. uv__io_poll() can return without doing</span></span><br><span class="line"><span class="hljs-comment">       * I/O (meaning: no callbacks) when its timeout expires - which means we</span></span><br><span class="line"><span class="hljs-comment">       * have pending timers that satisfy the forward progress constraint.</span></span><br><span class="line"><span class="hljs-comment">       *</span></span><br><span class="line"><span class="hljs-comment">       * UV_RUN_NOWAIT makes no guarantees about progress so it's omitted from</span></span><br><span class="line"><span class="hljs-comment">       * the check.</span></span><br><span class="line"><span class="hljs-comment">       */</span></span><br><span class="line">      uv__update_time(loop);</span><br><span class="line">      uv__run_timers(loop);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    r = uv__loop_alive(loop);</span><br><span class="line">    <span class="hljs-keyword">if</span> (mode == UV_RUN_ONCE || mode == UV_RUN_NOWAIT)</span><br><span class="line">      <span class="hljs-keyword">break</span>;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="hljs-comment">/* The if statement lets gcc compile it to a conditional store. Avoids</span></span><br><span class="line"><span class="hljs-comment">   * dirtying a cache line.</span></span><br><span class="line"><span class="hljs-comment">   */</span></span><br><span class="line">  <span class="hljs-keyword">if</span> (loop-&gt;stop_flag != <span class="hljs-number">0</span>)</span><br><span class="line">    loop-&gt;stop_flag = <span class="hljs-number">0</span>;</span><br><span class="line"></span><br><span class="line">  <span class="hljs-keyword">return</span> r;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>Let’s see how the timeout for the poll phase(waiting on TCP connections) is calculated.<br>To break it down for you it goes like this:</p>
+<ul>
+<li>If the stop flag is not 0, return 0</li>
+<li>If we dont have active handles or requests, return 0</li>
+<li>If the idle and pending queues are not empty return 0</li>
+<li>If we have closing handles return 0</li>
+<li>Otherwise return the next timeout from the loop</li>
+</ul>
+<p>What this means is that the loop will not wait in poll phase if not neccessary, but if we have a timer, then it will wait in poll phase for the time of that timer in order to wrap to the timers phase instead of just doing meaningless iterations.</p>
+<figure class="highlight c++ hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-function"><span class="hljs-keyword">int</span> <span class="hljs-title">uv_backend_timeout</span><span class="hljs-params">(<span class="hljs-keyword">const</span> <span class="hljs-keyword">uv_loop_t</span>* loop)</span> </span>&#123;</span><br><span class="line">  <span class="hljs-keyword">if</span> (loop-&gt;stop_flag != <span class="hljs-number">0</span>)</span><br><span class="line">    <span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;</span><br><span class="line"></span><br><span class="line">  <span class="hljs-keyword">if</span> (!uv__has_active_handles(loop) &amp;&amp; !uv__has_active_reqs(loop))</span><br><span class="line">    <span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;</span><br><span class="line"></span><br><span class="line">  <span class="hljs-keyword">if</span> (!QUEUE_EMPTY(&amp;loop-&gt;idle_handles))</span><br><span class="line">    <span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;</span><br><span class="line"></span><br><span class="line">  <span class="hljs-keyword">if</span> (!QUEUE_EMPTY(&amp;loop-&gt;pending_queue))</span><br><span class="line">    <span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;</span><br><span class="line"></span><br><span class="line">  <span class="hljs-keyword">if</span> (loop-&gt;closing_handles)</span><br><span class="line">    <span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;</span><br><span class="line"></span><br><span class="line">  <span class="hljs-keyword">return</span> uv__next_timeout(loop);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="Is-Node-js-single-threaded"><a href="#Is-Node-js-single-threaded" class="headerlink" title="Is Node.js single threaded?"></a>Is Node.js single threaded?</h2><p>Well, as we said previously, the event loop runs on the same thread as the JS runtime, which means, that we have one execution thread, so by definition, <strong>Node.js is single threaded</strong>.</p>
+<p>Essentially, when the JS stack is empty of user code(all sync code we defined in our scripts), the event loop runs a tick. Important thing to note - slow sync code can halt the system to the ground at scale, due to the shared thread of the JS runtime with the event loop. More concrete, the context switch to c++ land cannot happen until the JS stack is empty.</p>
+<p>If you try to do recursive operations in different queues(different stages of the event loop), even the <code>setImmediate</code>, it will always run on later ticks, remember the 1 macro per tick we talked about? This is it. But, <code>microTaskQueue</code> and <code>nextTickQueue</code> that are defined in JS land, will run recursively on the same tick, because we learned that the event loop will only run when all JS code is executed and the 2 queues above are simply javascript.</p>
+<h2 id="Why-do-we-have-a-thread-pool-if-we-already-have-the-event-loop-that-does-all-the-async-operations"><a href="#Why-do-we-have-a-thread-pool-if-we-already-have-the-event-loop-that-does-all-the-async-operations" class="headerlink" title="Why do we have a thread pool if we already have the event loop that does all the async operations?"></a>Why do we have a thread pool if we already have the event loop that does all the async operations?</h2><p>This is an interesting part of Node.js land, because it is single threaded, like we already answered, but its also not! It all depends from what perspective you look at it. We do have one execution thread, but we also have the thread pool that comes along with the event loop.</p>
+<p>Taken from the libuv website:</p>
+<blockquote>
+<p>Whenever possible, libuv will use asynchronous interfaces provided by the OS, avoiding usage of the thread pool. The same applies to third party subsystems like databases. The event loop follows the rather usual single threaded asynchronous I/O approach: all (network) I/O is performed on non-blocking sockets which are polled using the best mechanism available on the given platform: epoll on Linux, kqueue on OSX and other BSDs, event ports on SunOS and IOCP on Windows.</p>
+</blockquote>
+<p>What this basically means is that all operating systems have some sort of non-blocking IO handling we can leverage. We can subscribe to all events regarding new TCP connections, incoming data from TCP connection and etc. But what about crypto stuff, DNS resolving, file system operations? They are supposed to be non blocking as well, right?</p>
+<blockquote>
+<p>Well, Not all the types of I/O can be performed using async implementations. Even on the same OS platform, there are complexities in supporting different types of I/O. Typically, network I/O can be performed in a non-blocking way using epoll, kqueue, event ports and IOCP, but the file I/O is much more complex. Certain systems, such as Linux does not support complete asynchrony for file system access. And there are limitations in file system event notifications/signaling with kqueue in MacOS.</p>
+</blockquote>
+<p>Ok, we figured out that fs operations are problematic and must be done sync, but why DNS resolving must be sync too? To resolve DNS you must <strong>read</strong> the hosts file first on the host machine. We must use the fs for that and you get it by now…<br>Regarding the crypto, Cryptography on the most basic level is performing calculations, and there is no way to to calculations asynchronously on the same thread. For all the reasons above, we have a thread pool. When you send an async fs operation or an async crypto/dns resolve callbacks to the event loop, it gets picked up by the thread pool and resolved on a different thread <strong>synchronously</strong>.</p>
+<h2 id="Examples"><a href="#Examples" class="headerlink" title="Examples"></a>Examples</h2><p>Now, after we answered all the questions, lets look at some examples:<br>We will call the crypto.pbkdf2 async implementation.</p>
+<p>I added a comment of how the results look in the previous example with default 4 threads that took 9xx ms completion time</p>
+<h3 id="Example-1"><a href="#Example-1" class="headerlink" title="Example 1:"></a>Example 1:</h3><figure class="highlight javascript hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-keyword">const</span> &#123; pbkdf2 &#125; = <span class="hljs-built_in">require</span>(<span class="hljs-string">'crypto'</span>);</span><br><span class="line"><span class="hljs-keyword">const</span> start = <span class="hljs-built_in">Date</span>.now();</span><br><span class="line"><span class="hljs-keyword">const</span> doExpensiveHashing = <span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> &#123;</span><br><span class="line">  pbkdf2(<span class="hljs-string">'pwd'</span>, <span class="hljs-string">'salt'</span>, <span class="hljs-number">100000</span>, <span class="hljs-number">512</span>, <span class="hljs-string">'sha512'</span>, () =&gt;</span><br><span class="line">    <span class="hljs-built_in">console</span>.log(<span class="hljs-string">`Done in <span class="hljs-subst">$&#123;<span class="hljs-built_in">Date</span>.now() - start&#125;</span>ms`</span>)</span><br><span class="line">  );</span><br><span class="line">&#125;;</span><br><span class="line">doExpensiveHashing(); <span class="hljs-comment">// Done in 937ms</span></span><br><span class="line">doExpensiveHashing(); <span class="hljs-comment">// Done in 942ms</span></span><br><span class="line">doExpensiveHashing(); <span class="hljs-comment">// Done in 943ms</span></span><br><span class="line">doExpensiveHashing(); <span class="hljs-comment">// Done in 943ms</span></span><br></pre></td></tr></table></figure>
+
+<p>now set the environment variable <code>UV_THREADPOOL_SIZE=1</code> and run the code again, </p>
+<figure class="highlight javascript hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-keyword">const</span> &#123; pbkdf2 &#125; = <span class="hljs-built_in">require</span>(<span class="hljs-string">'crypto'</span>);</span><br><span class="line"><span class="hljs-keyword">const</span> start = <span class="hljs-built_in">Date</span>.now();</span><br><span class="line"><span class="hljs-keyword">const</span> doExpensiveHashing = <span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> &#123;</span><br><span class="line">  pbkdf2(<span class="hljs-string">'pwd'</span>, <span class="hljs-string">'salt'</span>, <span class="hljs-number">100000</span>, <span class="hljs-number">512</span>, <span class="hljs-string">'sha512'</span>, () =&gt;</span><br><span class="line">    <span class="hljs-built_in">console</span>.log(<span class="hljs-string">`Done in <span class="hljs-subst">$&#123;<span class="hljs-built_in">Date</span>.now() - start&#125;</span>ms`</span>)</span><br><span class="line">  );</span><br><span class="line">&#125;;</span><br><span class="line">doExpensiveHashing(); <span class="hljs-comment">// Done in 658ms</span></span><br><span class="line">doExpensiveHashing(); <span class="hljs-comment">// Done in 1321ms</span></span><br><span class="line">doExpensiveHashing(); <span class="hljs-comment">// Done in 1982ms</span></span><br><span class="line">doExpensiveHashing(); <span class="hljs-comment">// Done in 2637ms</span></span><br></pre></td></tr></table></figure>
+
+<p>We saw that we get sequential execution because we have only 1 thread. If you try the sync implementation we will simply block our thread, but the thread pool allows us to do all the non trivial crypto work on another thread and keep our business rolling! Isn’t that cool?</p>
+<h3 id="Example-2"><a href="#Example-2" class="headerlink" title="Example 2:"></a>Example 2:</h3><p>Before we start, important note, if we set <code>setTimeout</code> to 0, it will be 1ms.</p>
+<p>Who will execute first? According to what we saw, it will be setImmediate because the timer has not expired yet, but try and run it several times:</p>
+<figure class="highlight javascript hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">setTimeout(<span class="hljs-function"><span class="hljs-params">()</span>=&gt;</span><span class="hljs-built_in">console</span>.log(<span class="hljs-string">'setTimeout'</span>),<span class="hljs-number">0</span>)</span><br><span class="line">setImmediate(<span class="hljs-function"><span class="hljs-params">()</span>=&gt;</span><span class="hljs-built_in">console</span>.log(<span class="hljs-string">'setImmediate'</span>))</span><br></pre></td></tr></table></figure>
+
+<p>First time:</p>
+<figure class="highlight javascript hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">setImmediate</span><br><span class="line">setTimeout</span><br></pre></td></tr></table></figure>
+
+<p>Second time:</p>
+<figure class="highlight javascript hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">setTimeout</span><br><span class="line">setImmediate</span><br></pre></td></tr></table></figure>
+
+<p>The interesting part here is that we know that when the event loop runs, it checks if the timer expired, which in our case is 1ms, which is a long time for a cpu, and the <code>setImmediate</code> will run only on next tick after we defined it and only after poll phase!. If the timer expired on start of next tick it will be called first, if not, the <code>setImmediate</code> will be called first and <code>setTimeout</code> afterwards.</p>
+<h3 id="Example-3"><a href="#Example-3" class="headerlink" title="Example 3:"></a>Example 3:</h3><p>Now, lets add an IO cycle</p>
+<figure class="highlight javascript hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-keyword">const</span> fs = <span class="hljs-built_in">require</span>(<span class="hljs-string">'fs'</span>)</span><br><span class="line"></span><br><span class="line">fs.readFile(<span class="hljs-string">'test.txt'</span>, ()=&gt;&#123;</span><br><span class="line">  setTimeout(<span class="hljs-function"><span class="hljs-params">()</span>=&gt;</span><span class="hljs-built_in">console</span>.log(<span class="hljs-string">'setTimeout'</span>),<span class="hljs-number">0</span>)</span><br><span class="line">  setImmediate(<span class="hljs-function"><span class="hljs-params">()</span>=&gt;</span><span class="hljs-built_in">console</span>.log(<span class="hljs-string">'setImmediate'</span>))</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
+
+<p>The fs sends the readFile to our thread pool, when the operation finishes in poll phase, it registers the setTimeout and setImmediate and as we saw, the check phase always comes after the poll phase, so our <code>setImmediate</code> is guaranteed to execute first.</p>
+<h3 id="Example-4"><a href="#Example-4" class="headerlink" title="Example 4:"></a>Example 4:</h3><p>Recursive operations in the event loop:</p>
+<p>take this example:</p>
+<figure class="highlight javascript hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-keyword">const</span> express = <span class="hljs-built_in">require</span>(<span class="hljs-string">'express'</span>)</span><br><span class="line"><span class="hljs-keyword">const</span> app = express()</span><br><span class="line"></span><br><span class="line">app.use(<span class="hljs-function">(<span class="hljs-params">req,res,next</span>)=&gt;</span>&#123;</span><br><span class="line">  res.json(<span class="hljs-string">'ok'</span>)</span><br><span class="line">&#125;)</span><br><span class="line"></span><br><span class="line"><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">compute</span>(<span class="hljs-params"></span>)</span>&#123;</span><br><span class="line">  <span class="hljs-keyword">for</span>(i=<span class="hljs-number">0</span>;i&lt;<span class="hljs-number">1e3</span>;i++)&#123;</span><br><span class="line">    <span class="hljs-built_in">console</span>.log(<span class="hljs-string">`computing i=<span class="hljs-subst">$&#123;i&#125;</span>...`</span>)</span><br><span class="line">  &#125;</span><br><span class="line">  setImmediate(compute)</span><br><span class="line">  <span class="hljs-comment">// Promise.resolve().then(compute)</span></span><br><span class="line">  <span class="hljs-comment">// process.nextTick(compute)</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">app.listen(<span class="hljs-number">3000</span>, ()=&gt;<span class="hljs-built_in">console</span>.log(<span class="hljs-string">'listening on port 3000'</span>))</span><br><span class="line">compute()</span><br></pre></td></tr></table></figure>
+
+<p>Will our web server answer our requests?<br>Remember we said that recursive operations are dangerous on <code>microTaskQueue</code> and <code>nextTickQueue</code> in JS land? Well, thats true, which means, that a recursive call to <code>setImmediate</code> will not be immediate(1 macro per tick, remember?), but split to next tick after each invocation and that means that we pass iterations through poll phase which is responsible for our IO. To answer the question - Yes, we will answer the web requests!</p>
+<h3 id="Example-5"><a href="#Example-5" class="headerlink" title="Example 5:"></a>Example 5:</h3><p>Now, lets see with <code>Promise.resolve().then(compute)</code></p>
+<figure class="highlight javascript hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-keyword">const</span> express = <span class="hljs-built_in">require</span>(<span class="hljs-string">'express'</span>)</span><br><span class="line"><span class="hljs-keyword">const</span> app = express()</span><br><span class="line"></span><br><span class="line">app.use(<span class="hljs-function">(<span class="hljs-params">req,res,next</span>)=&gt;</span>&#123;</span><br><span class="line">  res.json(<span class="hljs-string">'ok'</span>)</span><br><span class="line">&#125;)</span><br><span class="line"></span><br><span class="line"><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">compute</span>(<span class="hljs-params"></span>)</span>&#123;</span><br><span class="line">  <span class="hljs-keyword">for</span>(i=<span class="hljs-number">0</span>;i&lt;<span class="hljs-number">1e3</span>;i++)&#123;</span><br><span class="line">    <span class="hljs-built_in">console</span>.log(<span class="hljs-string">`computing i=<span class="hljs-subst">$&#123;i&#125;</span>...`</span>)</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="hljs-comment">// setImmediate(compute)</span></span><br><span class="line">  <span class="hljs-built_in">Promise</span>.resolve().then(compute)</span><br><span class="line">  <span class="hljs-comment">// process.nextTick(compute)</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">app.listen(<span class="hljs-number">3000</span>, ()=&gt;<span class="hljs-built_in">console</span>.log(<span class="hljs-string">'listening on port 3000'</span>))</span><br><span class="line">compute()</span><br></pre></td></tr></table></figure>
+
+<p>The native implementation of promises work with the <code>microTaskQueue</code>, which will run in recursion indefinitely and our web server will never answer!</p>
+<p>Fun fact - With native promises we could implement long running promises that do recursions, and would never continue to next ticks - so fs operations and other network IO and phases from c++ land will never get execution time! For these reasons, <code>Bluebird</code> and other promise libraries implemented the <code>resolve</code> and <code>reject</code> to be in <code>setImmediate</code> which will never starve the IO! </p>
+<p>The <code>process.nextTick</code> should be obvious by now.</p>
+<h3 id="Example-6"><a href="#Example-6" class="headerlink" title="Example 6:"></a>Example 6:</h3><p>Last one before we wrap up:</p>
+<figure class="highlight javascript hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-built_in">Promise</span>.resolve().then(<span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> <span class="hljs-built_in">console</span>.log(<span class="hljs-string">'promise1 resolved'</span>));</span><br><span class="line"><span class="hljs-built_in">Promise</span>.resolve().then(<span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> <span class="hljs-built_in">console</span>.log(<span class="hljs-string">'promise2 resolved'</span>));</span><br><span class="line"><span class="hljs-built_in">Promise</span>.resolve().then(<span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> &#123;</span><br><span class="line">    <span class="hljs-built_in">console</span>.log(<span class="hljs-string">'promise3 resolved'</span>);</span><br><span class="line">    process.nextTick(<span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> <span class="hljs-built_in">console</span>.log(<span class="hljs-string">'next tick inside promise resolve handler'</span>));</span><br><span class="line">&#125;);</span><br><span class="line"><span class="hljs-built_in">Promise</span>.resolve().then(<span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> <span class="hljs-built_in">console</span>.log(<span class="hljs-string">'promise4 resolved'</span>));</span><br><span class="line"><span class="hljs-built_in">Promise</span>.resolve().then(<span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> <span class="hljs-built_in">console</span>.log(<span class="hljs-string">'promise5 resolved'</span>));</span><br><span class="line">setImmediate(<span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> <span class="hljs-built_in">console</span>.log(<span class="hljs-string">'set immediate1'</span>));</span><br><span class="line">setImmediate(<span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> <span class="hljs-built_in">console</span>.log(<span class="hljs-string">'set immediate2'</span>));</span><br><span class="line"></span><br><span class="line">process.nextTick(<span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> <span class="hljs-built_in">console</span>.log(<span class="hljs-string">'next tick1'</span>));</span><br><span class="line">process.nextTick(<span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> <span class="hljs-built_in">console</span>.log(<span class="hljs-string">'next tick2'</span>));</span><br><span class="line">process.nextTick(<span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> <span class="hljs-built_in">console</span>.log(<span class="hljs-string">'next tick3'</span>));</span><br><span class="line"></span><br><span class="line">setTimeout(<span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> <span class="hljs-built_in">console</span>.log(<span class="hljs-string">'set timeout'</span>), <span class="hljs-number">0</span>);</span><br><span class="line">setImmediate(<span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> <span class="hljs-built_in">console</span>.log(<span class="hljs-string">'set immediate3'</span>));</span><br><span class="line">setImmediate(<span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> <span class="hljs-built_in">console</span>.log(<span class="hljs-string">'set immediate4'</span>));</span><br></pre></td></tr></table></figure>
+
+<p>Do not be startled! Lets do what we always do in software engineering - break it down</p>
+<ul>
+<li>Promise.resolve - native implementation and on js land, it will run last after <code>nextTickQueue</code></li>
+<li>setImmediate runs after poll phase</li>
+<li>setTimeout runs on timers phase</li>
+<li>process.nextTick must be exhausted before continuing to next tick</li>
+</ul>
+<p>Now, <code>nextTick</code> is run on current tick and must be exhausted like we said, so it has to go first, because it runs on JS land regardless of where we are on the event loop!
+After the <code>nextTick</code> we have the <code>microTaskQueue</code> which like we said previously, is run last after <code>nextTickQueue</code> so it runs.<br>We have a <code>process.nextTick</code> inside the callback of a micro tick. That one we did not cover on purpose! What do you think will happen? Like we said, the <code>nextTickQueue</code> must be exhasted on each iteration, and we added a callback to the queue, so it wraps back to <code>nextTickQueue</code> and runs the callbacks again.<br>After all those steps we finally can start a new tick and by this time our timer has elapsed, so our setTimeout gets executed, our setImmediate is last and the result is:</p>
+<pre><code class="javascript">next tick1
+next tick2
+next tick3
+promise1 resolved
+promise2 resolved
+promise3 resolved
+promise4 resolved
+promise5 resolved
+next tick inside promise resolve handler
+<span class="keyword">set</span> timeout
+<span class="keyword">set</span> immediate1
+<span class="keyword">set</span> immediate2
+<span class="keyword">set</span> immediate3
+<span class="keyword">set</span> immediate4</code></pre>
+<h2 id="Summary"><a href="#Summary" class="headerlink" title="Summary"></a>Summary</h2><p>We started by asking a few basic questions in Node.js, like: how does its internals look like and how does it operate? Later on, we tried to answer each of those questions as deep as possible. We learned that after all the abstractions, it is a (not so simple) <code>while</code> loop which enables us to build advanced systems and build web servers without worrying about concurrency control or multi threading. Finally, we saw some examples that seem trivial at first, but after our dive to Node core, we were able to answer them.</p>
+
+        </div>
+        
+        <div class="level is-size-7 is-uppercase">
+            <div class="level-start">
+                <div class="level-item">
+                    <span class="is-size-6 has-text-grey has-mr-7">#</span>
+                    <a class="has-link-grey -link" href="/tags/Event-Loop/">Event Loop</a>, <a class="has-link-grey -link" href="/tags/Javascript/">Javascript</a>, <a class="has-link-grey -link" href="/tags/Node-js/">Node.js</a>, <a class="has-link-grey -link" href="/tags/libuv/">libuv</a>
+                </div>
+            </div>
+        </div>
+        
+        
+        
+    </div>
+</div>
+
+
+
+
+
+<div class="card card-transparent">
+    <div class="level post-navigation is-flex-wrap is-mobile">
+        
+        <div class="level-start">
+            <a class="level level-item has-link-grey  article-nav-prev" href="/2019/06/11/Implementing-Clean-Architecture/">
+                <i class="level-item fas fa-chevron-left"></i>
+                <span class="level-item">Implementing Clean Architecture</span>
+            </a>
+        </div>
+        
+        
+    </div>
+</div>
+
+
+
+<div class="card">
+    <div class="card-content">
+        <h3 class="title is-5 has-text-weight-normal">Comments</h3>
+        
+<script>
+    var disqus_config = function () {
+        this.page.url = 'https://yuriktech.com/2019/06/09/Node-JS-Event-Loop-0/';
+        this.page.identifier = '2019/06/09/Node-JS-Event-Loop-0/';
+    };
+    (function() {
+        var d = document, s = d.createElement('script');  
+        s.src = '//' + 'yuritech' + '.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', +new Date());
+        (d.head || d.body).appendChild(s);
+    })();
+</script>
+
+<div id="disqus_thread">
+    
+    <noscript>Please enable JavaScript to view the <a href="//disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+    </div>
+</div>
+</div>
+                
+
+
+
+
+<div class="column is-4-tablet is-4-desktop is-3-widescreen  has-order-1 column-left ">
+    
+        
+<div class="card widget">
+    <div class="card-content">
+        <nav class="level">
+            <div class="level-item has-text-centered" style="flex-shrink: 1">
+                <div>
+                    
+                        <img class="image is-128x128 has-mb-6" src="/about/index/avatar.png" alt="Yuri Khomyakov">
+                    
+                    
+                    <p class="is-size-4 is-block">
+                        Yuri Khomyakov
+                    </p>
+                    
+                    
+                    <p class="is-size-6 is-block">
+                        Software Developer
+                    </p>
+                    
+                    
+                </div>
+            </div>
+        </nav>
+        <nav class="level is-mobile">
+            <div class="level-item has-text-centered is-marginless">
+                <div>
+                    <p class="heading">
+                        Posts
+                    </p>
+                    <p class="title has-text-weight-normal">
+                        9
+                    </p>
+                </div>
+            </div>
+            <div class="level-item has-text-centered is-marginless">
+                <div>
+                    <p class="heading">
+                        Categories
+                    </p>
+                    <p class="title has-text-weight-normal">
+                        3
+                    </p>
+                </div>
+            </div>
+            <div class="level-item has-text-centered is-marginless">
+                <div>
+                    <p class="heading">
+                        Tags
+                    </p>
+                    <p class="title has-text-weight-normal">
+                        23
+                    </p>
+                </div>
+            </div>
+        </nav>
+        <div class="level">
+            <a class="level-item button is-link is-rounded" href="https://github.com/yuraxdrumz" target="_blank">
+                Follow</a>
+        </div>
+        
+        
+        <div class="level is-mobile">
+            
+            <a class="level-item button is-white is-marginless" target="_blank" title="Email" href="mailto:yurik1776@gmail.com">
+                
+                <i class="far fa-envelope"></i>
+                
+            </a>
+            
+            <a class="level-item button is-white is-marginless" target="_blank" title="LinkedIn" href="https://www.linkedin.com/in/yuri-khomyakov-383278125/">
+                
+                <i class="fab fa-linkedin"></i>
+                
+            </a>
+            
+            <a class="level-item button is-white is-marginless" target="_blank" title="Github" href="https://github.com/yuraxdrumz">
+                
+                <i class="fab fa-github"></i>
+                
+            </a>
+            
+            <a class="level-item button is-white is-marginless" target="_blank" title="RSS" href="/atom.xml">
+                
+                <i class="fas fa-rss"></i>
+                
+            </a>
+            
+        </div>
+        
+    </div>
+</div>
+    
+        
+<div class="card widget" id="toc">
+    <div class="card-content">
+        <div class="menu">
+            <h3 class="menu-label">
+                Catalogue
+            </h3>
+            <ul class="menu-list"><li>
+        <a class="is-flex" href="#What-is-the-event-loop">
+        <span class="has-mr-6">1</span>
+        <span>What is the event loop??</span>
+        </a></li><li>
+        <a class="is-flex" href="#What-are-the-phases-in-libuv">
+        <span class="has-mr-6">2</span>
+        <span>What are the phases in libuv?</span>
+        </a></li><li>
+        <a class="is-flex" href="#What-are-the-differences-between-the-phases-of-libuv-and-Node-js">
+        <span class="has-mr-6">3</span>
+        <span>What are the differences between the phases of libuv and Node.js</span>
+        </a></li><li>
+        <a class="is-flex" href="#How-is-the-event-loop-implemented-in-practice">
+        <span class="has-mr-6">4</span>
+        <span>How is the event loop implemented in practice?</span>
+        </a></li><li>
+        <a class="is-flex" href="#Is-Node-js-single-threaded">
+        <span class="has-mr-6">5</span>
+        <span>Is Node.js single threaded?</span>
+        </a></li><li>
+        <a class="is-flex" href="#Why-do-we-have-a-thread-pool-if-we-already-have-the-event-loop-that-does-all-the-async-operations">
+        <span class="has-mr-6">6</span>
+        <span>Why do we have a thread pool if we already have the event loop that does all the async operations?</span>
+        </a></li><li>
+        <a class="is-flex" href="#Examples">
+        <span class="has-mr-6">7</span>
+        <span>Examples</span>
+        </a><ul class="menu-list"><li>
+        <a class="is-flex" href="#Example-1">
+        <span class="has-mr-6">7.1</span>
+        <span>Example 1:</span>
+        </a></li><li>
+        <a class="is-flex" href="#Example-2">
+        <span class="has-mr-6">7.2</span>
+        <span>Example 2:</span>
+        </a></li><li>
+        <a class="is-flex" href="#Example-3">
+        <span class="has-mr-6">7.3</span>
+        <span>Example 3:</span>
+        </a></li><li>
+        <a class="is-flex" href="#Example-4">
+        <span class="has-mr-6">7.4</span>
+        <span>Example 4:</span>
+        </a></li><li>
+        <a class="is-flex" href="#Example-5">
+        <span class="has-mr-6">7.5</span>
+        <span>Example 5:</span>
+        </a></li><li>
+        <a class="is-flex" href="#Example-6">
+        <span class="has-mr-6">7.6</span>
+        <span>Example 6:</span>
+        </a></li></ul></li><li>
+        <a class="is-flex" href="#Summary">
+        <span class="has-mr-6">8</span>
+        <span>Summary</span>
+        </a></li></ul>
+        </div>
+    </div>
+</div>
+
+    
+        
+<div class="card widget">
+    <div class="card-content">
+        <div class="menu">
+            <h3 class="menu-label">
+                Categories
+            </h3>
+            <ul class="menu-list">
+            <li>
+        <a class="level is-marginless" href="/categories/Architecture/">
+            <span class="level-start">
+                <span class="level-item">Architecture</span>
+            </span>
+            <span class="level-end">
+                <span class="level-item tag">5</span>
+            </span>
+        </a></li><li>
+        <a class="level is-marginless" href="/categories/Paradigms/">
+            <span class="level-start">
+                <span class="level-item">Paradigms</span>
+            </span>
+            <span class="level-end">
+                <span class="level-item tag">1</span>
+            </span>
+        </a></li><li>
+        <a class="level is-marginless" href="/categories/Programming/">
+            <span class="level-start">
+                <span class="level-item">Programming</span>
+            </span>
+            <span class="level-end">
+                <span class="level-item tag">3</span>
+            </span>
+        </a></li>
+            </ul>
+        </div>
+    </div>
+</div>
+    
+        
+<div class="card widget">
+    <div class="card-content">
+        <h3 class="menu-label">
+            Tag Cloud
+        </h3>
+        <a href="/tags/API-Gateway/" style="font-size: 10px;">API Gateway</a> <a href="/tags/Actor-Model/" style="font-size: 10px;">Actor Model</a> <a href="/tags/Backend-For-Frontend/" style="font-size: 10px;">Backend For Frontend</a> <a href="/tags/Clean-Architecture/" style="font-size: 10px;">Clean Architecture</a> <a href="/tags/Context-Maps/" style="font-size: 10px;">Context Maps</a> <a href="/tags/DDD/" style="font-size: 13.33px;">DDD</a> <a href="/tags/Design/" style="font-size: 10px;">Design</a> <a href="/tags/Elixir/" style="font-size: 13.33px;">Elixir</a> <a href="/tags/Event-Loop/" style="font-size: 10px;">Event Loop</a> <a href="/tags/Functional/" style="font-size: 16.67px;">Functional</a> <a href="/tags/Golang/" style="font-size: 10px;">Golang</a> <a href="/tags/Hexagonal/" style="font-size: 10px;">Hexagonal</a> <a href="/tags/Javascript/" style="font-size: 10px;">Javascript</a> <a href="/tags/Maybe-a-rant/" style="font-size: 10px;">Maybe a rant</a> <a href="/tags/Microservices/" style="font-size: 13.33px;">Microservices</a> <a href="/tags/Node-js/" style="font-size: 20px;">Node.js</a> <a href="/tags/Ports-and-Adapters/" style="font-size: 10px;">Ports and Adapters</a> <a href="/tags/Programming-Paradigms/" style="font-size: 10px;">Programming Paradigms</a> <a href="/tags/Sidecar-Pattern/" style="font-size: 10px;">Sidecar Pattern</a> <a href="/tags/Software-Architecture/" style="font-size: 20px;">Software Architecture</a> <a href="/tags/Typescript/" style="font-size: 10px;">Typescript</a> <a href="/tags/Uncle-Bob/" style="font-size: 10px;">Uncle Bob</a> <a href="/tags/libuv/" style="font-size: 10px;">libuv</a>
+    </div>
+</div>
+
+    
+    
+        <div class="column-right-shadow is-hidden-widescreen ">
+        
+            
+<div class="card widget">
+    <div class="card-content">
+        <h3 class="menu-label">
+            Recent
+        </h3>
+        
+        <article class="media">
+            
+            <div class="media-content">
+                <div class="content">
+                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2020-02-01T16:15:21.000Z">2020-02-01</time></div>
+                    <a href="/2020/02/01/Implementing-Ports-and-Adapters/" class="has-link-black-ter is-size-6">Implementing Ports and Adapters</a>
+                    <p class="is-size-7 is-uppercase">
+                        <a class="has-link-grey -link" href="/categories/Architecture/">Architecture</a>
+                    </p>
+                </div>
+            </div>
+        </article>
+        
+        <article class="media">
+            
+            <div class="media-content">
+                <div class="content">
+                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2019-11-05T18:24:24.000Z">2019-11-05</time></div>
+                    <a href="/2019/11/05/what-are-microservices/" class="has-link-black-ter is-size-6">What Are Microservices</a>
+                    <p class="is-size-7 is-uppercase">
+                        <a class="has-link-grey -link" href="/categories/Architecture/">Architecture</a>
+                    </p>
+                </div>
+            </div>
+        </article>
+        
+        <article class="media">
+            
+            <div class="media-content">
+                <div class="content">
+                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2019-07-15T21:46:10.000Z">2019-07-16</time></div>
+                    <a href="/2019/07/16/Microservices-Epiphany/" class="has-link-black-ter is-size-6">Microservices Epiphany</a>
+                    <p class="is-size-7 is-uppercase">
+                        <a class="has-link-grey -link" href="/categories/Architecture/">Architecture</a>
+                    </p>
+                </div>
+            </div>
+        </article>
+        
+        <article class="media">
+            
+            <div class="media-content">
+                <div class="content">
+                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2019-07-10T12:52:33.000Z">2019-07-10</time></div>
+                    <a href="/2019/07/10/Context-Maps-In-Domain-Driven-Design/" class="has-link-black-ter is-size-6">Context Maps in Domain Driven Design</a>
+                    <p class="is-size-7 is-uppercase">
+                        <a class="has-link-grey -link" href="/categories/Architecture/">Architecture</a>
+                    </p>
+                </div>
+            </div>
+        </article>
+        
+        <article class="media">
+            
+            <div class="media-content">
+                <div class="content">
+                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2019-07-03T15:44:34.000Z">2019-07-03</time></div>
+                    <a href="/2019/07/03/Authentication-Middleware-In-Elixir/" class="has-link-black-ter is-size-6">Authentication Middleware in Elixir</a>
+                    <p class="is-size-7 is-uppercase">
+                        <a class="has-link-grey -link" href="/categories/Programming/">Programming</a>
+                    </p>
+                </div>
+            </div>
+        </article>
+        
+    </div>
+</div>
+
+        
+            <div class="card widget">
+    <div class="card-content">
+        <div class="menu">
+        <h3 class="menu-label">
+            Archives
+        </h3>
+        <ul class="menu-list">
+        
+        <li>
+            <a class="level is-marginless" href="/archives/2020/02/">
+                <span class="level-start">
+                    <span class="level-item">February 2020</span>
+                </span>
+                <span class="level-end">
+                    <span class="level-item tag">1</span>
+                </span>
+            </a>
+        </li>
+        
+        <li>
+            <a class="level is-marginless" href="/archives/2019/11/">
+                <span class="level-start">
+                    <span class="level-item">November 2019</span>
+                </span>
+                <span class="level-end">
+                    <span class="level-item tag">1</span>
+                </span>
+            </a>
+        </li>
+        
+        <li>
+            <a class="level is-marginless" href="/archives/2019/07/">
+                <span class="level-start">
+                    <span class="level-item">July 2019</span>
+                </span>
+                <span class="level-end">
+                    <span class="level-item tag">3</span>
+                </span>
+            </a>
+        </li>
+        
+        <li>
+            <a class="level is-marginless" href="/archives/2019/06/">
+                <span class="level-start">
+                    <span class="level-item">June 2019</span>
+                </span>
+                <span class="level-end">
+                    <span class="level-item tag">4</span>
+                </span>
+            </a>
+        </li>
+        
+        </ul>
+        </div>
+    </div>
+</div>
+        
+            <div class="card widget">
+    <div class="card-content">
+        <div class="menu">
+            <h3 class="menu-label">
+                Tags
+            </h3>
+            <div class="field is-grouped is-grouped-multiline">
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/API-Gateway/">
+                        <span class="tag">API Gateway</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/Actor-Model/">
+                        <span class="tag">Actor Model</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/Backend-For-Frontend/">
+                        <span class="tag">Backend For Frontend</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/Clean-Architecture/">
+                        <span class="tag">Clean Architecture</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/Context-Maps/">
+                        <span class="tag">Context Maps</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/DDD/">
+                        <span class="tag">DDD</span>
+                        <span class="tag is-grey">2</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/Design/">
+                        <span class="tag">Design</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/Elixir/">
+                        <span class="tag">Elixir</span>
+                        <span class="tag is-grey">2</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/Event-Loop/">
+                        <span class="tag">Event Loop</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/Functional/">
+                        <span class="tag">Functional</span>
+                        <span class="tag is-grey">3</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/Golang/">
+                        <span class="tag">Golang</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/Hexagonal/">
+                        <span class="tag">Hexagonal</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/Javascript/">
+                        <span class="tag">Javascript</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/Maybe-a-rant/">
+                        <span class="tag">Maybe a rant</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/Microservices/">
+                        <span class="tag">Microservices</span>
+                        <span class="tag is-grey">2</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/Node-js/">
+                        <span class="tag">Node.js</span>
+                        <span class="tag is-grey">4</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/Ports-and-Adapters/">
+                        <span class="tag">Ports and Adapters</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/Programming-Paradigms/">
+                        <span class="tag">Programming Paradigms</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/Sidecar-Pattern/">
+                        <span class="tag">Sidecar Pattern</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/Software-Architecture/">
+                        <span class="tag">Software Architecture</span>
+                        <span class="tag is-grey">4</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/Typescript/">
+                        <span class="tag">Typescript</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/Uncle-Bob/">
+                        <span class="tag">Uncle Bob</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/libuv/">
+                        <span class="tag">libuv</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+            </div>
+        </div>
+    </div>
+</div>
+        
+        </div>
+    
+</div>
+
+                
+
+
+
+
+<div class="column is-4-tablet is-4-desktop is-3-widescreen is-hidden-touch is-hidden-desktop-only has-order-3 column-right ">
+    
+        
+<div class="card widget">
+    <div class="card-content">
+        <h3 class="menu-label">
+            Recent
+        </h3>
+        
+        <article class="media">
+            
+            <div class="media-content">
+                <div class="content">
+                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2020-02-01T16:15:21.000Z">2020-02-01</time></div>
+                    <a href="/2020/02/01/Implementing-Ports-and-Adapters/" class="has-link-black-ter is-size-6">Implementing Ports and Adapters</a>
+                    <p class="is-size-7 is-uppercase">
+                        <a class="has-link-grey -link" href="/categories/Architecture/">Architecture</a>
+                    </p>
+                </div>
+            </div>
+        </article>
+        
+        <article class="media">
+            
+            <div class="media-content">
+                <div class="content">
+                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2019-11-05T18:24:24.000Z">2019-11-05</time></div>
+                    <a href="/2019/11/05/what-are-microservices/" class="has-link-black-ter is-size-6">What Are Microservices</a>
+                    <p class="is-size-7 is-uppercase">
+                        <a class="has-link-grey -link" href="/categories/Architecture/">Architecture</a>
+                    </p>
+                </div>
+            </div>
+        </article>
+        
+        <article class="media">
+            
+            <div class="media-content">
+                <div class="content">
+                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2019-07-15T21:46:10.000Z">2019-07-16</time></div>
+                    <a href="/2019/07/16/Microservices-Epiphany/" class="has-link-black-ter is-size-6">Microservices Epiphany</a>
+                    <p class="is-size-7 is-uppercase">
+                        <a class="has-link-grey -link" href="/categories/Architecture/">Architecture</a>
+                    </p>
+                </div>
+            </div>
+        </article>
+        
+        <article class="media">
+            
+            <div class="media-content">
+                <div class="content">
+                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2019-07-10T12:52:33.000Z">2019-07-10</time></div>
+                    <a href="/2019/07/10/Context-Maps-In-Domain-Driven-Design/" class="has-link-black-ter is-size-6">Context Maps in Domain Driven Design</a>
+                    <p class="is-size-7 is-uppercase">
+                        <a class="has-link-grey -link" href="/categories/Architecture/">Architecture</a>
+                    </p>
+                </div>
+            </div>
+        </article>
+        
+        <article class="media">
+            
+            <div class="media-content">
+                <div class="content">
+                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2019-07-03T15:44:34.000Z">2019-07-03</time></div>
+                    <a href="/2019/07/03/Authentication-Middleware-In-Elixir/" class="has-link-black-ter is-size-6">Authentication Middleware in Elixir</a>
+                    <p class="is-size-7 is-uppercase">
+                        <a class="has-link-grey -link" href="/categories/Programming/">Programming</a>
+                    </p>
+                </div>
+            </div>
+        </article>
+        
+    </div>
+</div>
+
+    
+        <div class="card widget">
+    <div class="card-content">
+        <div class="menu">
+        <h3 class="menu-label">
+            Archives
+        </h3>
+        <ul class="menu-list">
+        
+        <li>
+            <a class="level is-marginless" href="/archives/2020/02/">
+                <span class="level-start">
+                    <span class="level-item">February 2020</span>
+                </span>
+                <span class="level-end">
+                    <span class="level-item tag">1</span>
+                </span>
+            </a>
+        </li>
+        
+        <li>
+            <a class="level is-marginless" href="/archives/2019/11/">
+                <span class="level-start">
+                    <span class="level-item">November 2019</span>
+                </span>
+                <span class="level-end">
+                    <span class="level-item tag">1</span>
+                </span>
+            </a>
+        </li>
+        
+        <li>
+            <a class="level is-marginless" href="/archives/2019/07/">
+                <span class="level-start">
+                    <span class="level-item">July 2019</span>
+                </span>
+                <span class="level-end">
+                    <span class="level-item tag">3</span>
+                </span>
+            </a>
+        </li>
+        
+        <li>
+            <a class="level is-marginless" href="/archives/2019/06/">
+                <span class="level-start">
+                    <span class="level-item">June 2019</span>
+                </span>
+                <span class="level-end">
+                    <span class="level-item tag">4</span>
+                </span>
+            </a>
+        </li>
+        
+        </ul>
+        </div>
+    </div>
+</div>
+    
+        <div class="card widget">
+    <div class="card-content">
+        <div class="menu">
+            <h3 class="menu-label">
+                Tags
+            </h3>
+            <div class="field is-grouped is-grouped-multiline">
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/API-Gateway/">
+                        <span class="tag">API Gateway</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/Actor-Model/">
+                        <span class="tag">Actor Model</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/Backend-For-Frontend/">
+                        <span class="tag">Backend For Frontend</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/Clean-Architecture/">
+                        <span class="tag">Clean Architecture</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/Context-Maps/">
+                        <span class="tag">Context Maps</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/DDD/">
+                        <span class="tag">DDD</span>
+                        <span class="tag is-grey">2</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/Design/">
+                        <span class="tag">Design</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/Elixir/">
+                        <span class="tag">Elixir</span>
+                        <span class="tag is-grey">2</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/Event-Loop/">
+                        <span class="tag">Event Loop</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/Functional/">
+                        <span class="tag">Functional</span>
+                        <span class="tag is-grey">3</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/Golang/">
+                        <span class="tag">Golang</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/Hexagonal/">
+                        <span class="tag">Hexagonal</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/Javascript/">
+                        <span class="tag">Javascript</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/Maybe-a-rant/">
+                        <span class="tag">Maybe a rant</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/Microservices/">
+                        <span class="tag">Microservices</span>
+                        <span class="tag is-grey">2</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/Node-js/">
+                        <span class="tag">Node.js</span>
+                        <span class="tag is-grey">4</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/Ports-and-Adapters/">
+                        <span class="tag">Ports and Adapters</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/Programming-Paradigms/">
+                        <span class="tag">Programming Paradigms</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/Sidecar-Pattern/">
+                        <span class="tag">Sidecar Pattern</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/Software-Architecture/">
+                        <span class="tag">Software Architecture</span>
+                        <span class="tag is-grey">4</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/Typescript/">
+                        <span class="tag">Typescript</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/Uncle-Bob/">
+                        <span class="tag">Uncle Bob</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/libuv/">
+                        <span class="tag">libuv</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+            </div>
+        </div>
+    </div>
+</div>
+    
+    
+</div>
+
+            </div>
+        </div>
+    </section>
+    <footer class="footer">
+    <div class="container">
+        <div class="level">
+            <div class="level-start has-text-centered-mobile">
+                <p class="is-size-7">
+                &copy; 2020 Yuri Khomyakov&nbsp;
+                Powered by <a href="https://hexo.io/" target="_blank">Hexo</a> & <a href="https://github.com/ppoffice/hexo-theme-icarus" target="_blank">Icarus</a>
+                
+                </p>
+            </div>
+            <div class="level-end">
+            
+                <div class="field has-addons is-flex-center-mobile has-mt-5-mobile is-flex-wrap is-flex-middle">
+                
+                
+                <p class="control">
+                    <a class="button is-white is-large" target="_blank" title="GitHub" href="https://github.com/yuraxdrumz">
+                        
+                        <i class="fab fa-github"></i>
+                        
+                    </a>
+                </p>
+                
+                </div>
+            
+            </div>
+        </div>
+    </div>
+</footer>
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.3.1/dist/jquery.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/moment@2.22.2/min/moment-with-locales.min.js"></script>
+<script>moment.locale("en");</script>
+
+
+    
+    
+    
+    <script src="/js/animation.js"></script>
+    
+
+    
+    
+    
+    <script src="https://cdn.jsdelivr.net/npm/lightgallery@1.6.8/dist/js/lightgallery.min.js" defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/justifiedGallery@3.7.0/dist/js/jquery.justifiedGallery.min.js" defer></script>
+    <script src="/js/gallery.js" defer></script>
+    
+
+    
+    
+
+<div id="outdated">
+    <h6>Your browser is out-of-date!</h6>
+    <p>Update your browser to view this website correctly. <a id="btnUpdateBrowser" href="http://outdatedbrowser.com/">Update
+            my browser now </a></p>
+    <p class="last"><a href="#" id="btnCloseUpdateBrowser" title="Close">&times;</a></p>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/outdatedbrowser@1.1.5/outdatedbrowser/outdatedbrowser.min.js" defer></script>
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        outdatedBrowser({
+            bgColor: '#f25648',
+            color: '#ffffff',
+            lowerThan: 'flex'
+        });
+    });
+</script>
+
+
+    
+    
+<script src="https://cdn.jsdelivr.net/npm/mathjax@2.7.5/unpacked/MathJax.js?config=TeX-MML-AM_CHTML" defer></script>
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    MathJax.Hub.Config({
+        'HTML-CSS': {
+            matchFontHeight: false
+        },
+        SVG: {
+            matchFontHeight: false
+        },
+        CommonHTML: {
+            matchFontHeight: false
+        },
+        tex2jax: {
+            inlineMath: [
+                ['$','$'],
+                ['\\(','\\)']
+            ]
+        }
+    });
+});
+</script>
+
+    
+    
+
+<a id="back-to-top" title="Back to Top" href="javascript:;">
+    <i class="fas fa-chevron-up"></i>
+</a>
+<script src="/js/back-to-top.js" defer></script>
+
+
+    
+    
+
+    
+    
+    
+    
+
+    
+    
+    
+    
+    
+    <script src="https://cdn.jsdelivr.net/npm/clipboard@2.0.4/dist/clipboard.min.js" defer></script>
+    <script src="/js/clipboard.js" defer></script>
+    
+
+    
+    
+    
+
+
+<script src="/js/main.js" defer></script>
+
+    
+    <div class="searchbox ins-search">
+    <div class="searchbox-container ins-search-container">
+        <div class="searchbox-input-wrapper">
+            <input type="text" class="searchbox-input ins-search-input" placeholder="Type something...">
+            <span class="searchbox-close ins-close ins-selectable"><i class="fa fa-times-circle"></i></span>
+        </div>
+        <div class="searchbox-result-wrapper ins-section-wrapper">
+            <div class="ins-section-container"></div>
+        </div>
+    </div>
+</div>
+<script>
+    (function (window) {
+        var INSIGHT_CONFIG = {
+            TRANSLATION: {
+                POSTS: 'Posts',
+                PAGES: 'Pages',
+                CATEGORIES: 'Categories',
+                TAGS: 'Tags',
+                UNTITLED: '(Untitled)',
+            },
+            CONTENT_URL: '/content.json',
+        };
+        window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+    })(window);
+</script>
+<script src="/js/insight.js" defer></script>
+<link rel="stylesheet" href="/css/search.css">
+<link rel="stylesheet" href="/css/insight.css">
+    
+</body>
+</html>

@@ -1,0 +1,250 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+  <title>Yurik&#39;s Tech Blog</title>
+  
+  <subtitle>Simplicity is prerequisite for reliability - Edsger Dijkstra</subtitle>
+  <link href="/atom.xml" rel="self"/>
+  
+  <link href="https://yuriktech.com/"/>
+  <updated>2020-02-01T16:15:21.910Z</updated>
+  <id>https://yuriktech.com/</id>
+  
+  <author>
+    <name>Yuri Khomyakov</name>
+    
+  </author>
+  
+  <generator uri="http://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>Implementing Ports and Adapters</title>
+    <link href="https://yuriktech.com/2020/02/01/Implementing-Ports-and-Adapters/"/>
+    <id>https://yuriktech.com/2020/02/01/Implementing-Ports-and-Adapters/</id>
+    <published>2020-02-01T16:15:21.000Z</published>
+    <updated>2020-02-01T16:15:21.910Z</updated>
+    
+    <summary type="html">
+    
+      &lt;p&gt;There are different architectures that allow you to keep focus on your business domain and allow for fast paced development and changes. Examples would be: Clean Architecture, Onion Architecture and Ports and Adapters (also called hexagonal).&lt;br&gt;&lt;a href=&quot;/2019/06/11/Implementing-Clean-Architecture/&quot;&gt;In my previous post&lt;/a&gt;, I talked about Clean Architecture and how it helps get your code more modular and developer friendly after a somewhat short learning curve. After joining a new team, I noticed Clean Architecture did not really settle and the team found it to be somewhat over abstracted, so I decided to play around with a variation of Ports and Adapters.&lt;br&gt;In this post I will show what is Ports and Adapters and how I implemented it in Golang. Github repo is available &lt;a href=&quot;https://github.com/yuraxdrumz/ports-and-adapters-golang&quot; target=&quot;_blank&quot; rel=&quot;noopener&quot;&gt;here&lt;/a&gt;.&lt;/p&gt;
+    
+    </summary>
+    
+      <category term="Architecture" scheme="https://yuriktech.com/categories/Architecture/"/>
+    
+    
+      <category term="Software Architecture" scheme="https://yuriktech.com/tags/Software-Architecture/"/>
+    
+      <category term="Ports and Adapters" scheme="https://yuriktech.com/tags/Ports-and-Adapters/"/>
+    
+      <category term="Golang" scheme="https://yuriktech.com/tags/Golang/"/>
+    
+      <category term="Hexagonal" scheme="https://yuriktech.com/tags/Hexagonal/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>What Are Microservices</title>
+    <link href="https://yuriktech.com/2019/11/05/what-are-microservices/"/>
+    <id>https://yuriktech.com/2019/11/05/what-are-microservices/</id>
+    <published>2019-11-05T18:24:24.000Z</published>
+    <updated>2020-01-25T12:49:48.268Z</updated>
+    
+    <summary type="html">
+    
+      &lt;p&gt;&lt;img src=&quot;/2019/11/05/what-are-microservices/./legos-2.jpg&quot; alt&gt;&lt;br&gt;After having written and implemented several microservice architectures, I wanted to have a go at explaining microservices from my point of view and share my insights. In this post I will explain what are microservices, what are their pros and cons, how they communicate and the different approaches towards building microservices.&lt;/p&gt;
+    
+    </summary>
+    
+      <category term="Architecture" scheme="https://yuriktech.com/categories/Architecture/"/>
+    
+    
+      <category term="Software Architecture" scheme="https://yuriktech.com/tags/Software-Architecture/"/>
+    
+      <category term="Node.js" scheme="https://yuriktech.com/tags/Node-js/"/>
+    
+      <category term="Microservices" scheme="https://yuriktech.com/tags/Microservices/"/>
+    
+      <category term="Design" scheme="https://yuriktech.com/tags/Design/"/>
+    
+      <category term="Backend For Frontend" scheme="https://yuriktech.com/tags/Backend-For-Frontend/"/>
+    
+      <category term="API Gateway" scheme="https://yuriktech.com/tags/API-Gateway/"/>
+    
+      <category term="Sidecar Pattern" scheme="https://yuriktech.com/tags/Sidecar-Pattern/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>Microservices Epiphany</title>
+    <link href="https://yuriktech.com/2019/07/16/Microservices-Epiphany/"/>
+    <id>https://yuriktech.com/2019/07/16/Microservices-Epiphany/</id>
+    <published>2019-07-15T21:46:10.000Z</published>
+    <updated>2020-01-25T12:49:48.262Z</updated>
+    
+    <summary type="html">
+    
+      &lt;p&gt;&lt;img src=&quot;/2019/07/16/Microservices-Epiphany/./what.jpg&quot; alt&gt;&lt;br&gt;The majority of the posts I see about microservices talk about the differences vs monoliths and how everyone, including myself, is rushing to build microservices in this fast paced world we live in. Recently, I read &lt;em&gt;Implementing Domain Driven Design&lt;/em&gt; by Vaughn Vernon, which seemed unrelated to microservices at first but soon changed my perspective on things. What I experienced, like the title suggests, was an epiphany that I was building microservices wrong all along. In fact, I was building smaller monoliths, separated by a url subdomain. &lt;em&gt;Head Explodes!&lt;/em&gt; In this short post, I will show a couple of symptoms that I found are a sign your microservices architecture might suffer in the long run.&lt;/p&gt;
+    
+    </summary>
+    
+      <category term="Architecture" scheme="https://yuriktech.com/categories/Architecture/"/>
+    
+    
+      <category term="DDD" scheme="https://yuriktech.com/tags/DDD/"/>
+    
+      <category term="Microservices" scheme="https://yuriktech.com/tags/Microservices/"/>
+    
+      <category term="Maybe a rant" scheme="https://yuriktech.com/tags/Maybe-a-rant/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>Context Maps in Domain Driven Design</title>
+    <link href="https://yuriktech.com/2019/07/10/Context-Maps-In-Domain-Driven-Design/"/>
+    <id>https://yuriktech.com/2019/07/10/Context-Maps-In-Domain-Driven-Design/</id>
+    <published>2019-07-10T12:52:33.000Z</published>
+    <updated>2020-01-25T12:49:48.259Z</updated>
+    
+    <summary type="html">
+    
+      &lt;p&gt;Ideally, it would be great to have a single place that incorporates all of our models, but in reality, our systems fragment to multiple models and we need to understand how to approach building them in way that allows future changes quickly.&lt;br&gt;Strategic Domain Driven Design is a high level approach to distributed software architecture and is an essential part of DDD. One of its features is context maps, which allows grasping the different relationships between bounded contexts (a boundary within which the ubiquitous language is consistent) and gives the teams a better understanding on how they affect each other. In this short post I will introduce you to the basics of context maps.&lt;/p&gt;
+    
+    </summary>
+    
+      <category term="Architecture" scheme="https://yuriktech.com/categories/Architecture/"/>
+    
+    
+      <category term="DDD" scheme="https://yuriktech.com/tags/DDD/"/>
+    
+      <category term="Software Architecture" scheme="https://yuriktech.com/tags/Software-Architecture/"/>
+    
+      <category term="Context Maps" scheme="https://yuriktech.com/tags/Context-Maps/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>Authentication Middleware in Elixir</title>
+    <link href="https://yuriktech.com/2019/07/03/Authentication-Middleware-In-Elixir/"/>
+    <id>https://yuriktech.com/2019/07/03/Authentication-Middleware-In-Elixir/</id>
+    <published>2019-07-03T15:44:34.000Z</published>
+    <updated>2020-01-25T12:49:48.259Z</updated>
+    
+    <summary type="html">
+    
+      &lt;p&gt;One of the first projects I was working on in Elixir was an API gateway. Like everyone else, I saw Pheonix, which is a cool framework for building web servers which is similar to Express.js, but, for my use case, I wanted raw performance for the API gateway, and one of its features was to have basic authentication as well as bearer authentication for json web tokens. One way to achieve this was using Plugs, which are built in the language. A plug is similar to a middleware in Express.js, it accepts input, does some manipulation and either halts the request or passes it on. In this post I will show how I implemented an authentication plug in Elixir.&lt;/p&gt;
+    
+    </summary>
+    
+      <category term="Programming" scheme="https://yuriktech.com/categories/Programming/"/>
+    
+    
+      <category term="Elixir" scheme="https://yuriktech.com/tags/Elixir/"/>
+    
+      <category term="Functional" scheme="https://yuriktech.com/tags/Functional/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>Functional Programming in 10 Minutes</title>
+    <link href="https://yuriktech.com/2019/06/22/Functional-Programming-in-10-minutes/"/>
+    <id>https://yuriktech.com/2019/06/22/Functional-Programming-in-10-minutes/</id>
+    <published>2019-06-22T15:13:57.000Z</published>
+    <updated>2020-01-25T12:49:48.260Z</updated>
+    
+    <summary type="html">
+    
+      &lt;p&gt;When I first saw the ideas of functional programming, I found them very strange due to the fact that, I, like most people, got used to structural and object oriented programming paradigms. The structural takes away the &lt;code&gt;goto&lt;/code&gt; definitions from our code and replaces them with &lt;code&gt;if/else/do/while&lt;/code&gt;, which forces the code to execute in an order. The object oriented, encapsulates local variables and methods long after a function returns (what eventually became a constructor) and through the use of function pointers introduced polymorphism. In this post, I will introduce you to functional programming.&lt;/p&gt;
+    
+    </summary>
+    
+      <category term="Paradigms" scheme="https://yuriktech.com/categories/Paradigms/"/>
+    
+    
+      <category term="Functional" scheme="https://yuriktech.com/tags/Functional/"/>
+    
+      <category term="Programming Paradigms" scheme="https://yuriktech.com/tags/Programming-Paradigms/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>Switching From Node.js to Elixir</title>
+    <link href="https://yuriktech.com/2019/06/17/Switching-From-Node.js-To-Elixir/"/>
+    <id>https://yuriktech.com/2019/06/17/Switching-From-Node.js-To-Elixir/</id>
+    <published>2019-06-17T18:11:52.000Z</published>
+    <updated>2020-01-25T12:49:48.268Z</updated>
+    
+    <summary type="html">
+    
+      &lt;p&gt;After writing software for the past 6 years, I realized that the implementations that we write are far more important than the languages we choose, but, having a developer friendly, safe, strict language, can guide you towards better implementations. That is why I set out to search for a new programming language, that will replace my daily driver - &lt;code&gt;Node.js&lt;/code&gt;. 
+In a search for a new programming language, I asked myself two questions - &lt;em&gt;what are the must-have features I expect from a programming language?&lt;/em&gt; and &lt;em&gt;do its pros outweigh its cons?&lt;/em&gt;&lt;br&gt;In this post, I will weigh some of Javascript’s pros and cons, later on, I will list the features, I believe, a programming language should have, afterwards, I will explain why I chose to learn &lt;code&gt;Elixir&lt;/code&gt; and at last, I will weigh Elixir’s pros and cons.&lt;/p&gt;
+    
+    </summary>
+    
+      <category term="Programming" scheme="https://yuriktech.com/categories/Programming/"/>
+    
+    
+      <category term="Elixir" scheme="https://yuriktech.com/tags/Elixir/"/>
+    
+      <category term="Functional" scheme="https://yuriktech.com/tags/Functional/"/>
+    
+      <category term="Node.js" scheme="https://yuriktech.com/tags/Node-js/"/>
+    
+      <category term="Actor Model" scheme="https://yuriktech.com/tags/Actor-Model/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>Implementing Clean Architecture</title>
+    <link href="https://yuriktech.com/2019/06/11/Implementing-Clean-Architecture/"/>
+    <id>https://yuriktech.com/2019/06/11/Implementing-Clean-Architecture/</id>
+    <published>2019-06-11T18:31:56.000Z</published>
+    <updated>2020-01-25T12:49:48.260Z</updated>
+    
+    <summary type="html">
+    
+      &lt;p&gt;Last year, I had the opportunity to design a new project at work and since I had just finished reading Robert Martin’s &lt;em&gt;Clean Architecture&lt;/em&gt; I thought to myself, why not implement it on that project ? One of the reasons, except my usual &lt;em&gt;I have to implement this cool thing right away!&lt;/em&gt; was that working on legacy systems in the company was accompanied with the good ol’ &lt;em&gt;big ball of mud&lt;/em&gt; code. The purpose of this post is to show you how can one implement &lt;em&gt;Clean Architecture&lt;/em&gt; in practice and still understand it years from now, whether you work alone or in a team. Everything shown will be written in &lt;em&gt;Typescript&lt;/em&gt; on &lt;em&gt;Node.js&lt;/em&gt; using &lt;em&gt;Object Oriented&lt;/em&gt; programming paradigm. All of the code will be available &lt;a href=&quot;https://github.com/yuraxdrumz/clean-architecture-example&quot; target=&quot;_blank&quot; rel=&quot;noopener&quot;&gt;here&lt;/a&gt;&lt;/p&gt;
+    
+    </summary>
+    
+      <category term="Architecture" scheme="https://yuriktech.com/categories/Architecture/"/>
+    
+    
+      <category term="Software Architecture" scheme="https://yuriktech.com/tags/Software-Architecture/"/>
+    
+      <category term="Node.js" scheme="https://yuriktech.com/tags/Node-js/"/>
+    
+      <category term="Typescript" scheme="https://yuriktech.com/tags/Typescript/"/>
+    
+      <category term="Clean Architecture" scheme="https://yuriktech.com/tags/Clean-Architecture/"/>
+    
+      <category term="Uncle Bob" scheme="https://yuriktech.com/tags/Uncle-Bob/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>How the Event Loop Really Works</title>
+    <link href="https://yuriktech.com/2019/06/09/Node-JS-Event-Loop-0/"/>
+    <id>https://yuriktech.com/2019/06/09/Node-JS-Event-Loop-0/</id>
+    <published>2019-06-09T12:50:22.000Z</published>
+    <updated>2020-01-25T12:49:48.265Z</updated>
+    
+    <summary type="html">
+    
+      &lt;p&gt;After writing in Node.js for 3 years, I felt that the majority of the posts about it were lacking deeper knowledge, especially about the event loops internals, so, I decided to dig deep and give you my insights. Node.js seems like a simple beast to handle but in reality, there are a lot of layers of abstraction behind it. From one perspective, this abstraction is great, but, like everything else in software, abstraction comes at a cost.&lt;br&gt;The purpose of this post is to show you a broader picture of how the Node core handles the event loop, what it really is and how it coexists with the JS runtime.&lt;/p&gt;
+    
+    </summary>
+    
+      <category term="Programming" scheme="https://yuriktech.com/categories/Programming/"/>
+    
+    
+      <category term="Node.js" scheme="https://yuriktech.com/tags/Node-js/"/>
+    
+      <category term="Javascript" scheme="https://yuriktech.com/tags/Javascript/"/>
+    
+      <category term="Event Loop" scheme="https://yuriktech.com/tags/Event-Loop/"/>
+    
+      <category term="libuv" scheme="https://yuriktech.com/tags/libuv/"/>
+    
+  </entry>
+  
+</feed>
