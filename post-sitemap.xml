@@ -9,15 +9,7 @@
 
     <url>
         <loc>https://yuriktech.com/2020/02/01/Implementing-Ports-and-Adapters/</loc>
-        <lastmod>2020-02-01T16:15:21.910Z</lastmod>
-        <changefreq>weekly</changefreq>
-        <priority>0.6</priority>
-
-    </url>
-
-    <url>
-        <loc>https://yuriktech.com/2019/11/05/what-are-microservices/</loc>
-        <lastmod>2020-01-25T12:49:48.268Z</lastmod>
+        <lastmod>2020-02-01T16:51:04.704Z</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.6</priority>
 
@@ -25,6 +17,14 @@
 
     <url>
         <loc>https://yuriktech.com/2019/06/17/Switching-From-Node.js-To-Elixir/</loc>
+        <lastmod>2020-01-25T12:49:48.268Z</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.6</priority>
+
+    </url>
+
+    <url>
+        <loc>https://yuriktech.com/2019/11/05/what-are-microservices/</loc>
         <lastmod>2020-01-25T12:49:48.268Z</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.6</priority>

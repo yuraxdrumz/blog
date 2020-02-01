@@ -6,7 +6,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="https://yuriktech.com/"/>
-  <updated>2020-02-01T16:15:21.910Z</updated>
+  <updated>2020-02-01T16:51:04.704Z</updated>
   <id>https://yuriktech.com/</id>
   
   <author>
@@ -21,11 +21,11 @@
     <link href="https://yuriktech.com/2020/02/01/Implementing-Ports-and-Adapters/"/>
     <id>https://yuriktech.com/2020/02/01/Implementing-Ports-and-Adapters/</id>
     <published>2020-02-01T16:15:21.000Z</published>
-    <updated>2020-02-01T16:15:21.910Z</updated>
+    <updated>2020-02-01T16:51:04.704Z</updated>
     
     <summary type="html">
     
-      &lt;p&gt;There are different architectures that allow you to keep focus on your business domain and allow for fast paced development and changes. Examples would be: Clean Architecture, Onion Architecture and Ports and Adapters (also called hexagonal).&lt;br&gt;&lt;a href=&quot;/2019/06/11/Implementing-Clean-Architecture/&quot;&gt;In my previous post&lt;/a&gt;, I talked about Clean Architecture and how it helps get your code more modular and developer friendly after a somewhat short learning curve. After joining a new team, I noticed Clean Architecture did not really settle and the team found it to be somewhat over abstracted, so I decided to play around with a variation of Ports and Adapters.&lt;br&gt;In this post I will show what is Ports and Adapters and how I implemented it in Golang. Github repo is available &lt;a href=&quot;https://github.com/yuraxdrumz/ports-and-adapters-golang&quot; target=&quot;_blank&quot; rel=&quot;noopener&quot;&gt;here&lt;/a&gt;.&lt;/p&gt;
+      &lt;p&gt;&lt;img src=&quot;/2020/02/01/Implementing-Ports-and-Adapters/./golang-ports-and-adapters.png&quot; alt&gt;&lt;br&gt;There are different architectures that allow you to keep focus on your business domain and allow for fast paced development and changes. Examples would be: Clean Architecture, Onion Architecture and Ports and Adapters (also called hexagonal).&lt;br&gt;&lt;a href=&quot;/2019/06/11/Implementing-Clean-Architecture/&quot;&gt;In my previous post&lt;/a&gt;, I talked about Clean Architecture and how it helps get your code more modular and developer friendly after a somewhat short learning curve. After joining a new team, I noticed Clean Architecture did not really settle and the team found it to be somewhat over abstracted, so I decided to play around with a variation of Ports and Adapters.&lt;br&gt;In this post I will show what is Ports and Adapters and how I implemented it in Golang. Github repo is available &lt;a href=&quot;https://github.com/yuraxdrumz/ports-and-adapters-golang&quot; target=&quot;_blank&quot; rel=&quot;noopener&quot;&gt;here&lt;/a&gt;.&lt;/p&gt;
     
     </summary>
     

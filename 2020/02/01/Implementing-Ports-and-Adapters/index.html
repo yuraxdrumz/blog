@@ -18,7 +18,7 @@
 <meta property="og:description" content="There are different architectures that allow you to keep focus on your business domain and allow for fast paced development and changes. Examples would be: Clean Architecture, Onion Architecture and P">
 <meta property="og:locale" content="en">
 <meta property="og:image" content="https://yuriktech.com/images/og_image.png">
-<meta property="og:updated_time" content="2020-02-01T16:15:21.910Z">
+<meta property="og:updated_time" content="2020-02-01T16:51:04.704Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Implementing Ports and Adapters">
 <meta name="twitter:description" content="There are different architectures that allow you to keep focus on your business domain and allow for fast paced development and changes. Examples would be: Clean Architecture, Onion Architecture and P">
@@ -164,7 +164,7 @@
                 <span class="level-item has-text-grey">
                     
                     
-                    14 minutes read (About 2154 words)
+                    14 minutes read (About 2159 words)
                 </span>
                 
                 
@@ -177,7 +177,7 @@
             
         </h1>
         <div class="content">
-            <p>There are different architectures that allow you to keep focus on your business domain and allow for fast paced development and changes. Examples would be: Clean Architecture, Onion Architecture and Ports and Adapters (also called hexagonal).<br><a href="/2019/06/11/Implementing-Clean-Architecture/">In my previous post</a>, I talked about Clean Architecture and how it helps get your code more modular and developer friendly after a somewhat short learning curve. After joining a new team, I noticed Clean Architecture did not really settle and the team found it to be somewhat over abstracted, so I decided to play around with a variation of Ports and Adapters.<br>In this post I will show what is Ports and Adapters and how I implemented it in Golang. Github repo is available <a href="https://github.com/yuraxdrumz/ports-and-adapters-golang" target="_blank" rel="noopener">here</a>.</p>
+            <p><img src="/2020/02/01/Implementing-Ports-and-Adapters/./golang-ports-and-adapters.png" alt><br>There are different architectures that allow you to keep focus on your business domain and allow for fast paced development and changes. Examples would be: Clean Architecture, Onion Architecture and Ports and Adapters (also called hexagonal).<br><a href="/2019/06/11/Implementing-Clean-Architecture/">In my previous post</a>, I talked about Clean Architecture and how it helps get your code more modular and developer friendly after a somewhat short learning curve. After joining a new team, I noticed Clean Architecture did not really settle and the team found it to be somewhat over abstracted, so I decided to play around with a variation of Ports and Adapters.<br>In this post I will show what is Ports and Adapters and how I implemented it in Golang. Github repo is available <a href="https://github.com/yuraxdrumz/ports-and-adapters-golang" target="_blank" rel="noopener">here</a>.</p>
 <h3 id="Disclaimer"><a href="#Disclaimer" class="headerlink" title="Disclaimer"></a>Disclaimer</h3><p>Some of the things that I am going to write and show are my personal experiences and opinions.</p>
 <h3 id="Core-Idea"><a href="#Core-Idea" class="headerlink" title="Core Idea"></a>Core Idea</h3><p>Ports and Adapters architecture divides a system into several loosely-coupled interchangeable components. The components communicate with each other through abstracted API’s with the use of interfaces and their implementations.<br>This approach is an alternative to the traditional layered architecture, where components are divided into layers. There are no layers in Ports and Adapters, only ports &lt;- adapters, meaning there are no restrictions on how to structure the applications, only that an adapter relies on a port and the business logic port relies on other ports</p>
 <h3 id="Business-Logic"><a href="#Business-Logic" class="headerlink" title="Business Logic"></a>Business Logic</h3><p>All of your business specific use cases.<br>Example: upon adding a user to a board, send an email, save the user in the database and grant the user permissions to view the board from an auth service.</p>
