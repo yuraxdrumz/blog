@@ -6,7 +6,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="https://yuriktech.com/"/>
-  <updated>2020-02-01T16:51:04.704Z</updated>
+  <updated>2020-03-07T14:26:21.783Z</updated>
   <id>https://yuriktech.com/</id>
   
   <author>
@@ -15,6 +15,38 @@
   </author>
   
   <generator uri="http://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>Introduction to Threads and Schedulers</title>
+    <link href="https://yuriktech.com/2020/03/07/Introduction-to-Threads-and-Schedulers/"/>
+    <id>https://yuriktech.com/2020/03/07/Introduction-to-Threads-and-Schedulers/</id>
+    <published>2020-03-07T14:26:21.000Z</published>
+    <updated>2020-03-07T14:26:21.783Z</updated>
+    
+    <summary type="html">
+    
+      &lt;p&gt;&lt;img src=&quot;/2020/03/07/Introduction-to-Threads-and-Schedulers/./concurrency.jpg&quot; alt&gt;&lt;br&gt;A scheduler is a complex piece of software that is responsible for making sure cores are not idle if there are Threads that need work to be done.&lt;br&gt;The fast switching of Threads, also called a context switch, is what gives us the illusion that all of our processes run in parallel.&lt;br&gt;In this blog post I will explain what a thread is, what a scheduler is, what threading models exist and finally how programming languages are affected by scheduling.&lt;/p&gt;
+    
+    </summary>
+    
+      <category term="Operating Systems" scheme="https://yuriktech.com/categories/Operating-Systems/"/>
+    
+    
+      <category term="Concurrency" scheme="https://yuriktech.com/tags/Concurrency/"/>
+    
+      <category term="Parallelism" scheme="https://yuriktech.com/tags/Parallelism/"/>
+    
+      <category term="Threads" scheme="https://yuriktech.com/tags/Threads/"/>
+    
+      <category term="Scheduler" scheme="https://yuriktech.com/tags/Scheduler/"/>
+    
+      <category term="Green Threads" scheme="https://yuriktech.com/tags/Green-Threads/"/>
+    
+      <category term="Kernel Threads" scheme="https://yuriktech.com/tags/Kernel-Threads/"/>
+    
+      <category term="Threading Models" scheme="https://yuriktech.com/tags/Threading-Models/"/>
+    
+  </entry>
   
   <entry>
     <title>Implementing Ports and Adapters</title>

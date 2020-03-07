@@ -8,6 +8,13 @@
     </url>
 
     <url>
+        <loc>https://yuriktech.com/categories/Operating-Systems/</loc>
+        <lastmod>2020-03-07T14:26:21.783Z</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.2</priority>
+    </url>
+
+    <url>
         <loc>https://yuriktech.com/categories/Architecture/</loc>
         <lastmod>2020-02-01T16:51:04.704Z</lastmod>
         <changefreq>weekly</changefreq>

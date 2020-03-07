@@ -8,6 +8,14 @@
     </url>
 
     <url>
+        <loc>https://yuriktech.com/2020/03/07/Introduction-to-Threads-and-Schedulers/</loc>
+        <lastmod>2020-03-07T14:26:21.783Z</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.6</priority>
+
+    </url>
+
+    <url>
         <loc>https://yuriktech.com/2020/02/01/Implementing-Ports-and-Adapters/</loc>
         <lastmod>2020-02-01T16:51:04.704Z</lastmod>
         <changefreq>weekly</changefreq>

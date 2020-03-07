@@ -3,6 +3,55 @@
 
 
     <url>
+        <loc>https://yuriktech.com/tags/Threading-Models/</loc>
+        <lastmod>2020-03-07T14:26:21.783Z</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.2</priority>
+    </url>
+
+    <url>
+        <loc>https://yuriktech.com/tags/Kernel-Threads/</loc>
+        <lastmod>2020-03-07T14:26:21.783Z</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.2</priority>
+    </url>
+
+    <url>
+        <loc>https://yuriktech.com/tags/Green-Threads/</loc>
+        <lastmod>2020-03-07T14:26:21.783Z</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.2</priority>
+    </url>
+
+    <url>
+        <loc>https://yuriktech.com/tags/Scheduler/</loc>
+        <lastmod>2020-03-07T14:26:21.783Z</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.2</priority>
+    </url>
+
+    <url>
+        <loc>https://yuriktech.com/tags/Threads/</loc>
+        <lastmod>2020-03-07T14:26:21.783Z</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.2</priority>
+    </url>
+
+    <url>
+        <loc>https://yuriktech.com/tags/Parallelism/</loc>
+        <lastmod>2020-03-07T14:26:21.783Z</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.2</priority>
+    </url>
+
+    <url>
+        <loc>https://yuriktech.com/tags/Concurrency/</loc>
+        <lastmod>2020-03-07T14:26:21.783Z</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.2</priority>
+    </url>
+
+    <url>
         <loc>https://yuriktech.com/tags/Hexagonal/</loc>
         <lastmod>2020-02-01T16:51:04.704Z</lastmod>
         <changefreq>weekly</changefreq>
