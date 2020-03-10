@@ -2,22 +2,26 @@
 <html lang="en">
 <head><meta name="generator" content="Hexo 3.8.0">
     <meta charset="utf-8">
-<title>Category: Operating Systems - Yurik&#39;s Tech Blog</title>
+<title>User Space Scheduling - Yurik&#39;s Tech Blog</title>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
 <meta>
 <meta>
 <meta>
 <meta>
 
-    <meta name="keywords" content="Blogger, Software Enginner, Software Architect">
-<meta property="og:type" content="website">
-<meta property="og:title" content="Yurik&#39;s Tech Blog">
-<meta property="og:url" content="https://yuriktech.com/categories/Operating-Systems/index.html">
+    <meta name="description" content="A scheduler is a complex piece of software that is responsible for making sure cores are not idle if there are Threads that need work to be done.The fast switching of Threads, also called a context sw">
+<meta name="keywords" content="Concurrency,Parallelism,Threads,Scheduler,Green Threads,Kernel Threads,Threading Models">
+<meta property="og:type" content="article">
+<meta property="og:title" content="User Space Scheduling">
+<meta property="og:url" content="https://yuriktech.com/2020/03/07/User-Space-Scheduling/index.html">
 <meta property="og:site_name" content="Yurik&#39;s Tech Blog">
+<meta property="og:description" content="A scheduler is a complex piece of software that is responsible for making sure cores are not idle if there are Threads that need work to be done.The fast switching of Threads, also called a context sw">
 <meta property="og:locale" content="en">
 <meta property="og:image" content="https://yuriktech.com/images/og_image.png">
+<meta property="og:updated_time" content="2020-03-10T01:03:24.272Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Yurik&#39;s Tech Blog">
+<meta name="twitter:title" content="User Space Scheduling">
+<meta name="twitter:description" content="A scheduler is a complex piece of software that is responsible for making sure cores are not idle if there are Threads that need work to be done.The fast switching of Threads, also called a context sw">
 <meta name="twitter:image" content="https://yuriktech.com/images/og_image.png">
 
 
@@ -127,6 +131,10 @@
                     
                 
                 
+                <a class="navbar-item is-hidden-tablet catalogue" title="Catalogue" href="javascript:;">
+                    <i class="fas fa-list-ul"></i>
+                </a>
+                
                 
                 <a class="navbar-item search" title="Search" href="javascript:;">
                     <i class="fas fa-search"></i>
@@ -141,18 +149,6 @@
         <div class="container">
             <div class="columns">
                 <div class="column is-8-tablet is-8-desktop is-6-widescreen has-order-2 column-main"><div class="card">
-    <div class="card-content">
-        <nav class="breadcrumb" aria-label="breadcrumbs">
-        <ul>
-            <li><a href="/categories">Categories</a></li>
-            
-            <li class="is-active"><a href="#" aria-current="page">Operating Systems</a></li>
-        </ul>
-        </nav>
-    </div>
-</div>
-
-    <div class="card">
     
     <div class="card-content article ">
         
@@ -161,14 +157,14 @@
                 <time class="level-item has-text-grey" datetime="2020-03-07T14:26:21.000Z">2020-03-07</time>
                 
                 <div class="level-item">
-                <a class="has-link-grey -link" href="/categories/Operating-Systems/">Operating Systems</a>
+                <a class="has-link-grey -link" href="/categories/Programming/">Programming</a>
                 </div>
                 
                 
                 <span class="level-item has-text-grey">
                     
                     
-                    7 minutes read (About 1020 words)
+                    7 minutes read (About 1035 words)
                 </span>
                 
                 
@@ -177,21 +173,61 @@
         
         <h1 class="title is-size-3 is-size-4-mobile has-text-weight-normal">
             
-                <a class="has-link-black-ter" href="/2020/03/07/Introduction-to-Threads-and-Schedulers/">Introduction to Threads and Schedulers</a>
+                User Space Scheduling
             
         </h1>
         <div class="content">
-            <p><img src="/2020/03/07/Introduction-to-Threads-and-Schedulers/./concurrency.jpg" alt><br>A scheduler is a complex piece of software that is responsible for making sure cores are not idle if there are Threads that need work to be done.<br>The fast switching of Threads, also called a context switch, is what gives us the illusion that all of our processes run in parallel.<br>In this blog post I will explain what a thread is, what a scheduler is, what threading models exist and finally how programming languages are affected by scheduling.</p>
+            <p><img src="/2020/03/07/User-Space-Scheduling/./concurrency.jpg" alt><br>A scheduler is a complex piece of software that is responsible for making sure cores are not idle if there are Threads that need work to be done.<br>The fast switching of Threads, also called a context switch, is done by the scheduler and it gives us the illusion that all of our processes run in parallel.<br>We have schedulers both in the Kernel of our favorite OS and in the user space, where our programs live and run.<br>Some types of programming languages leverage one type of scheduling, while others leverage another.<br>In this blog post, I will explain what a scheduler is and compare how scheduling affects different programming languages.</p>
+<p>Before we jump to the scheduling section, let’s refresh our memory with what Threads are.</p>
+<h2 id="Threads"><a href="#Threads" class="headerlink" title="Threads"></a>Threads</h2><p>A Thread is a set of instructions that waits to be called and there are two types of Threads:</p>
+<ol>
+<li>Kernel Threads (OS Threads)</li>
+<li>Green Threads (lightweight Threads)</li>
+</ol>
+<h3 id="Kernel-Threads"><a href="#Kernel-Threads" class="headerlink" title="Kernel Threads"></a>Kernel Threads</h3><p>Every application you run creates a process and each process is given an initial Kernel Thread, which in turn can create more Kernel Threads.<br>Kernel Threads can run concurrently by taking a turn on a single core, or in parallel each running at the same time on different cores.<br>When a Thread receives running time on a core it executes its instructions until it is pulled of the core.</p>
+<h3 id="Kernel-Thread-States"><a href="#Kernel-Thread-States" class="headerlink" title="Kernel Thread States"></a>Kernel Thread States</h3><p>A Kernel Thread can have three states</p>
+<ul>
+<li><code>Waiting</code> - the Thread is stopped because it is waiting for a sync call (mutex), a system call or a disk.</li>
+<li><code>Runnable</code> - the Thread is ready to be run on a core so it can execute its instructions</li>
+<li><code>Executing</code> - the Thread is executing instructions on the core.</li>
+</ul>
+<h3 id="Green-Threads"><a href="#Green-Threads" class="headerlink" title="Green Threads"></a>Green Threads</h3><p>These Threads only exist in our programs in the user space and are invisible to the Kernel.<br>The handling and scheduling of these Threads occurs in user space as well, depending on the <code>Threading model</code>.
+The states of user space threads depend on how the scheduler that administers them is implemented.</p>
+<h2 id="Scheduler"><a href="#Scheduler" class="headerlink" title="Scheduler"></a>Scheduler</h2><p>The scheduler is a component that selects which Thread to run next and there are two types of schedulers:</p>
+<h3 id="Preemptive"><a href="#Preemptive" class="headerlink" title="Preemptive"></a>Preemptive</h3><p>The scheduler decides when a Thread is to cease running and a new Thread is to resume running (context switching).<br>Preemptive scheduling has to solve getting all kinds of software from all kinds of places to efficiently share a CPU.</p>
+<h4 id="Benefits"><a href="#Benefits" class="headerlink" title="Benefits"></a>Benefits</h4><p>There is a degree of fairness to all Threads.</p>
+<h4 id="Drawbacks"><a href="#Drawbacks" class="headerlink" title="Drawbacks"></a>Drawbacks</h4><p>Because Threads get interrupted and switched, there is an overhead to store/restore the Thread’s state each context switch, which is very expensive computation wise.</p>
+<h3 id="Cooperative"><a href="#Cooperative" class="headerlink" title="Cooperative"></a>Cooperative</h3><p>A process does not stop running until it voluntarily decides to do so. </p>
+<h4 id="Benefits-1"><a href="#Benefits-1" class="headerlink" title="Benefits"></a>Benefits</h4><p>Works well for processes designed to work together.<br>The scheduler is much simpler to implement.<br>There is no context switching so we get better performance.</p>
+<h4 id="Drawbacks-1"><a href="#Drawbacks-1" class="headerlink" title="Drawbacks"></a>Drawbacks</h4><p>If a program forgot to yield control back to the scheduler, other programs will not get a chance to run on that core.</p>
+<p>All major OS’s today use a preemptive type of scheduler.<br>Windows 3.1 and MacOS 9 had a cooperative scheduler.</p>
+<h2 id="Threading-Models"><a href="#Threading-Models" class="headerlink" title="Threading Models"></a>Threading Models</h2><p>There are different Threading models that explain how our Green Threads are linked to Kernel threads.</p>
+<h3 id="1-1"><a href="#1-1" class="headerlink" title="1-1"></a>1-1</h3><p>When we call to create a Green Thread in our program, it invokes a system call to spawn an Kernel Thread.<br>This type of Threading model does not need its own scheduler in user space.<br>Examples would be: <code>Java (JVM)</code>, <code>C</code>, <code>Rust</code></p>
+<h4 id="Benefits-2"><a href="#Benefits-2" class="headerlink" title="Benefits"></a>Benefits</h4><p>No need for a user space scheduler as we reuse the preemptive OS scheduler.</p>
+<h4 id="Drawbacks-2"><a href="#Drawbacks-2" class="headerlink" title="Drawbacks"></a>Drawbacks</h4><p>Creating a large number of threads consumes a lot of system resources.<br>The same drawbacks to context switching apply here to due using the same OS scheduler.</p>
+<h3 id="N-1"><a href="#N-1" class="headerlink" title="N-1"></a>N-1</h3><p>We have multiple Green Threads and only one Kernel Thread.<br>This type of Threading model does need its own scheduler in user space.<br>The prime example would be <code>Node.js</code>.</p>
+<h4 id="Benefits-3"><a href="#Benefits-3" class="headerlink" title="Benefits"></a>Benefits</h4><p>Due to running on a single Kernel Thread, there is no overhead thinking about race conditions and mutexes.</p>
+<h4 id="Drawbacks-3"><a href="#Drawbacks-3" class="headerlink" title="Drawbacks"></a>Drawbacks</h4><p>Cannot leverage multi core processors</p>
+<h3 id="M-N"><a href="#M-N" class="headerlink" title="M-N"></a>M-N</h3><p>With this Threading model we create multiple Green Threads that run on multiple Kernel Threads.<br>This type of Threading model does need its own scheduler in user space.<br>Examples would be: <code>RxJava</code>, <code>Akka</code>, <code>Go</code></p>
+<h4 id="Benefits-4"><a href="#Benefits-4" class="headerlink" title="Benefits"></a>Benefits</h4><p>Leveraging the best of both worlds</p>
+<h4 id="Drawbacks-4"><a href="#Drawbacks-4" class="headerlink" title="Drawbacks"></a>Drawbacks</h4><p>You need a really good implementation of a user space scheduler to make this threading model utilize the most out of your system<br>Data races and sync issues can occur, so it is up to the developers to handle them.</p>
+<h2 id="Kernel-and-User-Space-Scheduling"><a href="#Kernel-and-User-Space-Scheduling" class="headerlink" title="Kernel and User Space Scheduling"></a>Kernel and User Space Scheduling</h2><p>We said earlier that all major OS’s today use a preemptive type of scheduler, but it does not mean that all user space schedulers are preemptive as well.</p>
+<h3 id="Preemptive-Kernel-and-Cooperative-User-Space"><a href="#Preemptive-Kernel-and-Cooperative-User-Space" class="headerlink" title="Preemptive Kernel and Cooperative User Space"></a>Preemptive Kernel and Cooperative User Space</h3><p>Take, for example <code>Node.js</code>, its event loop is actually a cooperative scheduler.<br>All phases in the event loop are run only after the previous phase finished running, meaning it gave control back to the event loop.<br>Another example for cooperative scheduling is <code>Go</code>, however we dont have to explicitly yield control back to its scheduler, as it does that by itself on each function invocation.</p>
+<p>Because we have the OS preemptive scheduler, we can leverage the cooperative scheduling in user space, thus achieving both performance and concurrency.</p>
+<h3 id="Preemptive-Kernel-and-Preemptive-User-Space"><a href="#Preemptive-Kernel-and-Preemptive-User-Space" class="headerlink" title="Preemptive Kernel and Preemptive User Space"></a>Preemptive Kernel and Preemptive User Space</h3><p>Preemptive scheduling is hard because we need to take into account context switches and synchronization primitives, however, there are a few languages like <code>Erlang</code>, <code>Elixir</code> and <code>Haskell</code> that use a preemptive scheduler in user space as well.<br>Due to their functional nature, the languages above do not share memory between processes, so they dont need synchronization.<br>The <code>Erlang</code> vm, for example, creates a preemptive scheduler per CPU core, allowing for maximum concurrency.<br>Even if you block a Thread in your application with synchronous code, the vm will still give other Green Threads time to run.</p>
+<h2 id="Conclusion"><a href="#Conclusion" class="headerlink" title="Conclusion"></a>Conclusion</h2><p>We saw what Threads are and how the scheduler uses them to not let the system idle if there is work to be done. Last, we saw how each of the Threading models affects how programming languages / runtimes work and how they are used.</p>
+
         </div>
         
-        
-        <div class="level is-mobile">
+        <div class="level is-size-7 is-uppercase">
             <div class="level-start">
                 <div class="level-item">
-                <a class="button is-size-7 is-light" href="/2020/03/07/Introduction-to-Threads-and-Schedulers/#more">Read More</a>
+                    <span class="is-size-6 has-text-grey has-mr-7">#</span>
+                    <a class="has-link-grey -link" href="/tags/Concurrency/">Concurrency</a>, <a class="has-link-grey -link" href="/tags/Green-Threads/">Green Threads</a>, <a class="has-link-grey -link" href="/tags/Kernel-Threads/">Kernel Threads</a>, <a class="has-link-grey -link" href="/tags/Parallelism/">Parallelism</a>, <a class="has-link-grey -link" href="/tags/Scheduler/">Scheduler</a>, <a class="has-link-grey -link" href="/tags/Threading-Models/">Threading Models</a>, <a class="has-link-grey -link" href="/tags/Threads/">Threads</a>
                 </div>
             </div>
         </div>
+        
         
         
     </div>
@@ -201,9 +237,45 @@
 
 
 
+<div class="card card-transparent">
+    <div class="level post-navigation is-flex-wrap is-mobile">
+        
+        
+        <div class="level-end">
+            <a class="level level-item has-link-grey  article-nav-next" href="/2020/02/01/Implementing-Ports-and-Adapters/">
+                <span class="level-item">Implementing Ports and Adapters</span>
+                <i class="level-item fas fa-chevron-right"></i>
+            </a>
+        </div>
+        
+    </div>
+</div>
 
 
 
+<div class="card">
+    <div class="card-content">
+        <h3 class="title is-5 has-text-weight-normal">Comments</h3>
+        
+<script>
+    var disqus_config = function () {
+        this.page.url = 'https://yuriktech.com/2020/03/07/User-Space-Scheduling/';
+        this.page.identifier = '2020/03/07/User-Space-Scheduling/';
+    };
+    (function() {
+        var d = document, s = d.createElement('script');  
+        s.src = '//' + 'yuritech' + '.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', +new Date());
+        (d.head || d.body).appendChild(s);
+    })();
+</script>
+
+<div id="disqus_thread">
+    
+    <noscript>Please enable JavaScript to view the <a href="//disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+    </div>
+</div>
 </div>
                 
 
@@ -252,7 +324,7 @@
                         Categories
                     </p>
                     <p class="title has-text-weight-normal">
-                        4
+                        3
                     </p>
                 </div>
             </div>
@@ -305,6 +377,117 @@
 </div>
     
         
+<div class="card widget" id="toc">
+    <div class="card-content">
+        <div class="menu">
+            <h3 class="menu-label">
+                Catalogue
+            </h3>
+            <ul class="menu-list"><li>
+        <a class="is-flex" href="#Threads">
+        <span class="has-mr-6">1</span>
+        <span>Threads</span>
+        </a><ul class="menu-list"><li>
+        <a class="is-flex" href="#Kernel-Threads">
+        <span class="has-mr-6">1.1</span>
+        <span>Kernel Threads</span>
+        </a></li><li>
+        <a class="is-flex" href="#Kernel-Thread-States">
+        <span class="has-mr-6">1.2</span>
+        <span>Kernel Thread States</span>
+        </a></li><li>
+        <a class="is-flex" href="#Green-Threads">
+        <span class="has-mr-6">1.3</span>
+        <span>Green Threads</span>
+        </a></li></ul></li><li>
+        <a class="is-flex" href="#Scheduler">
+        <span class="has-mr-6">2</span>
+        <span>Scheduler</span>
+        </a><ul class="menu-list"><li>
+        <a class="is-flex" href="#Preemptive">
+        <span class="has-mr-6">2.1</span>
+        <span>Preemptive</span>
+        </a><ul class="menu-list"><li>
+        <a class="is-flex" href="#Benefits">
+        <span class="has-mr-6">2.1.1</span>
+        <span>Benefits</span>
+        </a></li><li>
+        <a class="is-flex" href="#Drawbacks">
+        <span class="has-mr-6">2.1.2</span>
+        <span>Drawbacks</span>
+        </a></li></ul></li><li>
+        <a class="is-flex" href="#Cooperative">
+        <span class="has-mr-6">2.2</span>
+        <span>Cooperative</span>
+        </a><ul class="menu-list"><li>
+        <a class="is-flex" href="#Benefits-1">
+        <span class="has-mr-6">2.2.1</span>
+        <span>Benefits</span>
+        </a></li><li>
+        <a class="is-flex" href="#Drawbacks-1">
+        <span class="has-mr-6">2.2.2</span>
+        <span>Drawbacks</span>
+        </a></li></ul></li></ul></li><li>
+        <a class="is-flex" href="#Threading-Models">
+        <span class="has-mr-6">3</span>
+        <span>Threading Models</span>
+        </a><ul class="menu-list"><li>
+        <a class="is-flex" href="#1-1">
+        <span class="has-mr-6">3.1</span>
+        <span>1-1</span>
+        </a><ul class="menu-list"><li>
+        <a class="is-flex" href="#Benefits-2">
+        <span class="has-mr-6">3.1.1</span>
+        <span>Benefits</span>
+        </a></li><li>
+        <a class="is-flex" href="#Drawbacks-2">
+        <span class="has-mr-6">3.1.2</span>
+        <span>Drawbacks</span>
+        </a></li></ul></li><li>
+        <a class="is-flex" href="#N-1">
+        <span class="has-mr-6">3.2</span>
+        <span>N-1</span>
+        </a><ul class="menu-list"><li>
+        <a class="is-flex" href="#Benefits-3">
+        <span class="has-mr-6">3.2.1</span>
+        <span>Benefits</span>
+        </a></li><li>
+        <a class="is-flex" href="#Drawbacks-3">
+        <span class="has-mr-6">3.2.2</span>
+        <span>Drawbacks</span>
+        </a></li></ul></li><li>
+        <a class="is-flex" href="#M-N">
+        <span class="has-mr-6">3.3</span>
+        <span>M-N</span>
+        </a><ul class="menu-list"><li>
+        <a class="is-flex" href="#Benefits-4">
+        <span class="has-mr-6">3.3.1</span>
+        <span>Benefits</span>
+        </a></li><li>
+        <a class="is-flex" href="#Drawbacks-4">
+        <span class="has-mr-6">3.3.2</span>
+        <span>Drawbacks</span>
+        </a></li></ul></li></ul></li><li>
+        <a class="is-flex" href="#Kernel-and-User-Space-Scheduling">
+        <span class="has-mr-6">4</span>
+        <span>Kernel and User Space Scheduling</span>
+        </a><ul class="menu-list"><li>
+        <a class="is-flex" href="#Preemptive-Kernel-and-Cooperative-User-Space">
+        <span class="has-mr-6">4.1</span>
+        <span>Preemptive Kernel and Cooperative User Space</span>
+        </a></li><li>
+        <a class="is-flex" href="#Preemptive-Kernel-and-Preemptive-User-Space">
+        <span class="has-mr-6">4.2</span>
+        <span>Preemptive Kernel and Preemptive User Space</span>
+        </a></li></ul></li><li>
+        <a class="is-flex" href="#Conclusion">
+        <span class="has-mr-6">5</span>
+        <span>Conclusion</span>
+        </a></li></ul>
+        </div>
+    </div>
+</div>
+
     
         
 <div class="card widget">
@@ -323,14 +506,6 @@
                 <span class="level-item tag">5</span>
             </span>
         </a></li><li>
-        <a class="level is-marginless" href="/categories/Operating-Systems/">
-            <span class="level-start">
-                <span class="level-item">Operating Systems</span>
-            </span>
-            <span class="level-end">
-                <span class="level-item tag">1</span>
-            </span>
-        </a></li><li>
         <a class="level is-marginless" href="/categories/Paradigms/">
             <span class="level-start">
                 <span class="level-item">Paradigms</span>
@@ -344,7 +519,7 @@
                 <span class="level-item">Programming</span>
             </span>
             <span class="level-end">
-                <span class="level-item tag">3</span>
+                <span class="level-item tag">4</span>
             </span>
         </a></li>
             </ul>
@@ -378,9 +553,9 @@
             <div class="media-content">
                 <div class="content">
                     <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2020-03-07T14:26:21.000Z">2020-03-07</time></div>
-                    <a href="/2020/03/07/Introduction-to-Threads-and-Schedulers/" class="has-link-black-ter is-size-6">Introduction to Threads and Schedulers</a>
+                    <a href="/2020/03/07/User-Space-Scheduling/" class="has-link-black-ter is-size-6">User Space Scheduling</a>
                     <p class="is-size-7 is-uppercase">
-                        <a class="has-link-grey -link" href="/categories/Operating-Systems/">Operating Systems</a>
+                        <a class="has-link-grey -link" href="/categories/Programming/">Programming</a>
                     </p>
                 </div>
             </div>
@@ -756,9 +931,9 @@
             <div class="media-content">
                 <div class="content">
                     <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2020-03-07T14:26:21.000Z">2020-03-07</time></div>
-                    <a href="/2020/03/07/Introduction-to-Threads-and-Schedulers/" class="has-link-black-ter is-size-6">Introduction to Threads and Schedulers</a>
+                    <a href="/2020/03/07/User-Space-Scheduling/" class="has-link-black-ter is-size-6">User Space Scheduling</a>
                     <p class="is-size-7 is-uppercase">
-                        <a class="has-link-grey -link" href="/categories/Operating-Systems/">Operating Systems</a>
+                        <a class="has-link-grey -link" href="/categories/Programming/">Programming</a>
                     </p>
                 </div>
             </div>

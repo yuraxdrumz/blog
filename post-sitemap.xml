@@ -8,8 +8,8 @@
     </url>
 
     <url>
-        <loc>https://yuriktech.com/2020/03/07/Introduction-to-Threads-and-Schedulers/</loc>
-        <lastmod>2020-03-07T14:26:21.783Z</lastmod>
+        <loc>https://yuriktech.com/2020/03/07/User-Space-Scheduling/</loc>
+        <lastmod>2020-03-10T01:03:24.272Z</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.6</priority>
 
@@ -72,7 +72,7 @@
     </url>
 
     <url>
-        <loc>https://yuriktech.com/2019/07/03/Authentication-Middleware-In-Elixir/</loc>
+        <loc>https://yuriktech.com/2019/07/10/Context-Maps-In-Domain-Driven-Design/</loc>
         <lastmod>2020-01-25T12:49:48.259Z</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.6</priority>
@@ -80,7 +80,7 @@
     </url>
 
     <url>
-        <loc>https://yuriktech.com/2019/07/10/Context-Maps-In-Domain-Driven-Design/</loc>
+        <loc>https://yuriktech.com/2019/07/03/Authentication-Middleware-In-Elixir/</loc>
         <lastmod>2020-01-25T12:49:48.259Z</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.6</priority>
