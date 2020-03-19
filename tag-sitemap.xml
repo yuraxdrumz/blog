@@ -3,211 +3,211 @@
 
 
     <url>
-        <loc>https://yuriktech.com/tags/Threading-Models/</loc>
-        <lastmod>2020-03-10T01:03:24.272Z</lastmod>
-        <changefreq>weekly</changefreq>
-        <priority>0.2</priority>
-    </url>
-
-    <url>
-        <loc>https://yuriktech.com/tags/Kernel-Threads/</loc>
-        <lastmod>2020-03-10T01:03:24.272Z</lastmod>
-        <changefreq>weekly</changefreq>
-        <priority>0.2</priority>
-    </url>
-
-    <url>
-        <loc>https://yuriktech.com/tags/Green-Threads/</loc>
-        <lastmod>2020-03-10T01:03:24.272Z</lastmod>
-        <changefreq>weekly</changefreq>
-        <priority>0.2</priority>
-    </url>
-
-    <url>
-        <loc>https://yuriktech.com/tags/Scheduler/</loc>
-        <lastmod>2020-03-10T01:03:24.272Z</lastmod>
-        <changefreq>weekly</changefreq>
-        <priority>0.2</priority>
-    </url>
-
-    <url>
-        <loc>https://yuriktech.com/tags/Threads/</loc>
-        <lastmod>2020-03-10T01:03:24.272Z</lastmod>
-        <changefreq>weekly</changefreq>
-        <priority>0.2</priority>
-    </url>
-
-    <url>
-        <loc>https://yuriktech.com/tags/Parallelism/</loc>
-        <lastmod>2020-03-10T01:03:24.272Z</lastmod>
-        <changefreq>weekly</changefreq>
-        <priority>0.2</priority>
-    </url>
-
-    <url>
-        <loc>https://yuriktech.com/tags/Concurrency/</loc>
-        <lastmod>2020-03-10T01:03:24.272Z</lastmod>
-        <changefreq>weekly</changefreq>
-        <priority>0.2</priority>
-    </url>
-
-    <url>
-        <loc>https://yuriktech.com/tags/Hexagonal/</loc>
-        <lastmod>2020-02-01T16:51:04.704Z</lastmod>
-        <changefreq>weekly</changefreq>
-        <priority>0.2</priority>
-    </url>
-
-    <url>
-        <loc>https://yuriktech.com/tags/Golang/</loc>
-        <lastmod>2020-02-01T16:51:04.704Z</lastmod>
-        <changefreq>weekly</changefreq>
-        <priority>0.2</priority>
-    </url>
-
-    <url>
-        <loc>https://yuriktech.com/tags/Ports-and-Adapters/</loc>
-        <lastmod>2020-02-01T16:51:04.704Z</lastmod>
-        <changefreq>weekly</changefreq>
-        <priority>0.2</priority>
-    </url>
-
-    <url>
-        <loc>https://yuriktech.com/tags/Software-Architecture/</loc>
-        <lastmod>2020-02-01T16:51:04.704Z</lastmod>
-        <changefreq>weekly</changefreq>
-        <priority>0.2</priority>
-    </url>
-
-    <url>
-        <loc>https://yuriktech.com/tags/Sidecar-Pattern/</loc>
-        <lastmod>2020-01-25T12:49:48.268Z</lastmod>
-        <changefreq>weekly</changefreq>
-        <priority>0.2</priority>
-    </url>
-
-    <url>
-        <loc>https://yuriktech.com/tags/API-Gateway/</loc>
-        <lastmod>2020-01-25T12:49:48.268Z</lastmod>
-        <changefreq>weekly</changefreq>
-        <priority>0.2</priority>
-    </url>
-
-    <url>
-        <loc>https://yuriktech.com/tags/Backend-For-Frontend/</loc>
-        <lastmod>2020-01-25T12:49:48.268Z</lastmod>
-        <changefreq>weekly</changefreq>
-        <priority>0.2</priority>
-    </url>
-
-    <url>
-        <loc>https://yuriktech.com/tags/Design/</loc>
-        <lastmod>2020-01-25T12:49:48.268Z</lastmod>
-        <changefreq>weekly</changefreq>
-        <priority>0.2</priority>
-    </url>
-
-    <url>
-        <loc>https://yuriktech.com/tags/Actor-Model/</loc>
-        <lastmod>2020-01-25T12:49:48.268Z</lastmod>
-        <changefreq>weekly</changefreq>
-        <priority>0.2</priority>
-    </url>
-
-    <url>
-        <loc>https://yuriktech.com/tags/Microservices/</loc>
-        <lastmod>2020-01-25T12:49:48.268Z</lastmod>
-        <changefreq>weekly</changefreq>
-        <priority>0.2</priority>
-    </url>
-
-    <url>
-        <loc>https://yuriktech.com/tags/Node-js/</loc>
-        <lastmod>2020-01-25T12:49:48.268Z</lastmod>
-        <changefreq>weekly</changefreq>
-        <priority>0.2</priority>
-    </url>
-
-    <url>
         <loc>https://yuriktech.com/tags/Functional/</loc>
-        <lastmod>2020-01-25T12:49:48.268Z</lastmod>
+        <lastmod>2020-03-19T09:23:24.726Z</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.2</priority>
     </url>
 
     <url>
         <loc>https://yuriktech.com/tags/Elixir/</loc>
-        <lastmod>2020-01-25T12:49:48.268Z</lastmod>
-        <changefreq>weekly</changefreq>
-        <priority>0.2</priority>
-    </url>
-
-    <url>
-        <loc>https://yuriktech.com/tags/libuv/</loc>
-        <lastmod>2020-01-25T12:49:48.265Z</lastmod>
-        <changefreq>weekly</changefreq>
-        <priority>0.2</priority>
-    </url>
-
-    <url>
-        <loc>https://yuriktech.com/tags/Event-Loop/</loc>
-        <lastmod>2020-01-25T12:49:48.265Z</lastmod>
-        <changefreq>weekly</changefreq>
-        <priority>0.2</priority>
-    </url>
-
-    <url>
-        <loc>https://yuriktech.com/tags/Javascript/</loc>
-        <lastmod>2020-01-25T12:49:48.265Z</lastmod>
-        <changefreq>weekly</changefreq>
-        <priority>0.2</priority>
-    </url>
-
-    <url>
-        <loc>https://yuriktech.com/tags/Maybe-a-rant/</loc>
-        <lastmod>2020-01-25T12:49:48.262Z</lastmod>
-        <changefreq>weekly</changefreq>
-        <priority>0.2</priority>
-    </url>
-
-    <url>
-        <loc>https://yuriktech.com/tags/DDD/</loc>
-        <lastmod>2020-01-25T12:49:48.262Z</lastmod>
-        <changefreq>weekly</changefreq>
-        <priority>0.2</priority>
-    </url>
-
-    <url>
-        <loc>https://yuriktech.com/tags/Uncle-Bob/</loc>
-        <lastmod>2020-01-25T12:49:48.260Z</lastmod>
-        <changefreq>weekly</changefreq>
-        <priority>0.2</priority>
-    </url>
-
-    <url>
-        <loc>https://yuriktech.com/tags/Clean-Architecture/</loc>
-        <lastmod>2020-01-25T12:49:48.260Z</lastmod>
-        <changefreq>weekly</changefreq>
-        <priority>0.2</priority>
-    </url>
-
-    <url>
-        <loc>https://yuriktech.com/tags/Typescript/</loc>
-        <lastmod>2020-01-25T12:49:48.260Z</lastmod>
-        <changefreq>weekly</changefreq>
-        <priority>0.2</priority>
-    </url>
-
-    <url>
-        <loc>https://yuriktech.com/tags/Programming-Paradigms/</loc>
-        <lastmod>2020-01-25T12:49:48.260Z</lastmod>
+        <lastmod>2020-03-19T09:23:24.726Z</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.2</priority>
     </url>
 
     <url>
         <loc>https://yuriktech.com/tags/Context-Maps/</loc>
-        <lastmod>2020-01-25T12:49:48.259Z</lastmod>
+        <lastmod>2020-03-19T09:18:04.574Z</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.2</priority>
+    </url>
+
+    <url>
+        <loc>https://yuriktech.com/tags/Software-Architecture/</loc>
+        <lastmod>2020-03-19T09:18:04.574Z</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.2</priority>
+    </url>
+
+    <url>
+        <loc>https://yuriktech.com/tags/DDD/</loc>
+        <lastmod>2020-03-19T09:18:04.574Z</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.2</priority>
+    </url>
+
+    <url>
+        <loc>https://yuriktech.com/tags/Threading-Models/</loc>
+        <lastmod>2020-03-19T09:10:43.156Z</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.2</priority>
+    </url>
+
+    <url>
+        <loc>https://yuriktech.com/tags/Kernel-Threads/</loc>
+        <lastmod>2020-03-19T09:10:43.156Z</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.2</priority>
+    </url>
+
+    <url>
+        <loc>https://yuriktech.com/tags/Green-Threads/</loc>
+        <lastmod>2020-03-19T09:10:43.156Z</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.2</priority>
+    </url>
+
+    <url>
+        <loc>https://yuriktech.com/tags/Scheduler/</loc>
+        <lastmod>2020-03-19T09:10:43.156Z</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.2</priority>
+    </url>
+
+    <url>
+        <loc>https://yuriktech.com/tags/Threads/</loc>
+        <lastmod>2020-03-19T09:10:43.156Z</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.2</priority>
+    </url>
+
+    <url>
+        <loc>https://yuriktech.com/tags/Parallelism/</loc>
+        <lastmod>2020-03-19T09:10:43.156Z</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.2</priority>
+    </url>
+
+    <url>
+        <loc>https://yuriktech.com/tags/Concurrency/</loc>
+        <lastmod>2020-03-19T09:10:43.156Z</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.2</priority>
+    </url>
+
+    <url>
+        <loc>https://yuriktech.com/tags/Maybe-a-rant/</loc>
+        <lastmod>2020-03-19T09:05:35.747Z</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.2</priority>
+    </url>
+
+    <url>
+        <loc>https://yuriktech.com/tags/Microservices/</loc>
+        <lastmod>2020-03-19T09:05:35.747Z</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.2</priority>
+    </url>
+
+    <url>
+        <loc>https://yuriktech.com/tags/Sidecar-Pattern/</loc>
+        <lastmod>2020-03-19T09:03:36.773Z</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.2</priority>
+    </url>
+
+    <url>
+        <loc>https://yuriktech.com/tags/API-Gateway/</loc>
+        <lastmod>2020-03-19T09:03:36.773Z</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.2</priority>
+    </url>
+
+    <url>
+        <loc>https://yuriktech.com/tags/Backend-For-Frontend/</loc>
+        <lastmod>2020-03-19T09:03:36.773Z</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.2</priority>
+    </url>
+
+    <url>
+        <loc>https://yuriktech.com/tags/Design/</loc>
+        <lastmod>2020-03-19T09:03:36.773Z</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.2</priority>
+    </url>
+
+    <url>
+        <loc>https://yuriktech.com/tags/Node-js/</loc>
+        <lastmod>2020-03-19T09:03:36.773Z</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.2</priority>
+    </url>
+
+    <url>
+        <loc>https://yuriktech.com/tags/Hexagonal/</loc>
+        <lastmod>2020-03-19T09:02:25.008Z</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.2</priority>
+    </url>
+
+    <url>
+        <loc>https://yuriktech.com/tags/Golang/</loc>
+        <lastmod>2020-03-19T09:02:25.008Z</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.2</priority>
+    </url>
+
+    <url>
+        <loc>https://yuriktech.com/tags/Ports-and-Adapters/</loc>
+        <lastmod>2020-03-19T09:02:25.008Z</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.2</priority>
+    </url>
+
+    <url>
+        <loc>https://yuriktech.com/tags/Actor-Model/</loc>
+        <lastmod>2020-03-19T00:09:37.587Z</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.2</priority>
+    </url>
+
+    <url>
+        <loc>https://yuriktech.com/tags/libuv/</loc>
+        <lastmod>2020-03-19T00:09:37.583Z</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.2</priority>
+    </url>
+
+    <url>
+        <loc>https://yuriktech.com/tags/Event-Loop/</loc>
+        <lastmod>2020-03-19T00:09:37.583Z</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.2</priority>
+    </url>
+
+    <url>
+        <loc>https://yuriktech.com/tags/Javascript/</loc>
+        <lastmod>2020-03-19T00:09:37.583Z</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.2</priority>
+    </url>
+
+    <url>
+        <loc>https://yuriktech.com/tags/Programming-Paradigms/</loc>
+        <lastmod>2020-03-19T00:09:37.572Z</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.2</priority>
+    </url>
+
+    <url>
+        <loc>https://yuriktech.com/tags/Uncle-Bob/</loc>
+        <lastmod>2020-03-19T00:09:37.572Z</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.2</priority>
+    </url>
+
+    <url>
+        <loc>https://yuriktech.com/tags/Clean-Architecture/</loc>
+        <lastmod>2020-03-19T00:09:37.572Z</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.2</priority>
+    </url>
+
+    <url>
+        <loc>https://yuriktech.com/tags/Typescript/</loc>
+        <lastmod>2020-03-19T00:09:37.572Z</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.2</priority>
     </url>

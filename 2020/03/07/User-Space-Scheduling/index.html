@@ -17,12 +17,12 @@
 <meta property="og:site_name" content="Yurik&#39;s Tech Blog">
 <meta property="og:description" content="A scheduler is a complex piece of software that is responsible for making sure cores are not idle if there are Threads that need work to be done.The fast switching of Threads, also called a context sw">
 <meta property="og:locale" content="en">
-<meta property="og:image" content="https://yuriktech.com/images/og_image.png">
-<meta property="og:updated_time" content="2020-03-10T01:03:24.272Z">
+<meta property="og:image" content="https://yuriktech.com/images/multi.jpg">
+<meta property="og:updated_time" content="2020-03-19T09:10:43.156Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="User Space Scheduling">
 <meta name="twitter:description" content="A scheduler is a complex piece of software that is responsible for making sure cores are not idle if there are Threads that need work to be done.The fast switching of Threads, also called a context sw">
-<meta name="twitter:image" content="https://yuriktech.com/images/og_image.png">
+<meta name="twitter:image" content="https://yuriktech.com/images/multi.jpg">
 
 
 
@@ -150,6 +150,12 @@
             <div class="columns">
                 <div class="column is-8-tablet is-8-desktop is-6-widescreen has-order-2 column-main"><div class="card">
     
+    <div class="card-image">
+        <span class="image is-7by1">
+            <img class="thumbnail" src="/images/multi.jpg" alt="User Space Scheduling">
+        </span>
+    </div>
+    
     <div class="card-content article ">
         
         <div class="level article-meta is-size-7 is-uppercase is-mobile is-overflow-x-auto">
@@ -164,7 +170,7 @@
                 <span class="level-item has-text-grey">
                     
                     
-                    7 minutes read (About 1035 words)
+                    7 minutes read (About 1033 words)
                 </span>
                 
                 
@@ -177,7 +183,7 @@
             
         </h1>
         <div class="content">
-            <p><img src="/2020/03/07/User-Space-Scheduling/./concurrency.jpg" alt><br>A scheduler is a complex piece of software that is responsible for making sure cores are not idle if there are Threads that need work to be done.<br>The fast switching of Threads, also called a context switch, is done by the scheduler and it gives us the illusion that all of our processes run in parallel.<br>We have schedulers both in the Kernel of our favorite OS and in the user space, where our programs live and run.<br>Some types of programming languages leverage one type of scheduling, while others leverage another.<br>In this blog post, I will explain what a scheduler is and compare how scheduling affects different programming languages.</p>
+            <p>A scheduler is a complex piece of software that is responsible for making sure cores are not idle if there are Threads that need work to be done.<br>The fast switching of Threads, also called a context switch, is done by the scheduler and it gives us the illusion that all of our processes run in parallel.<br>We have schedulers both in the Kernel of our favorite OS and in the user space, where our programs live and run.<br>Some types of programming languages leverage one type of scheduling, while others leverage another.<br>In this blog post, I will explain what a scheduler is and compare how scheduling affects different programming languages.</p>
 <p>Before we jump to the scheduling section, let’s refresh our memory with what Threads are.</p>
 <h2 id="Threads"><a href="#Threads" class="headerlink" title="Threads"></a>Threads</h2><p>A Thread is a set of instructions that waits to be called and there are two types of Threads:</p>
 <ol>
@@ -221,7 +227,7 @@ The states of user space threads depend on how the scheduler that administers th
         
         <div class="level is-size-7 is-uppercase">
             <div class="level-start">
-                <div class="level-item">
+                <div class="level-item custom-tags">
                     <span class="is-size-6 has-text-grey has-mr-7">#</span>
                     <a class="has-link-grey -link" href="/tags/Concurrency/">Concurrency</a>, <a class="has-link-grey -link" href="/tags/Green-Threads/">Green Threads</a>, <a class="has-link-grey -link" href="/tags/Kernel-Threads/">Kernel Threads</a>, <a class="has-link-grey -link" href="/tags/Parallelism/">Parallelism</a>, <a class="has-link-grey -link" href="/tags/Scheduler/">Scheduler</a>, <a class="has-link-grey -link" href="/tags/Threading-Models/">Threading Models</a>, <a class="has-link-grey -link" href="/tags/Threads/">Threads</a>
                 </div>
@@ -550,6 +556,12 @@ The states of user space threads depend on how the scheduler that administers th
         
         <article class="media">
             
+            <a href="/2020/03/07/User-Space-Scheduling/" class="media-left">
+                <p class="image is-64x64">
+                    <img class="thumbnail" src="/images/multi.jpg" alt="User Space Scheduling">
+                </p>
+            </a>
+            
             <div class="media-content">
                 <div class="content">
                     <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2020-03-07T14:26:21.000Z">2020-03-07</time></div>
@@ -562,6 +574,12 @@ The states of user space threads depend on how the scheduler that administers th
         </article>
         
         <article class="media">
+            
+            <a href="/2020/02/01/Implementing-Ports-and-Adapters/" class="media-left">
+                <p class="image is-64x64">
+                    <img class="thumbnail" src="/images/golang-ports-and-adapters.png" alt="Implementing Ports and Adapters">
+                </p>
+            </a>
             
             <div class="media-content">
                 <div class="content">
@@ -576,6 +594,12 @@ The states of user space threads depend on how the scheduler that administers th
         
         <article class="media">
             
+            <a href="/2019/11/05/what-are-microservices/" class="media-left">
+                <p class="image is-64x64">
+                    <img class="thumbnail" src="/images/legos-2.jpg" alt="What Are Microservices">
+                </p>
+            </a>
+            
             <div class="media-content">
                 <div class="content">
                     <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2019-11-05T18:24:24.000Z">2019-11-05</time></div>
@@ -589,6 +613,12 @@ The states of user space threads depend on how the scheduler that administers th
         
         <article class="media">
             
+            <a href="/2019/07/16/Microservices-Epiphany/" class="media-left">
+                <p class="image is-64x64">
+                    <img class="thumbnail" src="/images/what.jpg" alt="Microservices Epiphany">
+                </p>
+            </a>
+            
             <div class="media-content">
                 <div class="content">
                     <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2019-07-15T21:46:10.000Z">2019-07-16</time></div>
@@ -601,6 +631,12 @@ The states of user space threads depend on how the scheduler that administers th
         </article>
         
         <article class="media">
+            
+            <a href="/2019/07/10/Context-Maps-In-Domain-Driven-Design/" class="media-left">
+                <p class="image is-64x64">
+                    <img class="thumbnail" src="/images/connections.jpg" alt="Context Maps in Domain Driven Design">
+                </p>
+            </a>
             
             <div class="media-content">
                 <div class="content">
@@ -928,6 +964,12 @@ The states of user space threads depend on how the scheduler that administers th
         
         <article class="media">
             
+            <a href="/2020/03/07/User-Space-Scheduling/" class="media-left">
+                <p class="image is-64x64">
+                    <img class="thumbnail" src="/images/multi.jpg" alt="User Space Scheduling">
+                </p>
+            </a>
+            
             <div class="media-content">
                 <div class="content">
                     <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2020-03-07T14:26:21.000Z">2020-03-07</time></div>
@@ -940,6 +982,12 @@ The states of user space threads depend on how the scheduler that administers th
         </article>
         
         <article class="media">
+            
+            <a href="/2020/02/01/Implementing-Ports-and-Adapters/" class="media-left">
+                <p class="image is-64x64">
+                    <img class="thumbnail" src="/images/golang-ports-and-adapters.png" alt="Implementing Ports and Adapters">
+                </p>
+            </a>
             
             <div class="media-content">
                 <div class="content">
@@ -954,6 +1002,12 @@ The states of user space threads depend on how the scheduler that administers th
         
         <article class="media">
             
+            <a href="/2019/11/05/what-are-microservices/" class="media-left">
+                <p class="image is-64x64">
+                    <img class="thumbnail" src="/images/legos-2.jpg" alt="What Are Microservices">
+                </p>
+            </a>
+            
             <div class="media-content">
                 <div class="content">
                     <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2019-11-05T18:24:24.000Z">2019-11-05</time></div>
@@ -967,6 +1021,12 @@ The states of user space threads depend on how the scheduler that administers th
         
         <article class="media">
             
+            <a href="/2019/07/16/Microservices-Epiphany/" class="media-left">
+                <p class="image is-64x64">
+                    <img class="thumbnail" src="/images/what.jpg" alt="Microservices Epiphany">
+                </p>
+            </a>
+            
             <div class="media-content">
                 <div class="content">
                     <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2019-07-15T21:46:10.000Z">2019-07-16</time></div>
@@ -979,6 +1039,12 @@ The states of user space threads depend on how the scheduler that administers th
         </article>
         
         <article class="media">
+            
+            <a href="/2019/07/10/Context-Maps-In-Domain-Driven-Design/" class="media-left">
+                <p class="image is-64x64">
+                    <img class="thumbnail" src="/images/connections.jpg" alt="Context Maps in Domain Driven Design">
+                </p>
+            </a>
             
             <div class="media-content">
                 <div class="content">

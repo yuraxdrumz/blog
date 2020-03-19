@@ -8,64 +8,8 @@
     </url>
 
     <url>
-        <loc>https://yuriktech.com/2020/03/07/User-Space-Scheduling/</loc>
-        <lastmod>2020-03-10T01:03:24.272Z</lastmod>
-        <changefreq>weekly</changefreq>
-        <priority>0.6</priority>
-
-    </url>
-
-    <url>
-        <loc>https://yuriktech.com/2020/02/01/Implementing-Ports-and-Adapters/</loc>
-        <lastmod>2020-02-01T16:51:04.704Z</lastmod>
-        <changefreq>weekly</changefreq>
-        <priority>0.6</priority>
-
-    </url>
-
-    <url>
-        <loc>https://yuriktech.com/2019/06/17/Switching-From-Node.js-To-Elixir/</loc>
-        <lastmod>2020-01-25T12:49:48.268Z</lastmod>
-        <changefreq>weekly</changefreq>
-        <priority>0.6</priority>
-
-    </url>
-
-    <url>
-        <loc>https://yuriktech.com/2019/11/05/what-are-microservices/</loc>
-        <lastmod>2020-01-25T12:49:48.268Z</lastmod>
-        <changefreq>weekly</changefreq>
-        <priority>0.6</priority>
-
-    </url>
-
-    <url>
-        <loc>https://yuriktech.com/2019/06/09/Node-JS-Event-Loop-0/</loc>
-        <lastmod>2020-01-25T12:49:48.265Z</lastmod>
-        <changefreq>weekly</changefreq>
-        <priority>0.6</priority>
-
-    </url>
-
-    <url>
-        <loc>https://yuriktech.com/2019/07/16/Microservices-Epiphany/</loc>
-        <lastmod>2020-01-25T12:49:48.262Z</lastmod>
-        <changefreq>weekly</changefreq>
-        <priority>0.6</priority>
-
-    </url>
-
-    <url>
-        <loc>https://yuriktech.com/2019/06/22/Functional-Programming-in-10-minutes/</loc>
-        <lastmod>2020-01-25T12:49:48.260Z</lastmod>
-        <changefreq>weekly</changefreq>
-        <priority>0.6</priority>
-
-    </url>
-
-    <url>
-        <loc>https://yuriktech.com/2019/06/11/Implementing-Clean-Architecture/</loc>
-        <lastmod>2020-01-25T12:49:48.260Z</lastmod>
+        <loc>https://yuriktech.com/2019/07/03/Authentication-Middleware-In-Elixir/</loc>
+        <lastmod>2020-03-19T09:23:24.726Z</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.6</priority>
 
@@ -73,15 +17,71 @@
 
     <url>
         <loc>https://yuriktech.com/2019/07/10/Context-Maps-In-Domain-Driven-Design/</loc>
-        <lastmod>2020-01-25T12:49:48.259Z</lastmod>
+        <lastmod>2020-03-19T09:18:04.574Z</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.6</priority>
 
     </url>
 
     <url>
-        <loc>https://yuriktech.com/2019/07/03/Authentication-Middleware-In-Elixir/</loc>
-        <lastmod>2020-01-25T12:49:48.259Z</lastmod>
+        <loc>https://yuriktech.com/2020/03/07/User-Space-Scheduling/</loc>
+        <lastmod>2020-03-19T09:10:43.156Z</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.6</priority>
+
+    </url>
+
+    <url>
+        <loc>https://yuriktech.com/2019/07/16/Microservices-Epiphany/</loc>
+        <lastmod>2020-03-19T09:05:35.747Z</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.6</priority>
+
+    </url>
+
+    <url>
+        <loc>https://yuriktech.com/2019/11/05/what-are-microservices/</loc>
+        <lastmod>2020-03-19T09:03:36.773Z</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.6</priority>
+
+    </url>
+
+    <url>
+        <loc>https://yuriktech.com/2020/02/01/Implementing-Ports-and-Adapters/</loc>
+        <lastmod>2020-03-19T09:02:25.008Z</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.6</priority>
+
+    </url>
+
+    <url>
+        <loc>https://yuriktech.com/2019/06/17/Switching-From-Node.js-To-Elixir/</loc>
+        <lastmod>2020-03-19T00:09:37.587Z</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.6</priority>
+
+    </url>
+
+    <url>
+        <loc>https://yuriktech.com/2019/06/09/Node-JS-Event-Loop-0/</loc>
+        <lastmod>2020-03-19T00:09:37.583Z</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.6</priority>
+
+    </url>
+
+    <url>
+        <loc>https://yuriktech.com/2019/06/11/Implementing-Clean-Architecture/</loc>
+        <lastmod>2020-03-19T00:09:37.572Z</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.6</priority>
+
+    </url>
+
+    <url>
+        <loc>https://yuriktech.com/2019/06/22/Functional-Programming-in-10-minutes/</loc>
+        <lastmod>2020-03-19T00:09:37.572Z</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.6</priority>
 

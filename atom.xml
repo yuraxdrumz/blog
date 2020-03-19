@@ -6,7 +6,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="https://yuriktech.com/"/>
-  <updated>2020-03-10T01:03:24.272Z</updated>
+  <updated>2020-03-19T09:10:43.156Z</updated>
   <id>https://yuriktech.com/</id>
   
   <author>
@@ -21,11 +21,11 @@
     <link href="https://yuriktech.com/2020/03/07/User-Space-Scheduling/"/>
     <id>https://yuriktech.com/2020/03/07/User-Space-Scheduling/</id>
     <published>2020-03-07T14:26:21.000Z</published>
-    <updated>2020-03-10T01:03:24.272Z</updated>
+    <updated>2020-03-19T09:10:43.156Z</updated>
     
     <summary type="html">
     
-      &lt;p&gt;&lt;img src=&quot;/2020/03/07/User-Space-Scheduling/./concurrency.jpg&quot; alt&gt;&lt;br&gt;A scheduler is a complex piece of software that is responsible for making sure cores are not idle if there are Threads that need work to be done.&lt;br&gt;The fast switching of Threads, also called a context switch, is done by the scheduler and it gives us the illusion that all of our processes run in parallel.&lt;br&gt;We have schedulers both in the Kernel of our favorite OS and in the user space, where our programs live and run.&lt;br&gt;Some types of programming languages leverage one type of scheduling, while others leverage another.&lt;br&gt;In this blog post, I will explain what a scheduler is and compare how scheduling affects different programming languages.&lt;/p&gt;
+      &lt;p&gt;A scheduler is a complex piece of software that is responsible for making sure cores are not idle if there are Threads that need work to be done.&lt;br&gt;The fast switching of Threads, also called a context switch, is done by the scheduler and it gives us the illusion that all of our processes run in parallel.&lt;br&gt;We have schedulers both in the Kernel of our favorite OS and in the user space, where our programs live and run.&lt;br&gt;Some types of programming languages leverage one type of scheduling, while others leverage another.&lt;br&gt;In this blog post, I will explain what a scheduler is and compare how scheduling affects different programming languages.&lt;/p&gt;
     
     </summary>
     
@@ -53,11 +53,11 @@
     <link href="https://yuriktech.com/2020/02/01/Implementing-Ports-and-Adapters/"/>
     <id>https://yuriktech.com/2020/02/01/Implementing-Ports-and-Adapters/</id>
     <published>2020-02-01T16:15:21.000Z</published>
-    <updated>2020-02-01T16:51:04.704Z</updated>
+    <updated>2020-03-19T09:02:25.008Z</updated>
     
     <summary type="html">
     
-      &lt;p&gt;&lt;img src=&quot;/2020/02/01/Implementing-Ports-and-Adapters/./golang-ports-and-adapters.png&quot; alt&gt;&lt;br&gt;There are different architectures that allow you to keep focus on your business domain and allow for fast paced development and changes. Examples would be: Clean Architecture, Onion Architecture and Ports and Adapters (also called hexagonal).&lt;br&gt;&lt;a href=&quot;/2019/06/11/Implementing-Clean-Architecture/&quot;&gt;In my previous post&lt;/a&gt;, I talked about Clean Architecture and how it helps get your code more modular and developer friendly after a somewhat short learning curve. After joining a new team, I noticed Clean Architecture did not really settle and the team found it to be somewhat over abstracted, so I decided to play around with a variation of Ports and Adapters.&lt;br&gt;In this post I will show what is Ports and Adapters and how I implemented it in Golang. Github repo is available &lt;a href=&quot;https://github.com/yuraxdrumz/ports-and-adapters-golang&quot; target=&quot;_blank&quot; rel=&quot;noopener&quot;&gt;here&lt;/a&gt;.&lt;/p&gt;
+      &lt;p&gt;There are different architectures that allow you to keep focus on your business domain and allow for fast paced development and changes. Examples would be: Clean Architecture, Onion Architecture and Ports and Adapters (also called hexagonal).&lt;br&gt;&lt;a href=&quot;/2019/06/11/Implementing-Clean-Architecture/&quot;&gt;In my previous post&lt;/a&gt;, I talked about Clean Architecture and how it helps get your code more modular and developer friendly after a somewhat short learning curve. After joining a new team, I noticed Clean Architecture did not really settle and the team found it to be somewhat over abstracted, so I decided to play around with a variation of Ports and Adapters.&lt;br&gt;In this post I will show what is Ports and Adapters and how I implemented it in Golang. Github repo is available &lt;a href=&quot;https://github.com/yuraxdrumz/ports-and-adapters-golang&quot; target=&quot;_blank&quot; rel=&quot;noopener&quot;&gt;here&lt;/a&gt;.&lt;/p&gt;
     
     </summary>
     
@@ -79,11 +79,11 @@
     <link href="https://yuriktech.com/2019/11/05/what-are-microservices/"/>
     <id>https://yuriktech.com/2019/11/05/what-are-microservices/</id>
     <published>2019-11-05T18:24:24.000Z</published>
-    <updated>2020-01-25T12:49:48.268Z</updated>
+    <updated>2020-03-19T09:03:36.773Z</updated>
     
     <summary type="html">
     
-      &lt;p&gt;&lt;img src=&quot;/2019/11/05/what-are-microservices/./legos-2.jpg&quot; alt&gt;&lt;br&gt;After having written and implemented several microservice architectures, I wanted to have a go at explaining microservices from my point of view and share my insights. In this post I will explain what are microservices, what are their pros and cons, how they communicate and the different approaches towards building microservices.&lt;/p&gt;
+      &lt;p&gt;After having written and implemented several microservice architectures, I wanted to have a go at explaining microservices from my point of view and share my insights. In this post I will explain what are microservices, what are their pros and cons, how they communicate and the different approaches towards building microservices.&lt;/p&gt;
     
     </summary>
     
@@ -111,11 +111,11 @@
     <link href="https://yuriktech.com/2019/07/16/Microservices-Epiphany/"/>
     <id>https://yuriktech.com/2019/07/16/Microservices-Epiphany/</id>
     <published>2019-07-15T21:46:10.000Z</published>
-    <updated>2020-01-25T12:49:48.262Z</updated>
+    <updated>2020-03-19T09:05:35.747Z</updated>
     
     <summary type="html">
     
-      &lt;p&gt;&lt;img src=&quot;/2019/07/16/Microservices-Epiphany/./what.jpg&quot; alt&gt;&lt;br&gt;The majority of the posts I see about microservices talk about the differences vs monoliths and how everyone, including myself, is rushing to build microservices in this fast paced world we live in. Recently, I read &lt;em&gt;Implementing Domain Driven Design&lt;/em&gt; by Vaughn Vernon, which seemed unrelated to microservices at first but soon changed my perspective on things. What I experienced, like the title suggests, was an epiphany that I was building microservices wrong all along. In fact, I was building smaller monoliths, separated by a url subdomain. &lt;em&gt;Head Explodes!&lt;/em&gt; In this short post, I will show a couple of symptoms that I found are a sign your microservices architecture might suffer in the long run.&lt;/p&gt;
+      &lt;p&gt;The majority of the posts I see about microservices talk about the differences vs monoliths and how everyone, including myself, is rushing to build microservices in this fast paced world we live in. Recently, I read &lt;em&gt;Implementing Domain Driven Design&lt;/em&gt; by Vaughn Vernon, which seemed unrelated to microservices at first but soon changed my perspective on things. What I experienced, like the title suggests, was an epiphany that I was building microservices wrong all along. In fact, I was building smaller monoliths, separated by a url subdomain. &lt;em&gt;Head Explodes!&lt;/em&gt; In this short post, I will show a couple of symptoms that I found are a sign your microservices architecture might suffer in the long run.&lt;/p&gt;
     
     </summary>
     
@@ -135,7 +135,7 @@
     <link href="https://yuriktech.com/2019/07/10/Context-Maps-In-Domain-Driven-Design/"/>
     <id>https://yuriktech.com/2019/07/10/Context-Maps-In-Domain-Driven-Design/</id>
     <published>2019-07-10T12:52:33.000Z</published>
-    <updated>2020-01-25T12:49:48.259Z</updated>
+    <updated>2020-03-19T09:18:04.574Z</updated>
     
     <summary type="html">
     
@@ -159,7 +159,7 @@
     <link href="https://yuriktech.com/2019/07/03/Authentication-Middleware-In-Elixir/"/>
     <id>https://yuriktech.com/2019/07/03/Authentication-Middleware-In-Elixir/</id>
     <published>2019-07-03T15:44:34.000Z</published>
-    <updated>2020-01-25T12:49:48.259Z</updated>
+    <updated>2020-03-19T09:23:24.726Z</updated>
     
     <summary type="html">
     
@@ -181,7 +181,7 @@
     <link href="https://yuriktech.com/2019/06/22/Functional-Programming-in-10-minutes/"/>
     <id>https://yuriktech.com/2019/06/22/Functional-Programming-in-10-minutes/</id>
     <published>2019-06-22T15:13:57.000Z</published>
-    <updated>2020-01-25T12:49:48.260Z</updated>
+    <updated>2020-03-19T00:09:37.572Z</updated>
     
     <summary type="html">
     
@@ -203,7 +203,7 @@
     <link href="https://yuriktech.com/2019/06/17/Switching-From-Node.js-To-Elixir/"/>
     <id>https://yuriktech.com/2019/06/17/Switching-From-Node.js-To-Elixir/</id>
     <published>2019-06-17T18:11:52.000Z</published>
-    <updated>2020-01-25T12:49:48.268Z</updated>
+    <updated>2020-03-19T00:09:37.587Z</updated>
     
     <summary type="html">
     
@@ -230,7 +230,7 @@ In a search for a new programming language, I asked myself two questions - &lt;e
     <link href="https://yuriktech.com/2019/06/11/Implementing-Clean-Architecture/"/>
     <id>https://yuriktech.com/2019/06/11/Implementing-Clean-Architecture/</id>
     <published>2019-06-11T18:31:56.000Z</published>
-    <updated>2020-01-25T12:49:48.260Z</updated>
+    <updated>2020-03-19T00:09:37.572Z</updated>
     
     <summary type="html">
     
@@ -258,7 +258,7 @@ In a search for a new programming language, I asked myself two questions - &lt;e
     <link href="https://yuriktech.com/2019/06/09/Node-JS-Event-Loop-0/"/>
     <id>https://yuriktech.com/2019/06/09/Node-JS-Event-Loop-0/</id>
     <published>2019-06-09T12:50:22.000Z</published>
-    <updated>2020-01-25T12:49:48.265Z</updated>
+    <updated>2020-03-19T00:09:37.583Z</updated>
     
     <summary type="html">
     
