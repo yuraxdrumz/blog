@@ -10,10 +10,10 @@ tags:
   - Threading Models
 category: Programming
 date: 2020-03-07 16:26:21
+thumbnail: images/multi.jpg
 ---
 
 
-![](./concurrency.jpg)
 A scheduler is a complex piece of software that is responsible for making sure cores are not idle if there are Threads that need work to be done.
 The fast switching of Threads, also called a context switch, is done by the scheduler and it gives us the illusion that all of our processes run in parallel.
 We have schedulers both in the Kernel of our favorite OS and in the user space, where our programs live and run.

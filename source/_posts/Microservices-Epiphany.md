@@ -6,8 +6,9 @@ tags:
   - Microservices
   - DDD
   - Maybe a rant
+thumbnail: images/what.jpg
+
 ---
-![](./what.jpg)
 The majority of the posts I see about microservices talk about the differences vs monoliths and how everyone, including myself, is rushing to build microservices in this fast paced world we live in. Recently, I read *Implementing Domain Driven Design* by Vaughn Vernon, which seemed unrelated to microservices at first but soon changed my perspective on things. What I experienced, like the title suggests, was an epiphany that I was building microservices wrong all along. In fact, I was building smaller monoliths, separated by a url subdomain. *Head Explodes!* In this short post, I will show a couple of symptoms that I found are a sign your microservices architecture might suffer in the long run.
 
 ## Symptoms of a monolith
