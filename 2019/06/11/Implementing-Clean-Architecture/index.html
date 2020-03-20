@@ -18,7 +18,7 @@
 <meta property="og:description" content="Last year, I had the opportunity to design a new project at work and since I had just finished reading Robert Martin’s Clean Architecture I thought to myself, why not implement it on that project ? On">
 <meta property="og:locale" content="en">
 <meta property="og:image" content="https://yuriktech.com/images/og_image.png">
-<meta property="og:updated_time" content="2020-03-19T00:09:37.572Z">
+<meta property="og:updated_time" content="2020-03-20T13:54:44.278Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Implementing Clean Architecture">
 <meta name="twitter:description" content="Last year, I had the opportunity to design a new project at work and since I had just finished reading Robert Martin’s Clean Architecture I thought to myself, why not implement it on that project ? On">
@@ -111,10 +111,6 @@
                 
                 <a class="navbar-item" href="/archives">Archives</a>
                 
-                <a class="navbar-item" href="/categories">Categories</a>
-                
-                <a class="navbar-item" href="/tags">Tags</a>
-                
                 <a class="navbar-item" href="/about">About</a>
                 
             </div>
@@ -178,7 +174,7 @@
         </h1>
         <div class="content">
             <p>Last year, I had the opportunity to design a new project at work and since I had just finished reading Robert Martin’s <em>Clean Architecture</em> I thought to myself, why not implement it on that project ? One of the reasons, except my usual <em>I have to implement this cool thing right away!</em> was that working on legacy systems in the company was accompanied with the good ol’ <em>big ball of mud</em> code. The purpose of this post is to show you how can one implement <em>Clean Architecture</em> in practice and still understand it years from now, whether you work alone or in a team. Everything shown will be written in <em>Typescript</em> on <em>Node.js</em> using <em>Object Oriented</em> programming paradigm. All of the code will be available <a href="https://github.com/yuraxdrumz/clean-architecture-example" target="_blank" rel="noopener">here</a></p>
-<h1 id="Disclaimer"><a href="#Disclaimer" class="headerlink" title="Disclaimer"></a>Disclaimer</h1><p>Some of the things that I am going to write and show are my personal experiences and opinions, you may have read Robert Martin’s <em>Clean Architecture</em> and thought, interpreted or implemented otherwise. All the architectures have the same goals in the end. Implementing this in production has taught me a lot about how to build better software and expanded my toolbox as I hope it expands yours.</p>
+<h2 id="Disclaimer"><a href="#Disclaimer" class="headerlink" title="Disclaimer"></a>Disclaimer</h2><p>Some of the things that I am going to write and show are my personal experiences and opinions, you may have read Robert Martin’s <em>Clean Architecture</em> and thought, interpreted or implemented otherwise. All the architectures have the same goals in the end. Implementing this in production has taught me a lot about how to build better software and expanded my toolbox as I hope it expands yours.</p>
 <h2 id="Core-Idea"><a href="#Core-Idea" class="headerlink" title="Core Idea"></a>Core Idea</h2><p>The idea behind <em>Clean Architecture</em> is that we have layers. Each layer is encapsulated by a higher level layer and the only way to communicate between the layers is with <em>The Dependency Rule</em>. </p>
 <h2 id="The-Dependency-Rule"><a href="#The-Dependency-Rule" class="headerlink" title="The Dependency Rule"></a>The Dependency Rule</h2><p> states that source code dependencies can only point inwards, meaning each layer can be dependant on the layer beneath it, but never the other way around. </p>
 <h2 id="Entities"><a href="#Entities" class="headerlink" title="Entities"></a>Entities</h2><p>The core of this architecture are your entities, which represent your classes/types/interfaces/basic methods.</p>
@@ -425,6 +421,20 @@ We wrapped each use-case with a handler which will be part of a web server, in o
 </div>
     
         
+<div class="card widget">
+    <div class="card-content">
+        <h3 class="menu-label">
+            Tag Cloud
+        </h3>
+        <a href="/tags/API-Gateway/" style="font-size: 10px;">API Gateway</a> <a href="/tags/Actor-Model/" style="font-size: 10px;">Actor Model</a> <a href="/tags/Backend-For-Frontend/" style="font-size: 10px;">Backend For Frontend</a> <a href="/tags/Clean-Architecture/" style="font-size: 10px;">Clean Architecture</a> <a href="/tags/Concurrency/" style="font-size: 10px;">Concurrency</a> <a href="/tags/Context-Maps/" style="font-size: 10px;">Context Maps</a> <a href="/tags/DDD/" style="font-size: 13.33px;">DDD</a> <a href="/tags/Design/" style="font-size: 10px;">Design</a> <a href="/tags/Elixir/" style="font-size: 13.33px;">Elixir</a> <a href="/tags/Event-Loop/" style="font-size: 10px;">Event Loop</a> <a href="/tags/Functional/" style="font-size: 16.67px;">Functional</a> <a href="/tags/Golang/" style="font-size: 10px;">Golang</a> <a href="/tags/Green-Threads/" style="font-size: 10px;">Green Threads</a> <a href="/tags/Hexagonal/" style="font-size: 10px;">Hexagonal</a> <a href="/tags/Javascript/" style="font-size: 10px;">Javascript</a> <a href="/tags/Kernel-Threads/" style="font-size: 10px;">Kernel Threads</a> <a href="/tags/Maybe-a-rant/" style="font-size: 10px;">Maybe a rant</a> <a href="/tags/Microservices/" style="font-size: 13.33px;">Microservices</a> <a href="/tags/Node-js/" style="font-size: 20px;">Node.js</a> <a href="/tags/Parallelism/" style="font-size: 10px;">Parallelism</a> <a href="/tags/Ports-and-Adapters/" style="font-size: 10px;">Ports and Adapters</a> <a href="/tags/Programming-Paradigms/" style="font-size: 10px;">Programming Paradigms</a> <a href="/tags/Scheduler/" style="font-size: 10px;">Scheduler</a> <a href="/tags/Sidecar-Pattern/" style="font-size: 10px;">Sidecar Pattern</a> <a href="/tags/Software-Architecture/" style="font-size: 20px;">Software Architecture</a> <a href="/tags/Threading-Models/" style="font-size: 10px;">Threading Models</a> <a href="/tags/Threads/" style="font-size: 10px;">Threads</a> <a href="/tags/Typescript/" style="font-size: 10px;">Typescript</a> <a href="/tags/Uncle-Bob/" style="font-size: 10px;">Uncle Bob</a> <a href="/tags/libuv/" style="font-size: 10px;">libuv</a>
+    </div>
+</div>
+
+    
+    
+        <div class="column-right-shadow is-hidden-widescreen ">
+        
+            
 <div class="card widget" id="toc">
     <div class="card-content">
         <div class="menu">
@@ -435,76 +445,422 @@ We wrapped each use-case with a handler which will be part of a web server, in o
         <a class="is-flex" href="#Disclaimer">
         <span class="has-mr-6">1</span>
         <span>Disclaimer</span>
-        </a><ul class="menu-list"><li>
+        </a></li><li>
         <a class="is-flex" href="#Core-Idea">
-        <span class="has-mr-6">1.1</span>
+        <span class="has-mr-6">2</span>
         <span>Core Idea</span>
         </a></li><li>
         <a class="is-flex" href="#The-Dependency-Rule">
-        <span class="has-mr-6">1.2</span>
+        <span class="has-mr-6">3</span>
         <span>The Dependency Rule</span>
         </a></li><li>
         <a class="is-flex" href="#Entities">
-        <span class="has-mr-6">1.3</span>
+        <span class="has-mr-6">4</span>
         <span>Entities</span>
         </a></li><li>
         <a class="is-flex" href="#Use-Cases">
-        <span class="has-mr-6">1.4</span>
+        <span class="has-mr-6">5</span>
         <span>Use-Cases</span>
         </a></li><li>
         <a class="is-flex" href="#Repository-Pattern">
-        <span class="has-mr-6">1.5</span>
+        <span class="has-mr-6">6</span>
         <span>Repository Pattern</span>
         </a></li><li>
         <a class="is-flex" href="#Interface-Adapters">
-        <span class="has-mr-6">1.6</span>
+        <span class="has-mr-6">7</span>
         <span>Interface Adapters</span>
         </a></li><li>
         <a class="is-flex" href="#Frameworks-and-Drivers">
-        <span class="has-mr-6">1.7</span>
+        <span class="has-mr-6">8</span>
         <span>Frameworks and Drivers</span>
         </a></li><li>
         <a class="is-flex" href="#Liskov-Substitution-Principle">
-        <span class="has-mr-6">1.8</span>
+        <span class="has-mr-6">9</span>
         <span>Liskov Substitution Principle</span>
         </a></li><li>
         <a class="is-flex" href="#Clean-Architecture-In-Practice">
-        <span class="has-mr-6">1.9</span>
+        <span class="has-mr-6">10</span>
         <span>Clean Architecture In Practice</span>
         </a></li><li>
         <a class="is-flex" href="#What-are-our-use-Cases">
-        <span class="has-mr-6">1.10</span>
+        <span class="has-mr-6">11</span>
         <span>What are our use-Cases</span>
         </a><ul class="menu-list"><li>
         <a class="is-flex" href="#Defining-the-types">
-        <span class="has-mr-6">1.10.1</span>
+        <span class="has-mr-6">11.1</span>
         <span>Defining the types</span>
         </a></li><li>
         <a class="is-flex" href="#Defining-the-contracts-interfaces">
-        <span class="has-mr-6">1.10.2</span>
+        <span class="has-mr-6">11.2</span>
         <span>Defining the contracts (interfaces)</span>
         </a></li><li>
         <a class="is-flex" href="#Defining-the-use-cases">
-        <span class="has-mr-6">1.10.3</span>
+        <span class="has-mr-6">11.3</span>
         <span>Defining the use-cases</span>
         </a></li><li>
         <a class="is-flex" href="#Defining-the-implementations">
-        <span class="has-mr-6">1.10.4</span>
+        <span class="has-mr-6">11.4</span>
         <span>Defining the implementations</span>
         </a></li><li>
         <a class="is-flex" href="#Defining-the-frameworks-and-drivers">
-        <span class="has-mr-6">1.10.5</span>
+        <span class="has-mr-6">11.5</span>
         <span>Defining the frameworks and drivers</span>
         </a></li></ul></li><li>
         <a class="is-flex" href="#Creating-another-implementation">
-        <span class="has-mr-6">1.11</span>
+        <span class="has-mr-6">12</span>
         <span>Creating another implementation</span>
         </a></li><li>
         <a class="is-flex" href="#Summary">
-        <span class="has-mr-6">1.12</span>
+        <span class="has-mr-6">13</span>
         <span>Summary</span>
-        </a></li></ul></li></ul>
+        </a></li></ul>
         </div>
+    </div>
+</div>
+
+        
+            
+<div class="card widget">
+    <div class="card-content">
+        <h3 class="menu-label">
+            Recent
+        </h3>
+        
+        <article class="media">
+            
+            <a href="/2020/03/07/User-Space-Scheduling/" class="media-left">
+                <p class="image is-64x64">
+                    <img class="thumbnail" src="/images/multi.jpg" alt="User Space Scheduling">
+                </p>
+            </a>
+            
+            <div class="media-content">
+                <div class="content">
+                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2020-03-07T14:26:21.000Z">2020-03-07</time></div>
+                    <a href="/2020/03/07/User-Space-Scheduling/" class="has-link-black-ter is-size-6">User Space Scheduling</a>
+                    <p class="is-size-7 is-uppercase">
+                        <a class="has-link-grey -link" href="/categories/Programming/">Programming</a>
+                    </p>
+                </div>
+            </div>
+        </article>
+        
+        <article class="media">
+            
+            <a href="/2020/02/01/Implementing-Ports-and-Adapters/" class="media-left">
+                <p class="image is-64x64">
+                    <img class="thumbnail" src="/images/golang-ports-and-adapters.png" alt="Implementing Ports and Adapters">
+                </p>
+            </a>
+            
+            <div class="media-content">
+                <div class="content">
+                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2020-02-01T16:15:21.000Z">2020-02-01</time></div>
+                    <a href="/2020/02/01/Implementing-Ports-and-Adapters/" class="has-link-black-ter is-size-6">Implementing Ports and Adapters</a>
+                    <p class="is-size-7 is-uppercase">
+                        <a class="has-link-grey -link" href="/categories/Architecture/">Architecture</a>
+                    </p>
+                </div>
+            </div>
+        </article>
+        
+        <article class="media">
+            
+            <a href="/2019/11/05/what-are-microservices/" class="media-left">
+                <p class="image is-64x64">
+                    <img class="thumbnail" src="/images/legos-2.jpg" alt="What Are Microservices">
+                </p>
+            </a>
+            
+            <div class="media-content">
+                <div class="content">
+                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2019-11-05T18:24:24.000Z">2019-11-05</time></div>
+                    <a href="/2019/11/05/what-are-microservices/" class="has-link-black-ter is-size-6">What Are Microservices</a>
+                    <p class="is-size-7 is-uppercase">
+                        <a class="has-link-grey -link" href="/categories/Architecture/">Architecture</a>
+                    </p>
+                </div>
+            </div>
+        </article>
+        
+        <article class="media">
+            
+            <a href="/2019/07/16/Microservices-Epiphany/" class="media-left">
+                <p class="image is-64x64">
+                    <img class="thumbnail" src="/images/what.jpg" alt="Microservices Epiphany">
+                </p>
+            </a>
+            
+            <div class="media-content">
+                <div class="content">
+                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2019-07-15T21:46:10.000Z">2019-07-16</time></div>
+                    <a href="/2019/07/16/Microservices-Epiphany/" class="has-link-black-ter is-size-6">Microservices Epiphany</a>
+                    <p class="is-size-7 is-uppercase">
+                        <a class="has-link-grey -link" href="/categories/Architecture/">Architecture</a>
+                    </p>
+                </div>
+            </div>
+        </article>
+        
+        <article class="media">
+            
+            <a href="/2019/07/10/Context-Maps-In-Domain-Driven-Design/" class="media-left">
+                <p class="image is-64x64">
+                    <img class="thumbnail" src="/images/connections.jpg" alt="Context Maps in Domain Driven Design">
+                </p>
+            </a>
+            
+            <div class="media-content">
+                <div class="content">
+                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2019-07-10T12:52:33.000Z">2019-07-10</time></div>
+                    <a href="/2019/07/10/Context-Maps-In-Domain-Driven-Design/" class="has-link-black-ter is-size-6">Context Maps in Domain Driven Design</a>
+                    <p class="is-size-7 is-uppercase">
+                        <a class="has-link-grey -link" href="/categories/Architecture/">Architecture</a>
+                    </p>
+                </div>
+            </div>
+        </article>
+        
+    </div>
+</div>
+
+        
+            
+<div class="card widget">
+    <div class="card-content">
+        <div class="menu">
+            <h3 class="menu-label">
+                Categories
+            </h3>
+            <ul class="menu-list">
+            <li>
+        <a class="level is-marginless" href="/categories/Architecture/">
+            <span class="level-start">
+                <span class="level-item">Architecture</span>
+            </span>
+            <span class="level-end">
+                <span class="level-item tag">5</span>
+            </span>
+        </a></li><li>
+        <a class="level is-marginless" href="/categories/Paradigms/">
+            <span class="level-start">
+                <span class="level-item">Paradigms</span>
+            </span>
+            <span class="level-end">
+                <span class="level-item tag">1</span>
+            </span>
+        </a></li><li>
+        <a class="level is-marginless" href="/categories/Programming/">
+            <span class="level-start">
+                <span class="level-item">Programming</span>
+            </span>
+            <span class="level-end">
+                <span class="level-item tag">4</span>
+            </span>
+        </a></li>
+            </ul>
+        </div>
+    </div>
+</div>
+        
+        </div>
+    
+</div>
+
+                
+
+
+
+
+<div class="column is-4-tablet is-4-desktop is-3-widescreen is-hidden-touch is-hidden-desktop-only has-order-3 column-right ">
+    
+        
+<div class="card widget" id="toc">
+    <div class="card-content">
+        <div class="menu">
+            <h3 class="menu-label">
+                Catalogue
+            </h3>
+            <ul class="menu-list"><li>
+        <a class="is-flex" href="#Disclaimer">
+        <span class="has-mr-6">1</span>
+        <span>Disclaimer</span>
+        </a></li><li>
+        <a class="is-flex" href="#Core-Idea">
+        <span class="has-mr-6">2</span>
+        <span>Core Idea</span>
+        </a></li><li>
+        <a class="is-flex" href="#The-Dependency-Rule">
+        <span class="has-mr-6">3</span>
+        <span>The Dependency Rule</span>
+        </a></li><li>
+        <a class="is-flex" href="#Entities">
+        <span class="has-mr-6">4</span>
+        <span>Entities</span>
+        </a></li><li>
+        <a class="is-flex" href="#Use-Cases">
+        <span class="has-mr-6">5</span>
+        <span>Use-Cases</span>
+        </a></li><li>
+        <a class="is-flex" href="#Repository-Pattern">
+        <span class="has-mr-6">6</span>
+        <span>Repository Pattern</span>
+        </a></li><li>
+        <a class="is-flex" href="#Interface-Adapters">
+        <span class="has-mr-6">7</span>
+        <span>Interface Adapters</span>
+        </a></li><li>
+        <a class="is-flex" href="#Frameworks-and-Drivers">
+        <span class="has-mr-6">8</span>
+        <span>Frameworks and Drivers</span>
+        </a></li><li>
+        <a class="is-flex" href="#Liskov-Substitution-Principle">
+        <span class="has-mr-6">9</span>
+        <span>Liskov Substitution Principle</span>
+        </a></li><li>
+        <a class="is-flex" href="#Clean-Architecture-In-Practice">
+        <span class="has-mr-6">10</span>
+        <span>Clean Architecture In Practice</span>
+        </a></li><li>
+        <a class="is-flex" href="#What-are-our-use-Cases">
+        <span class="has-mr-6">11</span>
+        <span>What are our use-Cases</span>
+        </a><ul class="menu-list"><li>
+        <a class="is-flex" href="#Defining-the-types">
+        <span class="has-mr-6">11.1</span>
+        <span>Defining the types</span>
+        </a></li><li>
+        <a class="is-flex" href="#Defining-the-contracts-interfaces">
+        <span class="has-mr-6">11.2</span>
+        <span>Defining the contracts (interfaces)</span>
+        </a></li><li>
+        <a class="is-flex" href="#Defining-the-use-cases">
+        <span class="has-mr-6">11.3</span>
+        <span>Defining the use-cases</span>
+        </a></li><li>
+        <a class="is-flex" href="#Defining-the-implementations">
+        <span class="has-mr-6">11.4</span>
+        <span>Defining the implementations</span>
+        </a></li><li>
+        <a class="is-flex" href="#Defining-the-frameworks-and-drivers">
+        <span class="has-mr-6">11.5</span>
+        <span>Defining the frameworks and drivers</span>
+        </a></li></ul></li><li>
+        <a class="is-flex" href="#Creating-another-implementation">
+        <span class="has-mr-6">12</span>
+        <span>Creating another implementation</span>
+        </a></li><li>
+        <a class="is-flex" href="#Summary">
+        <span class="has-mr-6">13</span>
+        <span>Summary</span>
+        </a></li></ul>
+        </div>
+    </div>
+</div>
+
+    
+        
+<div class="card widget">
+    <div class="card-content">
+        <h3 class="menu-label">
+            Recent
+        </h3>
+        
+        <article class="media">
+            
+            <a href="/2020/03/07/User-Space-Scheduling/" class="media-left">
+                <p class="image is-64x64">
+                    <img class="thumbnail" src="/images/multi.jpg" alt="User Space Scheduling">
+                </p>
+            </a>
+            
+            <div class="media-content">
+                <div class="content">
+                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2020-03-07T14:26:21.000Z">2020-03-07</time></div>
+                    <a href="/2020/03/07/User-Space-Scheduling/" class="has-link-black-ter is-size-6">User Space Scheduling</a>
+                    <p class="is-size-7 is-uppercase">
+                        <a class="has-link-grey -link" href="/categories/Programming/">Programming</a>
+                    </p>
+                </div>
+            </div>
+        </article>
+        
+        <article class="media">
+            
+            <a href="/2020/02/01/Implementing-Ports-and-Adapters/" class="media-left">
+                <p class="image is-64x64">
+                    <img class="thumbnail" src="/images/golang-ports-and-adapters.png" alt="Implementing Ports and Adapters">
+                </p>
+            </a>
+            
+            <div class="media-content">
+                <div class="content">
+                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2020-02-01T16:15:21.000Z">2020-02-01</time></div>
+                    <a href="/2020/02/01/Implementing-Ports-and-Adapters/" class="has-link-black-ter is-size-6">Implementing Ports and Adapters</a>
+                    <p class="is-size-7 is-uppercase">
+                        <a class="has-link-grey -link" href="/categories/Architecture/">Architecture</a>
+                    </p>
+                </div>
+            </div>
+        </article>
+        
+        <article class="media">
+            
+            <a href="/2019/11/05/what-are-microservices/" class="media-left">
+                <p class="image is-64x64">
+                    <img class="thumbnail" src="/images/legos-2.jpg" alt="What Are Microservices">
+                </p>
+            </a>
+            
+            <div class="media-content">
+                <div class="content">
+                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2019-11-05T18:24:24.000Z">2019-11-05</time></div>
+                    <a href="/2019/11/05/what-are-microservices/" class="has-link-black-ter is-size-6">What Are Microservices</a>
+                    <p class="is-size-7 is-uppercase">
+                        <a class="has-link-grey -link" href="/categories/Architecture/">Architecture</a>
+                    </p>
+                </div>
+            </div>
+        </article>
+        
+        <article class="media">
+            
+            <a href="/2019/07/16/Microservices-Epiphany/" class="media-left">
+                <p class="image is-64x64">
+                    <img class="thumbnail" src="/images/what.jpg" alt="Microservices Epiphany">
+                </p>
+            </a>
+            
+            <div class="media-content">
+                <div class="content">
+                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2019-07-15T21:46:10.000Z">2019-07-16</time></div>
+                    <a href="/2019/07/16/Microservices-Epiphany/" class="has-link-black-ter is-size-6">Microservices Epiphany</a>
+                    <p class="is-size-7 is-uppercase">
+                        <a class="has-link-grey -link" href="/categories/Architecture/">Architecture</a>
+                    </p>
+                </div>
+            </div>
+        </article>
+        
+        <article class="media">
+            
+            <a href="/2019/07/10/Context-Maps-In-Domain-Driven-Design/" class="media-left">
+                <p class="image is-64x64">
+                    <img class="thumbnail" src="/images/connections.jpg" alt="Context Maps in Domain Driven Design">
+                </p>
+            </a>
+            
+            <div class="media-content">
+                <div class="content">
+                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2019-07-10T12:52:33.000Z">2019-07-10</time></div>
+                    <a href="/2019/07/10/Context-Maps-In-Domain-Driven-Design/" class="has-link-black-ter is-size-6">Context Maps in Domain Driven Design</a>
+                    <p class="is-size-7 is-uppercase">
+                        <a class="has-link-grey -link" href="/categories/Architecture/">Architecture</a>
+                    </p>
+                </div>
+            </div>
+        </article>
+        
     </div>
 </div>
 
@@ -543,825 +899,6 @@ We wrapped each use-case with a handler which will be part of a web server, in o
             </span>
         </a></li>
             </ul>
-        </div>
-    </div>
-</div>
-    
-        
-<div class="card widget">
-    <div class="card-content">
-        <h3 class="menu-label">
-            Tag Cloud
-        </h3>
-        <a href="/tags/API-Gateway/" style="font-size: 10px;">API Gateway</a> <a href="/tags/Actor-Model/" style="font-size: 10px;">Actor Model</a> <a href="/tags/Backend-For-Frontend/" style="font-size: 10px;">Backend For Frontend</a> <a href="/tags/Clean-Architecture/" style="font-size: 10px;">Clean Architecture</a> <a href="/tags/Concurrency/" style="font-size: 10px;">Concurrency</a> <a href="/tags/Context-Maps/" style="font-size: 10px;">Context Maps</a> <a href="/tags/DDD/" style="font-size: 13.33px;">DDD</a> <a href="/tags/Design/" style="font-size: 10px;">Design</a> <a href="/tags/Elixir/" style="font-size: 13.33px;">Elixir</a> <a href="/tags/Event-Loop/" style="font-size: 10px;">Event Loop</a> <a href="/tags/Functional/" style="font-size: 16.67px;">Functional</a> <a href="/tags/Golang/" style="font-size: 10px;">Golang</a> <a href="/tags/Green-Threads/" style="font-size: 10px;">Green Threads</a> <a href="/tags/Hexagonal/" style="font-size: 10px;">Hexagonal</a> <a href="/tags/Javascript/" style="font-size: 10px;">Javascript</a> <a href="/tags/Kernel-Threads/" style="font-size: 10px;">Kernel Threads</a> <a href="/tags/Maybe-a-rant/" style="font-size: 10px;">Maybe a rant</a> <a href="/tags/Microservices/" style="font-size: 13.33px;">Microservices</a> <a href="/tags/Node-js/" style="font-size: 20px;">Node.js</a> <a href="/tags/Parallelism/" style="font-size: 10px;">Parallelism</a> <a href="/tags/Ports-and-Adapters/" style="font-size: 10px;">Ports and Adapters</a> <a href="/tags/Programming-Paradigms/" style="font-size: 10px;">Programming Paradigms</a> <a href="/tags/Scheduler/" style="font-size: 10px;">Scheduler</a> <a href="/tags/Sidecar-Pattern/" style="font-size: 10px;">Sidecar Pattern</a> <a href="/tags/Software-Architecture/" style="font-size: 20px;">Software Architecture</a> <a href="/tags/Threading-Models/" style="font-size: 10px;">Threading Models</a> <a href="/tags/Threads/" style="font-size: 10px;">Threads</a> <a href="/tags/Typescript/" style="font-size: 10px;">Typescript</a> <a href="/tags/Uncle-Bob/" style="font-size: 10px;">Uncle Bob</a> <a href="/tags/libuv/" style="font-size: 10px;">libuv</a>
-    </div>
-</div>
-
-    
-    
-        <div class="column-right-shadow is-hidden-widescreen ">
-        
-            
-<div class="card widget">
-    <div class="card-content">
-        <h3 class="menu-label">
-            Recent
-        </h3>
-        
-        <article class="media">
-            
-            <a href="/2020/03/07/User-Space-Scheduling/" class="media-left">
-                <p class="image is-64x64">
-                    <img class="thumbnail" src="/images/multi.jpg" alt="User Space Scheduling">
-                </p>
-            </a>
-            
-            <div class="media-content">
-                <div class="content">
-                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2020-03-07T14:26:21.000Z">2020-03-07</time></div>
-                    <a href="/2020/03/07/User-Space-Scheduling/" class="has-link-black-ter is-size-6">User Space Scheduling</a>
-                    <p class="is-size-7 is-uppercase">
-                        <a class="has-link-grey -link" href="/categories/Programming/">Programming</a>
-                    </p>
-                </div>
-            </div>
-        </article>
-        
-        <article class="media">
-            
-            <a href="/2020/02/01/Implementing-Ports-and-Adapters/" class="media-left">
-                <p class="image is-64x64">
-                    <img class="thumbnail" src="/images/golang-ports-and-adapters.png" alt="Implementing Ports and Adapters">
-                </p>
-            </a>
-            
-            <div class="media-content">
-                <div class="content">
-                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2020-02-01T16:15:21.000Z">2020-02-01</time></div>
-                    <a href="/2020/02/01/Implementing-Ports-and-Adapters/" class="has-link-black-ter is-size-6">Implementing Ports and Adapters</a>
-                    <p class="is-size-7 is-uppercase">
-                        <a class="has-link-grey -link" href="/categories/Architecture/">Architecture</a>
-                    </p>
-                </div>
-            </div>
-        </article>
-        
-        <article class="media">
-            
-            <a href="/2019/11/05/what-are-microservices/" class="media-left">
-                <p class="image is-64x64">
-                    <img class="thumbnail" src="/images/legos-2.jpg" alt="What Are Microservices">
-                </p>
-            </a>
-            
-            <div class="media-content">
-                <div class="content">
-                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2019-11-05T18:24:24.000Z">2019-11-05</time></div>
-                    <a href="/2019/11/05/what-are-microservices/" class="has-link-black-ter is-size-6">What Are Microservices</a>
-                    <p class="is-size-7 is-uppercase">
-                        <a class="has-link-grey -link" href="/categories/Architecture/">Architecture</a>
-                    </p>
-                </div>
-            </div>
-        </article>
-        
-        <article class="media">
-            
-            <a href="/2019/07/16/Microservices-Epiphany/" class="media-left">
-                <p class="image is-64x64">
-                    <img class="thumbnail" src="/images/what.jpg" alt="Microservices Epiphany">
-                </p>
-            </a>
-            
-            <div class="media-content">
-                <div class="content">
-                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2019-07-15T21:46:10.000Z">2019-07-16</time></div>
-                    <a href="/2019/07/16/Microservices-Epiphany/" class="has-link-black-ter is-size-6">Microservices Epiphany</a>
-                    <p class="is-size-7 is-uppercase">
-                        <a class="has-link-grey -link" href="/categories/Architecture/">Architecture</a>
-                    </p>
-                </div>
-            </div>
-        </article>
-        
-        <article class="media">
-            
-            <a href="/2019/07/10/Context-Maps-In-Domain-Driven-Design/" class="media-left">
-                <p class="image is-64x64">
-                    <img class="thumbnail" src="/images/connections.jpg" alt="Context Maps in Domain Driven Design">
-                </p>
-            </a>
-            
-            <div class="media-content">
-                <div class="content">
-                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2019-07-10T12:52:33.000Z">2019-07-10</time></div>
-                    <a href="/2019/07/10/Context-Maps-In-Domain-Driven-Design/" class="has-link-black-ter is-size-6">Context Maps in Domain Driven Design</a>
-                    <p class="is-size-7 is-uppercase">
-                        <a class="has-link-grey -link" href="/categories/Architecture/">Architecture</a>
-                    </p>
-                </div>
-            </div>
-        </article>
-        
-    </div>
-</div>
-
-        
-            <div class="card widget">
-    <div class="card-content">
-        <div class="menu">
-        <h3 class="menu-label">
-            Archives
-        </h3>
-        <ul class="menu-list">
-        
-        <li>
-            <a class="level is-marginless" href="/archives/2020/03/">
-                <span class="level-start">
-                    <span class="level-item">March 2020</span>
-                </span>
-                <span class="level-end">
-                    <span class="level-item tag">1</span>
-                </span>
-            </a>
-        </li>
-        
-        <li>
-            <a class="level is-marginless" href="/archives/2020/02/">
-                <span class="level-start">
-                    <span class="level-item">February 2020</span>
-                </span>
-                <span class="level-end">
-                    <span class="level-item tag">1</span>
-                </span>
-            </a>
-        </li>
-        
-        <li>
-            <a class="level is-marginless" href="/archives/2019/11/">
-                <span class="level-start">
-                    <span class="level-item">November 2019</span>
-                </span>
-                <span class="level-end">
-                    <span class="level-item tag">1</span>
-                </span>
-            </a>
-        </li>
-        
-        <li>
-            <a class="level is-marginless" href="/archives/2019/07/">
-                <span class="level-start">
-                    <span class="level-item">July 2019</span>
-                </span>
-                <span class="level-end">
-                    <span class="level-item tag">3</span>
-                </span>
-            </a>
-        </li>
-        
-        <li>
-            <a class="level is-marginless" href="/archives/2019/06/">
-                <span class="level-start">
-                    <span class="level-item">June 2019</span>
-                </span>
-                <span class="level-end">
-                    <span class="level-item tag">4</span>
-                </span>
-            </a>
-        </li>
-        
-        </ul>
-        </div>
-    </div>
-</div>
-        
-            <div class="card widget">
-    <div class="card-content">
-        <div class="menu">
-            <h3 class="menu-label">
-                Tags
-            </h3>
-            <div class="field is-grouped is-grouped-multiline">
-                
-                <div class="control">
-                    <a class="tags has-addons" href="/tags/API-Gateway/">
-                        <span class="tag">API Gateway</span>
-                        <span class="tag is-grey">1</span>
-                    </a>
-                </div>
-                
-                <div class="control">
-                    <a class="tags has-addons" href="/tags/Actor-Model/">
-                        <span class="tag">Actor Model</span>
-                        <span class="tag is-grey">1</span>
-                    </a>
-                </div>
-                
-                <div class="control">
-                    <a class="tags has-addons" href="/tags/Backend-For-Frontend/">
-                        <span class="tag">Backend For Frontend</span>
-                        <span class="tag is-grey">1</span>
-                    </a>
-                </div>
-                
-                <div class="control">
-                    <a class="tags has-addons" href="/tags/Clean-Architecture/">
-                        <span class="tag">Clean Architecture</span>
-                        <span class="tag is-grey">1</span>
-                    </a>
-                </div>
-                
-                <div class="control">
-                    <a class="tags has-addons" href="/tags/Concurrency/">
-                        <span class="tag">Concurrency</span>
-                        <span class="tag is-grey">1</span>
-                    </a>
-                </div>
-                
-                <div class="control">
-                    <a class="tags has-addons" href="/tags/Context-Maps/">
-                        <span class="tag">Context Maps</span>
-                        <span class="tag is-grey">1</span>
-                    </a>
-                </div>
-                
-                <div class="control">
-                    <a class="tags has-addons" href="/tags/DDD/">
-                        <span class="tag">DDD</span>
-                        <span class="tag is-grey">2</span>
-                    </a>
-                </div>
-                
-                <div class="control">
-                    <a class="tags has-addons" href="/tags/Design/">
-                        <span class="tag">Design</span>
-                        <span class="tag is-grey">1</span>
-                    </a>
-                </div>
-                
-                <div class="control">
-                    <a class="tags has-addons" href="/tags/Elixir/">
-                        <span class="tag">Elixir</span>
-                        <span class="tag is-grey">2</span>
-                    </a>
-                </div>
-                
-                <div class="control">
-                    <a class="tags has-addons" href="/tags/Event-Loop/">
-                        <span class="tag">Event Loop</span>
-                        <span class="tag is-grey">1</span>
-                    </a>
-                </div>
-                
-                <div class="control">
-                    <a class="tags has-addons" href="/tags/Functional/">
-                        <span class="tag">Functional</span>
-                        <span class="tag is-grey">3</span>
-                    </a>
-                </div>
-                
-                <div class="control">
-                    <a class="tags has-addons" href="/tags/Golang/">
-                        <span class="tag">Golang</span>
-                        <span class="tag is-grey">1</span>
-                    </a>
-                </div>
-                
-                <div class="control">
-                    <a class="tags has-addons" href="/tags/Green-Threads/">
-                        <span class="tag">Green Threads</span>
-                        <span class="tag is-grey">1</span>
-                    </a>
-                </div>
-                
-                <div class="control">
-                    <a class="tags has-addons" href="/tags/Hexagonal/">
-                        <span class="tag">Hexagonal</span>
-                        <span class="tag is-grey">1</span>
-                    </a>
-                </div>
-                
-                <div class="control">
-                    <a class="tags has-addons" href="/tags/Javascript/">
-                        <span class="tag">Javascript</span>
-                        <span class="tag is-grey">1</span>
-                    </a>
-                </div>
-                
-                <div class="control">
-                    <a class="tags has-addons" href="/tags/Kernel-Threads/">
-                        <span class="tag">Kernel Threads</span>
-                        <span class="tag is-grey">1</span>
-                    </a>
-                </div>
-                
-                <div class="control">
-                    <a class="tags has-addons" href="/tags/Maybe-a-rant/">
-                        <span class="tag">Maybe a rant</span>
-                        <span class="tag is-grey">1</span>
-                    </a>
-                </div>
-                
-                <div class="control">
-                    <a class="tags has-addons" href="/tags/Microservices/">
-                        <span class="tag">Microservices</span>
-                        <span class="tag is-grey">2</span>
-                    </a>
-                </div>
-                
-                <div class="control">
-                    <a class="tags has-addons" href="/tags/Node-js/">
-                        <span class="tag">Node.js</span>
-                        <span class="tag is-grey">4</span>
-                    </a>
-                </div>
-                
-                <div class="control">
-                    <a class="tags has-addons" href="/tags/Parallelism/">
-                        <span class="tag">Parallelism</span>
-                        <span class="tag is-grey">1</span>
-                    </a>
-                </div>
-                
-                <div class="control">
-                    <a class="tags has-addons" href="/tags/Ports-and-Adapters/">
-                        <span class="tag">Ports and Adapters</span>
-                        <span class="tag is-grey">1</span>
-                    </a>
-                </div>
-                
-                <div class="control">
-                    <a class="tags has-addons" href="/tags/Programming-Paradigms/">
-                        <span class="tag">Programming Paradigms</span>
-                        <span class="tag is-grey">1</span>
-                    </a>
-                </div>
-                
-                <div class="control">
-                    <a class="tags has-addons" href="/tags/Scheduler/">
-                        <span class="tag">Scheduler</span>
-                        <span class="tag is-grey">1</span>
-                    </a>
-                </div>
-                
-                <div class="control">
-                    <a class="tags has-addons" href="/tags/Sidecar-Pattern/">
-                        <span class="tag">Sidecar Pattern</span>
-                        <span class="tag is-grey">1</span>
-                    </a>
-                </div>
-                
-                <div class="control">
-                    <a class="tags has-addons" href="/tags/Software-Architecture/">
-                        <span class="tag">Software Architecture</span>
-                        <span class="tag is-grey">4</span>
-                    </a>
-                </div>
-                
-                <div class="control">
-                    <a class="tags has-addons" href="/tags/Threading-Models/">
-                        <span class="tag">Threading Models</span>
-                        <span class="tag is-grey">1</span>
-                    </a>
-                </div>
-                
-                <div class="control">
-                    <a class="tags has-addons" href="/tags/Threads/">
-                        <span class="tag">Threads</span>
-                        <span class="tag is-grey">1</span>
-                    </a>
-                </div>
-                
-                <div class="control">
-                    <a class="tags has-addons" href="/tags/Typescript/">
-                        <span class="tag">Typescript</span>
-                        <span class="tag is-grey">1</span>
-                    </a>
-                </div>
-                
-                <div class="control">
-                    <a class="tags has-addons" href="/tags/Uncle-Bob/">
-                        <span class="tag">Uncle Bob</span>
-                        <span class="tag is-grey">1</span>
-                    </a>
-                </div>
-                
-                <div class="control">
-                    <a class="tags has-addons" href="/tags/libuv/">
-                        <span class="tag">libuv</span>
-                        <span class="tag is-grey">1</span>
-                    </a>
-                </div>
-                
-            </div>
-        </div>
-    </div>
-</div>
-        
-        </div>
-    
-</div>
-
-                
-
-
-
-
-<div class="column is-4-tablet is-4-desktop is-3-widescreen is-hidden-touch is-hidden-desktop-only has-order-3 column-right ">
-    
-        
-<div class="card widget">
-    <div class="card-content">
-        <h3 class="menu-label">
-            Recent
-        </h3>
-        
-        <article class="media">
-            
-            <a href="/2020/03/07/User-Space-Scheduling/" class="media-left">
-                <p class="image is-64x64">
-                    <img class="thumbnail" src="/images/multi.jpg" alt="User Space Scheduling">
-                </p>
-            </a>
-            
-            <div class="media-content">
-                <div class="content">
-                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2020-03-07T14:26:21.000Z">2020-03-07</time></div>
-                    <a href="/2020/03/07/User-Space-Scheduling/" class="has-link-black-ter is-size-6">User Space Scheduling</a>
-                    <p class="is-size-7 is-uppercase">
-                        <a class="has-link-grey -link" href="/categories/Programming/">Programming</a>
-                    </p>
-                </div>
-            </div>
-        </article>
-        
-        <article class="media">
-            
-            <a href="/2020/02/01/Implementing-Ports-and-Adapters/" class="media-left">
-                <p class="image is-64x64">
-                    <img class="thumbnail" src="/images/golang-ports-and-adapters.png" alt="Implementing Ports and Adapters">
-                </p>
-            </a>
-            
-            <div class="media-content">
-                <div class="content">
-                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2020-02-01T16:15:21.000Z">2020-02-01</time></div>
-                    <a href="/2020/02/01/Implementing-Ports-and-Adapters/" class="has-link-black-ter is-size-6">Implementing Ports and Adapters</a>
-                    <p class="is-size-7 is-uppercase">
-                        <a class="has-link-grey -link" href="/categories/Architecture/">Architecture</a>
-                    </p>
-                </div>
-            </div>
-        </article>
-        
-        <article class="media">
-            
-            <a href="/2019/11/05/what-are-microservices/" class="media-left">
-                <p class="image is-64x64">
-                    <img class="thumbnail" src="/images/legos-2.jpg" alt="What Are Microservices">
-                </p>
-            </a>
-            
-            <div class="media-content">
-                <div class="content">
-                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2019-11-05T18:24:24.000Z">2019-11-05</time></div>
-                    <a href="/2019/11/05/what-are-microservices/" class="has-link-black-ter is-size-6">What Are Microservices</a>
-                    <p class="is-size-7 is-uppercase">
-                        <a class="has-link-grey -link" href="/categories/Architecture/">Architecture</a>
-                    </p>
-                </div>
-            </div>
-        </article>
-        
-        <article class="media">
-            
-            <a href="/2019/07/16/Microservices-Epiphany/" class="media-left">
-                <p class="image is-64x64">
-                    <img class="thumbnail" src="/images/what.jpg" alt="Microservices Epiphany">
-                </p>
-            </a>
-            
-            <div class="media-content">
-                <div class="content">
-                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2019-07-15T21:46:10.000Z">2019-07-16</time></div>
-                    <a href="/2019/07/16/Microservices-Epiphany/" class="has-link-black-ter is-size-6">Microservices Epiphany</a>
-                    <p class="is-size-7 is-uppercase">
-                        <a class="has-link-grey -link" href="/categories/Architecture/">Architecture</a>
-                    </p>
-                </div>
-            </div>
-        </article>
-        
-        <article class="media">
-            
-            <a href="/2019/07/10/Context-Maps-In-Domain-Driven-Design/" class="media-left">
-                <p class="image is-64x64">
-                    <img class="thumbnail" src="/images/connections.jpg" alt="Context Maps in Domain Driven Design">
-                </p>
-            </a>
-            
-            <div class="media-content">
-                <div class="content">
-                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2019-07-10T12:52:33.000Z">2019-07-10</time></div>
-                    <a href="/2019/07/10/Context-Maps-In-Domain-Driven-Design/" class="has-link-black-ter is-size-6">Context Maps in Domain Driven Design</a>
-                    <p class="is-size-7 is-uppercase">
-                        <a class="has-link-grey -link" href="/categories/Architecture/">Architecture</a>
-                    </p>
-                </div>
-            </div>
-        </article>
-        
-    </div>
-</div>
-
-    
-        <div class="card widget">
-    <div class="card-content">
-        <div class="menu">
-        <h3 class="menu-label">
-            Archives
-        </h3>
-        <ul class="menu-list">
-        
-        <li>
-            <a class="level is-marginless" href="/archives/2020/03/">
-                <span class="level-start">
-                    <span class="level-item">March 2020</span>
-                </span>
-                <span class="level-end">
-                    <span class="level-item tag">1</span>
-                </span>
-            </a>
-        </li>
-        
-        <li>
-            <a class="level is-marginless" href="/archives/2020/02/">
-                <span class="level-start">
-                    <span class="level-item">February 2020</span>
-                </span>
-                <span class="level-end">
-                    <span class="level-item tag">1</span>
-                </span>
-            </a>
-        </li>
-        
-        <li>
-            <a class="level is-marginless" href="/archives/2019/11/">
-                <span class="level-start">
-                    <span class="level-item">November 2019</span>
-                </span>
-                <span class="level-end">
-                    <span class="level-item tag">1</span>
-                </span>
-            </a>
-        </li>
-        
-        <li>
-            <a class="level is-marginless" href="/archives/2019/07/">
-                <span class="level-start">
-                    <span class="level-item">July 2019</span>
-                </span>
-                <span class="level-end">
-                    <span class="level-item tag">3</span>
-                </span>
-            </a>
-        </li>
-        
-        <li>
-            <a class="level is-marginless" href="/archives/2019/06/">
-                <span class="level-start">
-                    <span class="level-item">June 2019</span>
-                </span>
-                <span class="level-end">
-                    <span class="level-item tag">4</span>
-                </span>
-            </a>
-        </li>
-        
-        </ul>
-        </div>
-    </div>
-</div>
-    
-        <div class="card widget">
-    <div class="card-content">
-        <div class="menu">
-            <h3 class="menu-label">
-                Tags
-            </h3>
-            <div class="field is-grouped is-grouped-multiline">
-                
-                <div class="control">
-                    <a class="tags has-addons" href="/tags/API-Gateway/">
-                        <span class="tag">API Gateway</span>
-                        <span class="tag is-grey">1</span>
-                    </a>
-                </div>
-                
-                <div class="control">
-                    <a class="tags has-addons" href="/tags/Actor-Model/">
-                        <span class="tag">Actor Model</span>
-                        <span class="tag is-grey">1</span>
-                    </a>
-                </div>
-                
-                <div class="control">
-                    <a class="tags has-addons" href="/tags/Backend-For-Frontend/">
-                        <span class="tag">Backend For Frontend</span>
-                        <span class="tag is-grey">1</span>
-                    </a>
-                </div>
-                
-                <div class="control">
-                    <a class="tags has-addons" href="/tags/Clean-Architecture/">
-                        <span class="tag">Clean Architecture</span>
-                        <span class="tag is-grey">1</span>
-                    </a>
-                </div>
-                
-                <div class="control">
-                    <a class="tags has-addons" href="/tags/Concurrency/">
-                        <span class="tag">Concurrency</span>
-                        <span class="tag is-grey">1</span>
-                    </a>
-                </div>
-                
-                <div class="control">
-                    <a class="tags has-addons" href="/tags/Context-Maps/">
-                        <span class="tag">Context Maps</span>
-                        <span class="tag is-grey">1</span>
-                    </a>
-                </div>
-                
-                <div class="control">
-                    <a class="tags has-addons" href="/tags/DDD/">
-                        <span class="tag">DDD</span>
-                        <span class="tag is-grey">2</span>
-                    </a>
-                </div>
-                
-                <div class="control">
-                    <a class="tags has-addons" href="/tags/Design/">
-                        <span class="tag">Design</span>
-                        <span class="tag is-grey">1</span>
-                    </a>
-                </div>
-                
-                <div class="control">
-                    <a class="tags has-addons" href="/tags/Elixir/">
-                        <span class="tag">Elixir</span>
-                        <span class="tag is-grey">2</span>
-                    </a>
-                </div>
-                
-                <div class="control">
-                    <a class="tags has-addons" href="/tags/Event-Loop/">
-                        <span class="tag">Event Loop</span>
-                        <span class="tag is-grey">1</span>
-                    </a>
-                </div>
-                
-                <div class="control">
-                    <a class="tags has-addons" href="/tags/Functional/">
-                        <span class="tag">Functional</span>
-                        <span class="tag is-grey">3</span>
-                    </a>
-                </div>
-                
-                <div class="control">
-                    <a class="tags has-addons" href="/tags/Golang/">
-                        <span class="tag">Golang</span>
-                        <span class="tag is-grey">1</span>
-                    </a>
-                </div>
-                
-                <div class="control">
-                    <a class="tags has-addons" href="/tags/Green-Threads/">
-                        <span class="tag">Green Threads</span>
-                        <span class="tag is-grey">1</span>
-                    </a>
-                </div>
-                
-                <div class="control">
-                    <a class="tags has-addons" href="/tags/Hexagonal/">
-                        <span class="tag">Hexagonal</span>
-                        <span class="tag is-grey">1</span>
-                    </a>
-                </div>
-                
-                <div class="control">
-                    <a class="tags has-addons" href="/tags/Javascript/">
-                        <span class="tag">Javascript</span>
-                        <span class="tag is-grey">1</span>
-                    </a>
-                </div>
-                
-                <div class="control">
-                    <a class="tags has-addons" href="/tags/Kernel-Threads/">
-                        <span class="tag">Kernel Threads</span>
-                        <span class="tag is-grey">1</span>
-                    </a>
-                </div>
-                
-                <div class="control">
-                    <a class="tags has-addons" href="/tags/Maybe-a-rant/">
-                        <span class="tag">Maybe a rant</span>
-                        <span class="tag is-grey">1</span>
-                    </a>
-                </div>
-                
-                <div class="control">
-                    <a class="tags has-addons" href="/tags/Microservices/">
-                        <span class="tag">Microservices</span>
-                        <span class="tag is-grey">2</span>
-                    </a>
-                </div>
-                
-                <div class="control">
-                    <a class="tags has-addons" href="/tags/Node-js/">
-                        <span class="tag">Node.js</span>
-                        <span class="tag is-grey">4</span>
-                    </a>
-                </div>
-                
-                <div class="control">
-                    <a class="tags has-addons" href="/tags/Parallelism/">
-                        <span class="tag">Parallelism</span>
-                        <span class="tag is-grey">1</span>
-                    </a>
-                </div>
-                
-                <div class="control">
-                    <a class="tags has-addons" href="/tags/Ports-and-Adapters/">
-                        <span class="tag">Ports and Adapters</span>
-                        <span class="tag is-grey">1</span>
-                    </a>
-                </div>
-                
-                <div class="control">
-                    <a class="tags has-addons" href="/tags/Programming-Paradigms/">
-                        <span class="tag">Programming Paradigms</span>
-                        <span class="tag is-grey">1</span>
-                    </a>
-                </div>
-                
-                <div class="control">
-                    <a class="tags has-addons" href="/tags/Scheduler/">
-                        <span class="tag">Scheduler</span>
-                        <span class="tag is-grey">1</span>
-                    </a>
-                </div>
-                
-                <div class="control">
-                    <a class="tags has-addons" href="/tags/Sidecar-Pattern/">
-                        <span class="tag">Sidecar Pattern</span>
-                        <span class="tag is-grey">1</span>
-                    </a>
-                </div>
-                
-                <div class="control">
-                    <a class="tags has-addons" href="/tags/Software-Architecture/">
-                        <span class="tag">Software Architecture</span>
-                        <span class="tag is-grey">4</span>
-                    </a>
-                </div>
-                
-                <div class="control">
-                    <a class="tags has-addons" href="/tags/Threading-Models/">
-                        <span class="tag">Threading Models</span>
-                        <span class="tag is-grey">1</span>
-                    </a>
-                </div>
-                
-                <div class="control">
-                    <a class="tags has-addons" href="/tags/Threads/">
-                        <span class="tag">Threads</span>
-                        <span class="tag is-grey">1</span>
-                    </a>
-                </div>
-                
-                <div class="control">
-                    <a class="tags has-addons" href="/tags/Typescript/">
-                        <span class="tag">Typescript</span>
-                        <span class="tag is-grey">1</span>
-                    </a>
-                </div>
-                
-                <div class="control">
-                    <a class="tags has-addons" href="/tags/Uncle-Bob/">
-                        <span class="tag">Uncle Bob</span>
-                        <span class="tag is-grey">1</span>
-                    </a>
-                </div>
-                
-                <div class="control">
-                    <a class="tags has-addons" href="/tags/libuv/">
-                        <span class="tag">libuv</span>
-                        <span class="tag is-grey">1</span>
-                    </a>
-                </div>
-                
-            </div>
         </div>
     </div>
 </div>

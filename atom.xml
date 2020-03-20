@@ -170,9 +170,9 @@
       <category term="Programming" scheme="https://yuriktech.com/categories/Programming/"/>
     
     
-      <category term="Elixir" scheme="https://yuriktech.com/tags/Elixir/"/>
-    
       <category term="Functional" scheme="https://yuriktech.com/tags/Functional/"/>
+    
+      <category term="Elixir" scheme="https://yuriktech.com/tags/Elixir/"/>
     
   </entry>
   
@@ -192,9 +192,9 @@
       <category term="Paradigms" scheme="https://yuriktech.com/categories/Paradigms/"/>
     
     
-      <category term="Functional" scheme="https://yuriktech.com/tags/Functional/"/>
-    
       <category term="Programming Paradigms" scheme="https://yuriktech.com/tags/Programming-Paradigms/"/>
+    
+      <category term="Functional" scheme="https://yuriktech.com/tags/Functional/"/>
     
   </entry>
   
@@ -215,11 +215,11 @@ In a search for a new programming language, I asked myself two questions - &lt;e
       <category term="Programming" scheme="https://yuriktech.com/categories/Programming/"/>
     
     
-      <category term="Elixir" scheme="https://yuriktech.com/tags/Elixir/"/>
+      <category term="Node.js" scheme="https://yuriktech.com/tags/Node-js/"/>
     
       <category term="Functional" scheme="https://yuriktech.com/tags/Functional/"/>
     
-      <category term="Node.js" scheme="https://yuriktech.com/tags/Node-js/"/>
+      <category term="Elixir" scheme="https://yuriktech.com/tags/Elixir/"/>
     
       <category term="Actor Model" scheme="https://yuriktech.com/tags/Actor-Model/"/>
     
@@ -230,7 +230,7 @@ In a search for a new programming language, I asked myself two questions - &lt;e
     <link href="https://yuriktech.com/2019/06/11/Implementing-Clean-Architecture/"/>
     <id>https://yuriktech.com/2019/06/11/Implementing-Clean-Architecture/</id>
     <published>2019-06-11T18:31:56.000Z</published>
-    <updated>2020-03-19T00:09:37.572Z</updated>
+    <updated>2020-03-20T13:54:44.278Z</updated>
     
     <summary type="html">
     
