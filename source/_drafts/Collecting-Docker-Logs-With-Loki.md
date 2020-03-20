@@ -11,14 +11,14 @@ thumbnail: images/loki.jpg
 category: DevOps
 ---
 Loki is a multi-tenant log aggregation system inspired by Prometheus. 
-It is cost effective, easy to operate and allows viewing logs directly in Grafana, thus avoiding running an expensive ELK stack.
-In this blog post, I will show how to setup a Loki container using docker compose, how to define the loki logging driver to automatically ship all container logs to Loki and finally, how to use the logs in Grafana.
+It is cost effective, easy to operate and allows viewing logs directly in Grafana.
+In this blog post, I will show how to setup a Loki container using docker compose, how to define the Loki logging driver to automatically ship all container logs and finally, how to use the logs in Grafana.
 
 ### Disclaimer
 I have been using this setup for 3 months now with 24 services in a micro-services architecture with success.
 
 ### Setup Loki Container
-First of all, we will need to define a loki container in the `docker-compose.yml`.
+First of all, we will need to define a Loki container in the `docker-compose.yml`.
 
 ```yaml
   services:
@@ -32,8 +32,8 @@ First of all, we will need to define a loki container in the `docker-compose.yml
         - ./volumes/loki/etc:/etc/loki
 ```
 
-The command part tells loki to read the config from the `local-config.yaml` which we add as a volume.
-The `local-config.yaml` is a default from the Loki github page. You can find more about the config [here](https://github.com/grafana/loki/blob/master/docs/configuration/README.md).
+The command part tells Loki to read the config from the `local-config.yaml` which we add as a volume.
+The `local-config.yaml` is a default from the Loki Github page. You can find more about the config [here](https://github.com/grafana/loki/blob/master/docs/configuration/README.md).
 
 Here is an example of the config I use.
 ```yaml
@@ -94,7 +94,7 @@ table_manager:
   retention_period: 0
 ```
 
-### Install Loki Docker Plugin
+### Adding Loki as a Logging Driver
 After adding the container for Loki, we need to add the Loki logging driver as a docker plugin.
 ```shell script
   docker plugin install grafana/loki-docker-driver:latest --alias loki --grant-all-permissions
@@ -110,7 +110,7 @@ If you are on Linux:
   sudo systemctl restart docker
 ```
 
-After installing the plugin verify it is enabled.
+After installing the plugin, verify it is enabled.
 ```shell script
     docker plugin ls
 ```
@@ -120,10 +120,10 @@ Should output
     412df8a79e8e        loki:latest         Loki Logging Driver   true
 ```
 
-### Adding Loki as a Logging Driver
+### Using Loki as a Logging Driver
 We want every container we add to our docker-compose file to send logs to Loki automatically. 
-Add the logging section to each container
 #### Docker-compose.yaml
+Add the logging section to each container.
 ```yaml
   logging:
     driver: loki
@@ -164,7 +164,7 @@ WARNING: no logs are available with the 'loki' log driver
 But after checking Grafana I saw all logs are always sent to Loki, so I just ignore this message.
 
 ### Adding Loki to Grafana
-Login to your Grafana instance and add a new data source of type Loki. Make sure the Grafana can reach the Loki instance
+Login to your Grafana instance and add a new data source of type Loki. Make sure the Grafana can reach the Loki instance.
 ![](./adding-loki.png)
 
 After that, go to explore and you should see all containers appear with automatic labels set by the Loki logging driver.
