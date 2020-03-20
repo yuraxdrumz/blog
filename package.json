@@ -4,6 +4,7 @@
   "private": true,
   "scripts": {
     "server": "hexo server --drafts",
+    "server-no-drafts": "hexo server",
     "deploy": "hexo clean && hexo deploy"
   },
   "hexo": {

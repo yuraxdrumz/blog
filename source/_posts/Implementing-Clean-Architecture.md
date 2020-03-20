@@ -11,7 +11,7 @@ tags:
 ---
 Last year, I had the opportunity to design a new project at work and since I had just finished reading Robert Martin's *Clean Architecture* I thought to myself, why not implement it on that project ? One of the reasons, except my usual *I have to implement this cool thing right away!* was that working on legacy systems in the company was accompanied with the good ol' *big ball of mud* code. The purpose of this post is to show you how can one implement *Clean Architecture* in practice and still understand it years from now, whether you work alone or in a team. Everything shown will be written in *Typescript* on *Node.js* using *Object Oriented* programming paradigm. All of the code will be available [here](https://github.com/yuraxdrumz/clean-architecture-example)
 
-# Disclaimer
+## Disclaimer
 Some of the things that I am going to write and show are my personal experiences and opinions, you may have read Robert Martin's *Clean Architecture* and thought, interpreted or implemented otherwise. All the architectures have the same goals in the end. Implementing this in production has taught me a lot about how to build better software and expanded my toolbox as I hope it expands yours.
 
 ## Core Idea

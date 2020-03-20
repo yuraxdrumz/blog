@@ -1,6 +1,7 @@
 ---
 title: About & Contact
 date: 2019-06-09 20:30:47
+toc: false
 ---
 Hey, My name is Yuri Khomyakov.
 I am a senior software developer / tech lead and an aspiring software architect. I have been coding for the past 6 years. I like reading books about software architecture, design patterns, algorithms, programming paradigms, implementing what I have learned and progress as a software architect. I like building complex applications, cracking tough challenges and creating presentations and talks for my coworkers. I am open to open source collaborations, giving talks and talking over a cup of coffee.
