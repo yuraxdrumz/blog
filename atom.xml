@@ -6,7 +6,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="https://yuriktech.com/"/>
-  <updated>2020-03-19T09:10:43.156Z</updated>
+  <updated>2020-03-21T14:10:20.683Z</updated>
   <id>https://yuriktech.com/</id>
   
   <author>
@@ -15,6 +15,36 @@
   </author>
   
   <generator uri="http://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>Collecting Docker Logs With Loki</title>
+    <link href="https://yuriktech.com/2020/03/21/Collecting-Docker-Logs-With-Loki/"/>
+    <id>https://yuriktech.com/2020/03/21/Collecting-Docker-Logs-With-Loki/</id>
+    <published>2020-03-21T14:10:20.000Z</published>
+    <updated>2020-03-21T14:10:20.683Z</updated>
+    
+    <summary type="html">
+    
+      &lt;p&gt;Loki is a multi-tenant log aggregation system inspired by Prometheus.&lt;br&gt;It is cost effective, easy to operate and allows viewing logs directly in Grafana.&lt;br&gt;In this blog post, I will show how to setup a Loki container using docker compose, how to define the Loki logging driver to automatically ship all container logs and finally, how to view the logs in Grafana.&lt;/p&gt;
+    
+    </summary>
+    
+      <category term="DevOps" scheme="https://yuriktech.com/categories/DevOps/"/>
+    
+    
+      <category term="Tutorial" scheme="https://yuriktech.com/tags/Tutorial/"/>
+    
+      <category term="Docker" scheme="https://yuriktech.com/tags/Docker/"/>
+    
+      <category term="Logging" scheme="https://yuriktech.com/tags/Logging/"/>
+    
+      <category term="Loki" scheme="https://yuriktech.com/tags/Loki/"/>
+    
+      <category term="Development" scheme="https://yuriktech.com/tags/Development/"/>
+    
+      <category term="Containers" scheme="https://yuriktech.com/tags/Containers/"/>
+    
+  </entry>
   
   <entry>
     <title>User Space Scheduling</title>
@@ -92,9 +122,9 @@
     
       <category term="Software Architecture" scheme="https://yuriktech.com/tags/Software-Architecture/"/>
     
-      <category term="Microservices" scheme="https://yuriktech.com/tags/Microservices/"/>
-    
       <category term="Node.js" scheme="https://yuriktech.com/tags/Node-js/"/>
+    
+      <category term="Microservices" scheme="https://yuriktech.com/tags/Microservices/"/>
     
       <category term="Design" scheme="https://yuriktech.com/tags/Design/"/>
     
@@ -170,11 +200,11 @@
       <category term="Programming" scheme="https://yuriktech.com/categories/Programming/"/>
     
     
-      <category term="Tutorial" scheme="https://yuriktech.com/tags/Tutorial/"/>
-    
       <category term="Elixir" scheme="https://yuriktech.com/tags/Elixir/"/>
     
       <category term="Functional" scheme="https://yuriktech.com/tags/Functional/"/>
+    
+      <category term="Tutorial" scheme="https://yuriktech.com/tags/Tutorial/"/>
     
   </entry>
   

@@ -3,6 +3,48 @@
 
 
     <url>
+        <loc>https://yuriktech.com/tags/Containers/</loc>
+        <lastmod>2020-03-21T14:10:20.683Z</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.2</priority>
+    </url>
+
+    <url>
+        <loc>https://yuriktech.com/tags/Development/</loc>
+        <lastmod>2020-03-21T14:10:20.683Z</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.2</priority>
+    </url>
+
+    <url>
+        <loc>https://yuriktech.com/tags/Loki/</loc>
+        <lastmod>2020-03-21T14:10:20.683Z</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.2</priority>
+    </url>
+
+    <url>
+        <loc>https://yuriktech.com/tags/Logging/</loc>
+        <lastmod>2020-03-21T14:10:20.683Z</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.2</priority>
+    </url>
+
+    <url>
+        <loc>https://yuriktech.com/tags/Docker/</loc>
+        <lastmod>2020-03-21T14:10:20.683Z</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.2</priority>
+    </url>
+
+    <url>
+        <loc>https://yuriktech.com/tags/Tutorial/</loc>
+        <lastmod>2020-03-21T14:10:20.683Z</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.2</priority>
+    </url>
+
+    <url>
         <loc>https://yuriktech.com/tags/Functional/</loc>
         <lastmod>2020-03-20T17:59:24.081Z</lastmod>
         <changefreq>weekly</changefreq>
@@ -11,13 +53,6 @@
 
     <url>
         <loc>https://yuriktech.com/tags/Elixir/</loc>
-        <lastmod>2020-03-20T17:59:24.081Z</lastmod>
-        <changefreq>weekly</changefreq>
-        <priority>0.2</priority>
-    </url>
-
-    <url>
-        <loc>https://yuriktech.com/tags/Tutorial/</loc>
         <lastmod>2020-03-20T17:59:24.081Z</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.2</priority>

@@ -8,6 +8,14 @@
     </url>
 
     <url>
+        <loc>https://yuriktech.com/2020/03/21/Collecting-Docker-Logs-With-Loki/</loc>
+        <lastmod>2020-03-21T14:10:20.683Z</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.6</priority>
+
+    </url>
+
+    <url>
         <loc>https://yuriktech.com/2019/07/03/Authentication-Middleware-In-Elixir/</loc>
         <lastmod>2020-03-20T17:59:24.081Z</lastmod>
         <changefreq>weekly</changefreq>
