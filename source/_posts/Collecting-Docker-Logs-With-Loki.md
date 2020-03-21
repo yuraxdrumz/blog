@@ -9,7 +9,9 @@ tags:
   - Tutorial
 thumbnail: images/loki.jpg
 category: DevOps
+date: 2020-03-21 16:10:20
 ---
+
 Loki is a multi-tenant log aggregation system inspired by Prometheus. 
 It is cost effective, easy to operate and allows viewing logs directly in Grafana.
 In this blog post, I will show how to setup a Loki container using docker compose, how to define the Loki logging driver to automatically ship all container logs and finally, how to view the logs in Grafana.
