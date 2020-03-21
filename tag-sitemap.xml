@@ -3,6 +3,27 @@
 
 
     <url>
+        <loc>https://yuriktech.com/tags/Functional/</loc>
+        <lastmod>2020-03-20T17:59:24.081Z</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.2</priority>
+    </url>
+
+    <url>
+        <loc>https://yuriktech.com/tags/Elixir/</loc>
+        <lastmod>2020-03-20T17:59:24.081Z</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.2</priority>
+    </url>
+
+    <url>
+        <loc>https://yuriktech.com/tags/Tutorial/</loc>
+        <lastmod>2020-03-20T17:59:24.081Z</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.2</priority>
+    </url>
+
+    <url>
         <loc>https://yuriktech.com/tags/Uncle-Bob/</loc>
         <lastmod>2020-03-20T13:54:44.278Z</lastmod>
         <changefreq>weekly</changefreq>
@@ -33,20 +54,6 @@
     <url>
         <loc>https://yuriktech.com/tags/Software-Architecture/</loc>
         <lastmod>2020-03-20T13:54:44.278Z</lastmod>
-        <changefreq>weekly</changefreq>
-        <priority>0.2</priority>
-    </url>
-
-    <url>
-        <loc>https://yuriktech.com/tags/Elixir/</loc>
-        <lastmod>2020-03-19T09:23:24.726Z</lastmod>
-        <changefreq>weekly</changefreq>
-        <priority>0.2</priority>
-    </url>
-
-    <url>
-        <loc>https://yuriktech.com/tags/Functional/</loc>
-        <lastmod>2020-03-19T09:23:24.726Z</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.2</priority>
     </url>

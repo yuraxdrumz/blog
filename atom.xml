@@ -92,9 +92,9 @@
     
       <category term="Software Architecture" scheme="https://yuriktech.com/tags/Software-Architecture/"/>
     
-      <category term="Node.js" scheme="https://yuriktech.com/tags/Node-js/"/>
-    
       <category term="Microservices" scheme="https://yuriktech.com/tags/Microservices/"/>
+    
+      <category term="Node.js" scheme="https://yuriktech.com/tags/Node-js/"/>
     
       <category term="Design" scheme="https://yuriktech.com/tags/Design/"/>
     
@@ -159,7 +159,7 @@
     <link href="https://yuriktech.com/2019/07/03/Authentication-Middleware-In-Elixir/"/>
     <id>https://yuriktech.com/2019/07/03/Authentication-Middleware-In-Elixir/</id>
     <published>2019-07-03T15:44:34.000Z</published>
-    <updated>2020-03-19T09:23:24.726Z</updated>
+    <updated>2020-03-20T17:59:24.081Z</updated>
     
     <summary type="html">
     
@@ -170,9 +170,11 @@
       <category term="Programming" scheme="https://yuriktech.com/categories/Programming/"/>
     
     
-      <category term="Functional" scheme="https://yuriktech.com/tags/Functional/"/>
+      <category term="Tutorial" scheme="https://yuriktech.com/tags/Tutorial/"/>
     
       <category term="Elixir" scheme="https://yuriktech.com/tags/Elixir/"/>
+    
+      <category term="Functional" scheme="https://yuriktech.com/tags/Functional/"/>
     
   </entry>
   
@@ -192,9 +194,9 @@
       <category term="Paradigms" scheme="https://yuriktech.com/categories/Paradigms/"/>
     
     
-      <category term="Programming Paradigms" scheme="https://yuriktech.com/tags/Programming-Paradigms/"/>
-    
       <category term="Functional" scheme="https://yuriktech.com/tags/Functional/"/>
+    
+      <category term="Programming Paradigms" scheme="https://yuriktech.com/tags/Programming-Paradigms/"/>
     
   </entry>
   
@@ -215,11 +217,11 @@ In a search for a new programming language, I asked myself two questions - &lt;e
       <category term="Programming" scheme="https://yuriktech.com/categories/Programming/"/>
     
     
-      <category term="Node.js" scheme="https://yuriktech.com/tags/Node-js/"/>
+      <category term="Elixir" scheme="https://yuriktech.com/tags/Elixir/"/>
     
       <category term="Functional" scheme="https://yuriktech.com/tags/Functional/"/>
     
-      <category term="Elixir" scheme="https://yuriktech.com/tags/Elixir/"/>
+      <category term="Node.js" scheme="https://yuriktech.com/tags/Node-js/"/>
     
       <category term="Actor Model" scheme="https://yuriktech.com/tags/Actor-Model/"/>
     
