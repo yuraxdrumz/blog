@@ -15,7 +15,9 @@ It is cost effective, easy to operate and allows viewing logs directly in Grafan
 In this blog post, I will show how to setup a Loki container using docker compose, how to define the Loki logging driver to automatically ship all container logs and finally, how to use the logs in Grafana.
 
 ### Disclaimer
-I have been using this setup for 3 months now with 24 services in a micro-services architecture with success.
+I have been using Loki in a development setup for 3 months now with 24 services with success.
+It really makes the developers life easier, especially after chasing log files and docker logs in 20 terminals in parallel.
+From what I have read, Loki was battle tested by Grafana, so I am sure it is capable of running in production just fine.
 
 ### Setup Loki Container
 First of all, we will need to define a Loki container in the `docker-compose.yml`.
@@ -32,7 +34,7 @@ First of all, we will need to define a Loki container in the `docker-compose.yml
         - ./volumes/loki/etc:/etc/loki
 ```
 
-The command part tells Loki to read the config from the `local-config.yaml` which we add as a volume.
+The command part tells Loki to read the config from the `local-config.yaml` which is added as a volume.
 The `local-config.yaml` is a default from the Loki Github page. You can find more about the config [here](https://github.com/grafana/loki/blob/master/docs/configuration/README.md).
 
 Here is an example of the config I use.
@@ -123,15 +125,19 @@ Should output
 ### Using Loki as a Logging Driver
 We want every container we add to our docker-compose file to send logs to Loki automatically. 
 #### Docker-compose.yaml
-Add the logging section to each container.
+The default driver is json-file, but we can easily change it to loki, thanks to the docker plugin we installed earlier.
+The loki-url option tells where to ship the logs, which in this case is to our local loki instance.
+For a complete options list check [here](https://github.com/grafana/loki/tree/master/cmd/docker-driver#log-opt-options)
 ```yaml
   logging:
     driver: loki
     options:
       loki-url: "http://host.docker.internal:3100/loki/api/v1/push"
 ```
-
-An easier way since docker-compose 3.4 is anchors
+An easier way to reuse the logging section since docker-compose version 3.4, is the `x-` extension fields and yaml anchors and aliases.
+The `x-` extension field tells docker compose to ignore the section that follows it.
+Anchors are identified by an `&` character, and aliases by an `*` character.
+Define an extension field at the top of your `docker-compose.yml` with an anchor after it and reuse it using the alias on all services.
 
 ```yaml
 # logger driver - change this driver to ship all container logs to a different location
@@ -140,20 +146,23 @@ x-logging: &logging
     driver: loki
     options:
       loki-url: "http://host.docker.internal:3100/loki/api/v1/push"
+services:
+  my_service:
+    *logging
+    container_name: xxx
+    image: xxx/xxx
+  another_cool_service:
+    *logging
+    container_name: xxxx
+    image: xxxx/xxxx
 ```
-The `x-` tells docker compose to ignore this section. The `&` is a yml feature which allows referencing the entire section under it later in the file.
 
-Here is an example with a reference to the &logging anchor we defined earlier.
-```yaml
-  services:
-    my_service:
-      *logging
-      container_name: xxx
-      image: xxx/xxx
-```
 #### Daemon.json
-We can also change the default logging driver for all containers in `/etc/docker/daemon.json`.
-I prefer adding it in the `docker-compose.yaml` directly, especially after anchor support came out.
+We can also change the default logging driver for all containers in a file called `daemon.json`.
+If you are on Mac its located at `~/.docker/daemon.json`
+If you are on linux its located at `/etc/docker/daemon.json`
+
+I prefer adding the logging driver in the `docker-compose.yaml` directly, especially after anchors and aliases support came out.
 
 ### Running Docker with Loki
 After you run `docker-compose up` all container logs will be sent to Loki.
@@ -161,17 +170,18 @@ One thing to note is, there is an error after running the containers, which says
 ```log
 WARNING: no logs are available with the 'loki' log driver
 ```
-But after checking Grafana I saw all logs are always sent to Loki, so I just ignore this message.
+Nevertheless, all container logs are successfully sent to Grafana every time.
+Because I use Loki in a development setup and not a production one, I ignore this message, but if you want to run this in production, I would ensure that it is minor.
 
 ### Adding Loki to Grafana
 Login to your Grafana instance and add a new data source of type Loki. Make sure the Grafana can reach the Loki instance.
 ![](./adding-loki.png)
 
-After that, go to explore and you should see all containers appear with automatic labels set by the Loki logging driver.
-
+### Using Loki in Grafana
+After adding Loki as a data source, go to explore and you should see all containers appear with automatic labels set by the Loki logging driver.
 ![](./grafana-loki.png)
 
 You can also filter by words using the logql syntax, for example: `|=` includes syntax or `!=` excludes syntax. You can find out more about Loki logql syntax [here](https://github.com/grafana/loki/blob/master/docs/logql.md).
 
 ### Closing Notes
-We saw how easy it is to define a Loki docker container, afterwards we added Loki logging driver as a docker plugin, and at last, we sent all of our logs to Grafana.
+We saw how easy it is to define a Loki docker container, afterwards we added Loki logging driver as a docker plugin, and at last, we sent all of our logs to Grafana with a simple configuration.
