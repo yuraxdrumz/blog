@@ -122,9 +122,9 @@
     
       <category term="Software Architecture" scheme="https://yuriktech.com/tags/Software-Architecture/"/>
     
-      <category term="Node.js" scheme="https://yuriktech.com/tags/Node-js/"/>
-    
       <category term="Microservices" scheme="https://yuriktech.com/tags/Microservices/"/>
+    
+      <category term="Node.js" scheme="https://yuriktech.com/tags/Node-js/"/>
     
       <category term="Design" scheme="https://yuriktech.com/tags/Design/"/>
     
@@ -189,7 +189,7 @@
     <link href="https://yuriktech.com/2019/07/03/Authentication-Middleware-In-Elixir/"/>
     <id>https://yuriktech.com/2019/07/03/Authentication-Middleware-In-Elixir/</id>
     <published>2019-07-03T15:44:34.000Z</published>
-    <updated>2020-03-20T17:59:24.081Z</updated>
+    <updated>2020-04-26T10:28:57.522Z</updated>
     
     <summary type="html">
     
@@ -205,6 +205,10 @@
       <category term="Functional" scheme="https://yuriktech.com/tags/Functional/"/>
     
       <category term="Tutorial" scheme="https://yuriktech.com/tags/Tutorial/"/>
+    
+      <category term="Authentication" scheme="https://yuriktech.com/tags/Authentication/"/>
+    
+      <category term="Middleware" scheme="https://yuriktech.com/tags/Middleware/"/>
     
   </entry>
   
@@ -251,9 +255,9 @@ In a search for a new programming language, I asked myself two questions - &lt;e
     
       <category term="Functional" scheme="https://yuriktech.com/tags/Functional/"/>
     
-      <category term="Node.js" scheme="https://yuriktech.com/tags/Node-js/"/>
-    
       <category term="Actor Model" scheme="https://yuriktech.com/tags/Actor-Model/"/>
+    
+      <category term="Node.js" scheme="https://yuriktech.com/tags/Node-js/"/>
     
   </entry>
   
@@ -286,11 +290,11 @@ In a search for a new programming language, I asked myself two questions - &lt;e
   </entry>
   
   <entry>
-    <title>How the Event Loop Really Works</title>
-    <link href="https://yuriktech.com/2019/06/09/Node-JS-Event-Loop-0/"/>
-    <id>https://yuriktech.com/2019/06/09/Node-JS-Event-Loop-0/</id>
+    <title>The Javascript Event Loop</title>
+    <link href="https://yuriktech.com/2019/06/09/The-Javascript-Event-Loop/"/>
+    <id>https://yuriktech.com/2019/06/09/The-Javascript-Event-Loop/</id>
     <published>2019-06-09T12:50:22.000Z</published>
-    <updated>2020-03-19T00:09:37.583Z</updated>
+    <updated>2020-04-26T10:31:12.095Z</updated>
     
     <summary type="html">
     
@@ -302,6 +306,8 @@ In a search for a new programming language, I asked myself two questions - &lt;e
     
     
       <category term="Node.js" scheme="https://yuriktech.com/tags/Node-js/"/>
+    
+      <category term="Node js" scheme="https://yuriktech.com/tags/Node-js/"/>
     
       <category term="Javascript" scheme="https://yuriktech.com/tags/Javascript/"/>
     

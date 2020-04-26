@@ -2,7 +2,7 @@
 <html lang="en">
 <head><meta name="generator" content="Hexo 3.8.0">
     <meta charset="utf-8">
-<title>How the Event Loop Really Works - Yurik&#39;s Tech Blog</title>
+<title>The Javascript Event Loop - Yurik&#39;s Tech Blog</title>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
 <meta>
 <meta>
@@ -10,19 +10,19 @@
 <meta>
 
     <meta name="description" content="After writing in Node.js for 3 years, I felt that the majority of the posts about it were lacking deeper knowledge, especially about the event loops internals, so, I decided to dig deep and give you m">
-<meta name="keywords" content="Node.js,Javascript,Event Loop,libuv">
+<meta name="keywords" content="Node.js,Node js,Javascript,Event Loop,libuv">
 <meta property="og:type" content="article">
-<meta property="og:title" content="How the Event Loop Really Works">
-<meta property="og:url" content="https://yuriktech.com/2019/06/09/Node-JS-Event-Loop-0/index.html">
+<meta property="og:title" content="The Javascript Event Loop">
+<meta property="og:url" content="https://yuriktech.com/2019/06/09/The-Javascript-Event-Loop/index.html">
 <meta property="og:site_name" content="Yurik&#39;s Tech Blog">
 <meta property="og:description" content="After writing in Node.js for 3 years, I felt that the majority of the posts about it were lacking deeper knowledge, especially about the event loops internals, so, I decided to dig deep and give you m">
 <meta property="og:locale" content="en">
-<meta property="og:image" content="https://yuriktech.com/images/og_image.png">
-<meta property="og:updated_time" content="2020-03-19T00:09:37.583Z">
+<meta property="og:image" content="https://yuriktech.com/images/nodejs.png">
+<meta property="og:updated_time" content="2020-04-26T10:31:12.095Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="How the Event Loop Really Works">
+<meta name="twitter:title" content="The Javascript Event Loop">
 <meta name="twitter:description" content="After writing in Node.js for 3 years, I felt that the majority of the posts about it were lacking deeper knowledge, especially about the event loops internals, so, I decided to dig deep and give you m">
-<meta name="twitter:image" content="https://yuriktech.com/images/og_image.png">
+<meta name="twitter:image" content="https://yuriktech.com/images/nodejs.png">
 
 
 
@@ -146,6 +146,12 @@
             <div class="columns">
                 <div class="column is-8-tablet is-8-desktop is-6-widescreen has-order-2 column-main"><div class="card">
     
+    <div class="card-image">
+        <span class="image is-7by1">
+            <img class="thumbnail" src="/images/nodejs.png" alt="The Javascript Event Loop">
+        </span>
+    </div>
+    
     <div class="card-content article ">
         
         <div class="level article-meta is-size-7 is-uppercase is-mobile is-overflow-x-auto">
@@ -160,7 +166,7 @@
                 <span class="level-item has-text-grey">
                     
                     
-                    21 minutes read (About 3208 words)
+                    21 minutes read (About 3216 words)
                 </span>
                 
                 
@@ -169,7 +175,7 @@
         
         <h1 class="title is-size-3 is-size-4-mobile has-text-weight-normal">
             
-                How the Event Loop Really Works
+                The Javascript Event Loop
             
         </h1>
         <div class="content">
@@ -183,7 +189,7 @@
 <li>Is Node.js really single threaded?</li>
 <li>Why do we have a thread pool if we already have the event loop that does all the async operations?</li>
 </ol>
-<h2 id="What-is-the-event-loop"><a href="#What-is-the-event-loop" class="headerlink" title="What is the event loop??"></a>What is the event loop??</h2><p>From the Node.js website, summarized:</p>
+<h2 id="What-is-the-event-loop"><a href="#What-is-the-event-loop" class="headerlink" title="What is the event loop?"></a>What is the event loop?</h2><p>From the Node.js website, summarized:</p>
 <blockquote>
 <p>Node.js is an event-based platform. This means that everything that happens in Node is the reaction to an event. Abstracted away from the developer, the reactions to events are all handled by a library called <strong>libuv</strong>.</p>
 </blockquote>
@@ -208,7 +214,7 @@
 <li>Repeat</li>
 </ul>
 <p>The visual diagram of the phases looks like this, do not worry if you still do not get the full picture, we still have things to cover!</p>
-<p><img src="/2019/06/09/Node-JS-Event-Loop-0/loop_iteration.png" alt></p>
+<p><img src="/2019/06/09/The-Javascript-Event-Loop/loop_iteration.png" alt></p>
 <h2 id="What-are-the-differences-between-the-phases-of-libuv-and-Node-js"><a href="#What-are-the-differences-between-the-phases-of-libuv-and-Node-js" class="headerlink" title="What are the differences between the phases of libuv and Node.js"></a>What are the differences between the phases of libuv and Node.js</h2><p>Node.js uses all of the above mentioned phases and adds 2 more: the <code>process.nextTick</code> and <code>microTaskQueue</code>.
  the differences in Node.js are:</p>
 <ul>
@@ -221,7 +227,7 @@
 </ul>
 <p>Before we continue, it is important to note that all phases we mentioned(timers, pending, poll, close) always call <strong>1</strong> callback which is a macro operation that is sent to JS land and afterwards the <code>nextTickQueue</code> + <code>microTaskQueue</code> are run, no matter where we are in the event loop. <strong>Each macro operation combined with the <code>nextTickQueue</code> and <code>microTaskQueue</code> is called an event loop tick.</strong> </p>
 <p>Here is the diagram for Node.js event loop, notice there is not much difference except the 2 queues we talked about(nextTickQueue and microTaskQueue).</p>
-<p><img src="/2019/06/09/Node-JS-Event-Loop-0/nodejs-event-loop-workflow.png" alt></p>
+<p><img src="/2019/06/09/The-Javascript-Event-Loop/nodejs-event-loop-workflow.png" alt></p>
 <p>Did you notice something interesting we learned about the callback queue<strong>s</strong>? Every one talks about <strong>a callback queue</strong> but in reality <strong>each phase has its own callback queue</strong>.</p>
 <h2 id="How-is-the-event-loop-implemented-in-practice"><a href="#How-is-the-event-loop-implemented-in-practice" class="headerlink" title="How is the event loop implemented in practice?"></a>How is the event loop implemented in practice?</h2><p>Here is the c++ code from the libuv github, I am sure you can figure the phases out by yourself and if you look carefully, you will see that the timeout for the poll phase is calculated. Also, we have a special mode of RUN_ONCE which dictates that if no callbacks were called in current poll phase, it means we have no work to do except the timers, so just update time and run timers phase before exiting.</p>
 <figure class="highlight c++ hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-function"><span class="hljs-keyword">int</span> <span class="hljs-title">uv_run</span><span class="hljs-params">(<span class="hljs-keyword">uv_loop_t</span>* loop, uv_run_mode mode)</span> </span>&#123;</span><br><span class="line">  <span class="hljs-keyword">int</span> timeout;</span><br><span class="line">  <span class="hljs-keyword">int</span> r;</span><br><span class="line">  <span class="hljs-keyword">int</span> ran_pending;</span><br><span class="line"></span><br><span class="line">  r = uv__loop_alive(loop);</span><br><span class="line">  <span class="hljs-keyword">if</span> (!r)</span><br><span class="line">    uv__update_time(loop);</span><br><span class="line"></span><br><span class="line">  <span class="hljs-keyword">while</span> (r != <span class="hljs-number">0</span> &amp;&amp; loop-&gt;stop_flag == <span class="hljs-number">0</span>) &#123;</span><br><span class="line">    uv__update_time(loop);</span><br><span class="line">    uv__run_timers(loop);</span><br><span class="line">    ran_pending = uv__run_pending(loop);</span><br><span class="line">    uv__run_idle(loop);</span><br><span class="line">    uv__run_prepare(loop);</span><br><span class="line"></span><br><span class="line">    timeout = <span class="hljs-number">0</span>;</span><br><span class="line">    <span class="hljs-keyword">if</span> ((mode == UV_RUN_ONCE &amp;&amp; !ran_pending) || mode == UV_RUN_DEFAULT)</span><br><span class="line">      timeout = uv_backend_timeout(loop);</span><br><span class="line"></span><br><span class="line">    uv__io_poll(loop, timeout);</span><br><span class="line">    uv__run_check(loop);</span><br><span class="line">    uv__run_closing_handles(loop);</span><br><span class="line"></span><br><span class="line">    <span class="hljs-keyword">if</span> (mode == UV_RUN_ONCE) &#123;</span><br><span class="line">      <span class="hljs-comment">/* UV_RUN_ONCE implies forward progress: at least one callback must have</span></span><br><span class="line"><span class="hljs-comment">       * been invoked when it returns. uv__io_poll() can return without doing</span></span><br><span class="line"><span class="hljs-comment">       * I/O (meaning: no callbacks) when its timeout expires - which means we</span></span><br><span class="line"><span class="hljs-comment">       * have pending timers that satisfy the forward progress constraint.</span></span><br><span class="line"><span class="hljs-comment">       *</span></span><br><span class="line"><span class="hljs-comment">       * UV_RUN_NOWAIT makes no guarantees about progress so it's omitted from</span></span><br><span class="line"><span class="hljs-comment">       * the check.</span></span><br><span class="line"><span class="hljs-comment">       */</span></span><br><span class="line">      uv__update_time(loop);</span><br><span class="line">      uv__run_timers(loop);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    r = uv__loop_alive(loop);</span><br><span class="line">    <span class="hljs-keyword">if</span> (mode == UV_RUN_ONCE || mode == UV_RUN_NOWAIT)</span><br><span class="line">      <span class="hljs-keyword">break</span>;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="hljs-comment">/* The if statement lets gcc compile it to a conditional store. Avoids</span></span><br><span class="line"><span class="hljs-comment">   * dirtying a cache line.</span></span><br><span class="line"><span class="hljs-comment">   */</span></span><br><span class="line">  <span class="hljs-keyword">if</span> (loop-&gt;stop_flag != <span class="hljs-number">0</span>)</span><br><span class="line">    loop-&gt;stop_flag = <span class="hljs-number">0</span>;</span><br><span class="line"></span><br><span class="line">  <span class="hljs-keyword">return</span> r;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
@@ -252,13 +258,13 @@
 <p>Ok, we figured out that fs operations are problematic and must be done sync, but why DNS resolving must be sync too? To resolve DNS you must <strong>read</strong> the hosts file first on the host machine. We must use the fs for that and you get it by now…<br>Regarding the crypto, Cryptography on the most basic level is performing calculations, and there is no way to to calculations asynchronously on the same thread. For all the reasons above, we have a thread pool. When you send an async fs operation or an async crypto/dns resolve callbacks to the event loop, it gets picked up by the thread pool and resolved on a different thread <strong>synchronously</strong>.</p>
 <h2 id="Examples"><a href="#Examples" class="headerlink" title="Examples"></a>Examples</h2><p>Now, after we answered all the questions, lets look at some examples:<br>We will call the crypto.pbkdf2 async implementation.</p>
 <p>I added a comment of how the results look in the previous example with default 4 threads that took 9xx ms completion time</p>
-<h3 id="Example-1"><a href="#Example-1" class="headerlink" title="Example 1:"></a>Example 1:</h3><figure class="highlight javascript hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-keyword">const</span> &#123; pbkdf2 &#125; = <span class="hljs-built_in">require</span>(<span class="hljs-string">'crypto'</span>);</span><br><span class="line"><span class="hljs-keyword">const</span> start = <span class="hljs-built_in">Date</span>.now();</span><br><span class="line"><span class="hljs-keyword">const</span> doExpensiveHashing = <span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> &#123;</span><br><span class="line">  pbkdf2(<span class="hljs-string">'pwd'</span>, <span class="hljs-string">'salt'</span>, <span class="hljs-number">100000</span>, <span class="hljs-number">512</span>, <span class="hljs-string">'sha512'</span>, () =&gt;</span><br><span class="line">    <span class="hljs-built_in">console</span>.log(<span class="hljs-string">`Done in <span class="hljs-subst">$&#123;<span class="hljs-built_in">Date</span>.now() - start&#125;</span>ms`</span>)</span><br><span class="line">  );</span><br><span class="line">&#125;;</span><br><span class="line">doExpensiveHashing(); <span class="hljs-comment">// Done in 937ms</span></span><br><span class="line">doExpensiveHashing(); <span class="hljs-comment">// Done in 942ms</span></span><br><span class="line">doExpensiveHashing(); <span class="hljs-comment">// Done in 943ms</span></span><br><span class="line">doExpensiveHashing(); <span class="hljs-comment">// Done in 943ms</span></span><br></pre></td></tr></table></figure>
+<h3 id="UV-THREADPOOL-SIZE"><a href="#UV-THREADPOOL-SIZE" class="headerlink" title="UV_THREADPOOL_SIZE"></a>UV_THREADPOOL_SIZE</h3><figure class="highlight javascript hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-keyword">const</span> &#123; pbkdf2 &#125; = <span class="hljs-built_in">require</span>(<span class="hljs-string">'crypto'</span>);</span><br><span class="line"><span class="hljs-keyword">const</span> start = <span class="hljs-built_in">Date</span>.now();</span><br><span class="line"><span class="hljs-keyword">const</span> doExpensiveHashing = <span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> &#123;</span><br><span class="line">  pbkdf2(<span class="hljs-string">'pwd'</span>, <span class="hljs-string">'salt'</span>, <span class="hljs-number">100000</span>, <span class="hljs-number">512</span>, <span class="hljs-string">'sha512'</span>, () =&gt;</span><br><span class="line">    <span class="hljs-built_in">console</span>.log(<span class="hljs-string">`Done in <span class="hljs-subst">$&#123;<span class="hljs-built_in">Date</span>.now() - start&#125;</span>ms`</span>)</span><br><span class="line">  );</span><br><span class="line">&#125;;</span><br><span class="line">doExpensiveHashing(); <span class="hljs-comment">// Done in 937ms</span></span><br><span class="line">doExpensiveHashing(); <span class="hljs-comment">// Done in 942ms</span></span><br><span class="line">doExpensiveHashing(); <span class="hljs-comment">// Done in 943ms</span></span><br><span class="line">doExpensiveHashing(); <span class="hljs-comment">// Done in 943ms</span></span><br></pre></td></tr></table></figure>
 
 <p>now set the environment variable <code>UV_THREADPOOL_SIZE=1</code> and run the code again, </p>
 <figure class="highlight javascript hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-keyword">const</span> &#123; pbkdf2 &#125; = <span class="hljs-built_in">require</span>(<span class="hljs-string">'crypto'</span>);</span><br><span class="line"><span class="hljs-keyword">const</span> start = <span class="hljs-built_in">Date</span>.now();</span><br><span class="line"><span class="hljs-keyword">const</span> doExpensiveHashing = <span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> &#123;</span><br><span class="line">  pbkdf2(<span class="hljs-string">'pwd'</span>, <span class="hljs-string">'salt'</span>, <span class="hljs-number">100000</span>, <span class="hljs-number">512</span>, <span class="hljs-string">'sha512'</span>, () =&gt;</span><br><span class="line">    <span class="hljs-built_in">console</span>.log(<span class="hljs-string">`Done in <span class="hljs-subst">$&#123;<span class="hljs-built_in">Date</span>.now() - start&#125;</span>ms`</span>)</span><br><span class="line">  );</span><br><span class="line">&#125;;</span><br><span class="line">doExpensiveHashing(); <span class="hljs-comment">// Done in 658ms</span></span><br><span class="line">doExpensiveHashing(); <span class="hljs-comment">// Done in 1321ms</span></span><br><span class="line">doExpensiveHashing(); <span class="hljs-comment">// Done in 1982ms</span></span><br><span class="line">doExpensiveHashing(); <span class="hljs-comment">// Done in 2637ms</span></span><br></pre></td></tr></table></figure>
 
 <p>We saw that we get sequential execution because we have only 1 thread. If you try the sync implementation we will simply block our thread, but the thread pool allows us to do all the non trivial crypto work on another thread and keep our business rolling! Isn’t that cool?</p>
-<h3 id="Example-2"><a href="#Example-2" class="headerlink" title="Example 2:"></a>Example 2:</h3><p>Before we start, important note, if we set <code>setTimeout</code> to 0, it will be 1ms.</p>
+<h3 id="Timers"><a href="#Timers" class="headerlink" title="Timers"></a>Timers</h3><p>Before we start, important note, if we set <code>setTimeout</code> to 0, it will be 1ms.</p>
 <p>Who will execute first? According to what we saw, it will be setImmediate because the timer has not expired yet, but try and run it several times:</p>
 <figure class="highlight javascript hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">setTimeout(<span class="hljs-function"><span class="hljs-params">()</span>=&gt;</span><span class="hljs-built_in">console</span>.log(<span class="hljs-string">'setTimeout'</span>),<span class="hljs-number">0</span>)</span><br><span class="line">setImmediate(<span class="hljs-function"><span class="hljs-params">()</span>=&gt;</span><span class="hljs-built_in">console</span>.log(<span class="hljs-string">'setImmediate'</span>))</span><br></pre></td></tr></table></figure>
 
@@ -269,22 +275,22 @@
 <figure class="highlight javascript hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">setTimeout</span><br><span class="line">setImmediate</span><br></pre></td></tr></table></figure>
 
 <p>The interesting part here is that we know that when the event loop runs, it checks if the timer expired, which in our case is 1ms, which is a long time for a cpu, and the <code>setImmediate</code> will run only on next tick after we defined it and only after poll phase!. If the timer expired on start of next tick it will be called first, if not, the <code>setImmediate</code> will be called first and <code>setTimeout</code> afterwards.</p>
-<h3 id="Example-3"><a href="#Example-3" class="headerlink" title="Example 3:"></a>Example 3:</h3><p>Now, lets add an IO cycle</p>
+<h3 id="Timers-IO"><a href="#Timers-IO" class="headerlink" title="Timers + IO"></a>Timers + IO</h3><p>Now, lets add an IO cycle</p>
 <figure class="highlight javascript hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-keyword">const</span> fs = <span class="hljs-built_in">require</span>(<span class="hljs-string">'fs'</span>)</span><br><span class="line"></span><br><span class="line">fs.readFile(<span class="hljs-string">'test.txt'</span>, ()=&gt;&#123;</span><br><span class="line">  setTimeout(<span class="hljs-function"><span class="hljs-params">()</span>=&gt;</span><span class="hljs-built_in">console</span>.log(<span class="hljs-string">'setTimeout'</span>),<span class="hljs-number">0</span>)</span><br><span class="line">  setImmediate(<span class="hljs-function"><span class="hljs-params">()</span>=&gt;</span><span class="hljs-built_in">console</span>.log(<span class="hljs-string">'setImmediate'</span>))</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
 
 <p>The fs sends the readFile to our thread pool, when the operation finishes in poll phase, it registers the setTimeout and setImmediate and as we saw, the check phase always comes after the poll phase, so our <code>setImmediate</code> is guaranteed to execute first.</p>
-<h3 id="Example-4"><a href="#Example-4" class="headerlink" title="Example 4:"></a>Example 4:</h3><p>Recursive operations in the event loop:</p>
+<h3 id="Recursion-Timers"><a href="#Recursion-Timers" class="headerlink" title="Recursion + Timers"></a>Recursion + Timers</h3><p>Recursive operations in the event loop:</p>
 <p>take this example:</p>
 <figure class="highlight javascript hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-keyword">const</span> express = <span class="hljs-built_in">require</span>(<span class="hljs-string">'express'</span>)</span><br><span class="line"><span class="hljs-keyword">const</span> app = express()</span><br><span class="line"></span><br><span class="line">app.use(<span class="hljs-function">(<span class="hljs-params">req,res,next</span>)=&gt;</span>&#123;</span><br><span class="line">  res.json(<span class="hljs-string">'ok'</span>)</span><br><span class="line">&#125;)</span><br><span class="line"></span><br><span class="line"><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">compute</span>(<span class="hljs-params"></span>)</span>&#123;</span><br><span class="line">  <span class="hljs-keyword">for</span>(i=<span class="hljs-number">0</span>;i&lt;<span class="hljs-number">1e3</span>;i++)&#123;</span><br><span class="line">    <span class="hljs-built_in">console</span>.log(<span class="hljs-string">`computing i=<span class="hljs-subst">$&#123;i&#125;</span>...`</span>)</span><br><span class="line">  &#125;</span><br><span class="line">  setImmediate(compute)</span><br><span class="line">  <span class="hljs-comment">// Promise.resolve().then(compute)</span></span><br><span class="line">  <span class="hljs-comment">// process.nextTick(compute)</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">app.listen(<span class="hljs-number">3000</span>, ()=&gt;<span class="hljs-built_in">console</span>.log(<span class="hljs-string">'listening on port 3000'</span>))</span><br><span class="line">compute()</span><br></pre></td></tr></table></figure>
 
 <p>Will our web server answer our requests?<br>Remember we said that recursive operations are dangerous on <code>microTaskQueue</code> and <code>nextTickQueue</code> in JS land? Well, thats true, which means, that a recursive call to <code>setImmediate</code> will not be immediate(1 macro per tick, remember?), but split to next tick after each invocation and that means that we pass iterations through poll phase which is responsible for our IO. To answer the question - Yes, we will answer the web requests!</p>
-<h3 id="Example-5"><a href="#Example-5" class="headerlink" title="Example 5:"></a>Example 5:</h3><p>Now, lets see with <code>Promise.resolve().then(compute)</code></p>
+<h3 id="Promise-resolve"><a href="#Promise-resolve" class="headerlink" title="Promise.resolve"></a>Promise.resolve</h3><p>Now, lets see with <code>Promise.resolve().then(compute)</code></p>
 <figure class="highlight javascript hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-keyword">const</span> express = <span class="hljs-built_in">require</span>(<span class="hljs-string">'express'</span>)</span><br><span class="line"><span class="hljs-keyword">const</span> app = express()</span><br><span class="line"></span><br><span class="line">app.use(<span class="hljs-function">(<span class="hljs-params">req,res,next</span>)=&gt;</span>&#123;</span><br><span class="line">  res.json(<span class="hljs-string">'ok'</span>)</span><br><span class="line">&#125;)</span><br><span class="line"></span><br><span class="line"><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">compute</span>(<span class="hljs-params"></span>)</span>&#123;</span><br><span class="line">  <span class="hljs-keyword">for</span>(i=<span class="hljs-number">0</span>;i&lt;<span class="hljs-number">1e3</span>;i++)&#123;</span><br><span class="line">    <span class="hljs-built_in">console</span>.log(<span class="hljs-string">`computing i=<span class="hljs-subst">$&#123;i&#125;</span>...`</span>)</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="hljs-comment">// setImmediate(compute)</span></span><br><span class="line">  <span class="hljs-built_in">Promise</span>.resolve().then(compute)</span><br><span class="line">  <span class="hljs-comment">// process.nextTick(compute)</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">app.listen(<span class="hljs-number">3000</span>, ()=&gt;<span class="hljs-built_in">console</span>.log(<span class="hljs-string">'listening on port 3000'</span>))</span><br><span class="line">compute()</span><br></pre></td></tr></table></figure>
 
 <p>The native implementation of promises work with the <code>microTaskQueue</code>, which will run in recursion indefinitely and our web server will never answer!</p>
 <p>Fun fact - With native promises we could implement long running promises that do recursions, and would never continue to next ticks - so fs operations and other network IO and phases from c++ land will never get execution time! For these reasons, <code>Bluebird</code> and other promise libraries implemented the <code>resolve</code> and <code>reject</code> to be in <code>setImmediate</code> which will never starve the IO! </p>
 <p>The <code>process.nextTick</code> should be obvious by now.</p>
-<h3 id="Example-6"><a href="#Example-6" class="headerlink" title="Example 6:"></a>Example 6:</h3><p>Last one before we wrap up:</p>
+<h3 id="Promise-resolve-nextTick-Timers"><a href="#Promise-resolve-nextTick-Timers" class="headerlink" title="Promise.resolve + nextTick + Timers"></a>Promise.resolve + nextTick + Timers</h3><p>Last one before we wrap up:</p>
 <figure class="highlight javascript hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-built_in">Promise</span>.resolve().then(<span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> <span class="hljs-built_in">console</span>.log(<span class="hljs-string">'promise1 resolved'</span>));</span><br><span class="line"><span class="hljs-built_in">Promise</span>.resolve().then(<span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> <span class="hljs-built_in">console</span>.log(<span class="hljs-string">'promise2 resolved'</span>));</span><br><span class="line"><span class="hljs-built_in">Promise</span>.resolve().then(<span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> &#123;</span><br><span class="line">    <span class="hljs-built_in">console</span>.log(<span class="hljs-string">'promise3 resolved'</span>);</span><br><span class="line">    process.nextTick(<span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> <span class="hljs-built_in">console</span>.log(<span class="hljs-string">'next tick inside promise resolve handler'</span>));</span><br><span class="line">&#125;);</span><br><span class="line"><span class="hljs-built_in">Promise</span>.resolve().then(<span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> <span class="hljs-built_in">console</span>.log(<span class="hljs-string">'promise4 resolved'</span>));</span><br><span class="line"><span class="hljs-built_in">Promise</span>.resolve().then(<span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> <span class="hljs-built_in">console</span>.log(<span class="hljs-string">'promise5 resolved'</span>));</span><br><span class="line">setImmediate(<span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> <span class="hljs-built_in">console</span>.log(<span class="hljs-string">'set immediate1'</span>));</span><br><span class="line">setImmediate(<span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> <span class="hljs-built_in">console</span>.log(<span class="hljs-string">'set immediate2'</span>));</span><br><span class="line"></span><br><span class="line">process.nextTick(<span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> <span class="hljs-built_in">console</span>.log(<span class="hljs-string">'next tick1'</span>));</span><br><span class="line">process.nextTick(<span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> <span class="hljs-built_in">console</span>.log(<span class="hljs-string">'next tick2'</span>));</span><br><span class="line">process.nextTick(<span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> <span class="hljs-built_in">console</span>.log(<span class="hljs-string">'next tick3'</span>));</span><br><span class="line"></span><br><span class="line">setTimeout(<span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> <span class="hljs-built_in">console</span>.log(<span class="hljs-string">'set timeout'</span>), <span class="hljs-number">0</span>);</span><br><span class="line">setImmediate(<span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> <span class="hljs-built_in">console</span>.log(<span class="hljs-string">'set immediate3'</span>));</span><br><span class="line">setImmediate(<span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> <span class="hljs-built_in">console</span>.log(<span class="hljs-string">'set immediate4'</span>));</span><br></pre></td></tr></table></figure>
 
 <p>Do not be startled! Lets do what we always do in software engineering - break it down</p>
@@ -318,7 +324,7 @@ next tick inside promise resolve handler
             <div class="level-start">
                 <div class="level-item custom-tags">
                     <span class="is-size-6 has-text-grey has-mr-7">#</span>
-                    <a class="has-link-grey -link" href="/tags/Event-Loop/">Event Loop</a>, <a class="has-link-grey -link" href="/tags/Javascript/">Javascript</a>, <a class="has-link-grey -link" href="/tags/Node-js/">Node.js</a>, <a class="has-link-grey -link" href="/tags/libuv/">libuv</a>
+                    <a class="has-link-grey -link" href="/tags/Event-Loop/">Event Loop</a>, <a class="has-link-grey -link" href="/tags/Javascript/">Javascript</a>, <a class="has-link-grey -link" href="/tags/Node-js/">Node js</a>, <a class="has-link-grey -link" href="/tags/Node-js/">Node.js</a>, <a class="has-link-grey -link" href="/tags/libuv/">libuv</a>
                 </div>
             </div>
         </div>
@@ -354,8 +360,8 @@ next tick inside promise resolve handler
         
 <script>
     var disqus_config = function () {
-        this.page.url = 'https://yuriktech.com/2019/06/09/Node-JS-Event-Loop-0/';
-        this.page.identifier = '2019/06/09/Node-JS-Event-Loop-0/';
+        this.page.url = 'https://yuriktech.com/2019/06/09/The-Javascript-Event-Loop/';
+        this.page.identifier = '2019/06/09/The-Javascript-Event-Loop/';
     };
     (function() {
         var d = document, s = d.createElement('script');  
@@ -429,7 +435,7 @@ next tick inside promise resolve handler
                         Tags
                     </p>
                     <p class="title has-text-weight-normal">
-                        36
+                        39
                     </p>
                 </div>
             </div>
@@ -477,7 +483,7 @@ next tick inside promise resolve handler
         <h3 class="menu-label">
             Tag Cloud
         </h3>
-        <a href="/tags/API-Gateway/" style="font-size: 10px;">API Gateway</a> <a href="/tags/Actor-Model/" style="font-size: 10px;">Actor Model</a> <a href="/tags/Backend-For-Frontend/" style="font-size: 10px;">Backend For Frontend</a> <a href="/tags/Clean-Architecture/" style="font-size: 10px;">Clean Architecture</a> <a href="/tags/Concurrency/" style="font-size: 10px;">Concurrency</a> <a href="/tags/Containers/" style="font-size: 10px;">Containers</a> <a href="/tags/Context-Maps/" style="font-size: 10px;">Context Maps</a> <a href="/tags/DDD/" style="font-size: 13.33px;">DDD</a> <a href="/tags/Design/" style="font-size: 10px;">Design</a> <a href="/tags/Development/" style="font-size: 10px;">Development</a> <a href="/tags/Docker/" style="font-size: 10px;">Docker</a> <a href="/tags/Elixir/" style="font-size: 13.33px;">Elixir</a> <a href="/tags/Event-Loop/" style="font-size: 10px;">Event Loop</a> <a href="/tags/Functional/" style="font-size: 16.67px;">Functional</a> <a href="/tags/Golang/" style="font-size: 10px;">Golang</a> <a href="/tags/Green-Threads/" style="font-size: 10px;">Green Threads</a> <a href="/tags/Hexagonal/" style="font-size: 10px;">Hexagonal</a> <a href="/tags/Javascript/" style="font-size: 10px;">Javascript</a> <a href="/tags/Kernel-Threads/" style="font-size: 10px;">Kernel Threads</a> <a href="/tags/Logging/" style="font-size: 10px;">Logging</a> <a href="/tags/Loki/" style="font-size: 10px;">Loki</a> <a href="/tags/Maybe-a-rant/" style="font-size: 10px;">Maybe a rant</a> <a href="/tags/Microservices/" style="font-size: 13.33px;">Microservices</a> <a href="/tags/Node-js/" style="font-size: 20px;">Node.js</a> <a href="/tags/Parallelism/" style="font-size: 10px;">Parallelism</a> <a href="/tags/Ports-and-Adapters/" style="font-size: 10px;">Ports and Adapters</a> <a href="/tags/Programming-Paradigms/" style="font-size: 10px;">Programming Paradigms</a> <a href="/tags/Scheduler/" style="font-size: 10px;">Scheduler</a> <a href="/tags/Sidecar-Pattern/" style="font-size: 10px;">Sidecar Pattern</a> <a href="/tags/Software-Architecture/" style="font-size: 20px;">Software Architecture</a> <a href="/tags/Threading-Models/" style="font-size: 10px;">Threading Models</a> <a href="/tags/Threads/" style="font-size: 10px;">Threads</a> <a href="/tags/Tutorial/" style="font-size: 13.33px;">Tutorial</a> <a href="/tags/Typescript/" style="font-size: 10px;">Typescript</a> <a href="/tags/Uncle-Bob/" style="font-size: 10px;">Uncle Bob</a> <a href="/tags/libuv/" style="font-size: 10px;">libuv</a>
+        <a href="/tags/API-Gateway/" style="font-size: 10px;">API Gateway</a> <a href="/tags/Actor-Model/" style="font-size: 10px;">Actor Model</a> <a href="/tags/Authentication/" style="font-size: 10px;">Authentication</a> <a href="/tags/Backend-For-Frontend/" style="font-size: 10px;">Backend For Frontend</a> <a href="/tags/Clean-Architecture/" style="font-size: 10px;">Clean Architecture</a> <a href="/tags/Concurrency/" style="font-size: 10px;">Concurrency</a> <a href="/tags/Containers/" style="font-size: 10px;">Containers</a> <a href="/tags/Context-Maps/" style="font-size: 10px;">Context Maps</a> <a href="/tags/DDD/" style="font-size: 13.33px;">DDD</a> <a href="/tags/Design/" style="font-size: 10px;">Design</a> <a href="/tags/Development/" style="font-size: 10px;">Development</a> <a href="/tags/Docker/" style="font-size: 10px;">Docker</a> <a href="/tags/Elixir/" style="font-size: 13.33px;">Elixir</a> <a href="/tags/Event-Loop/" style="font-size: 10px;">Event Loop</a> <a href="/tags/Functional/" style="font-size: 16.67px;">Functional</a> <a href="/tags/Golang/" style="font-size: 10px;">Golang</a> <a href="/tags/Green-Threads/" style="font-size: 10px;">Green Threads</a> <a href="/tags/Hexagonal/" style="font-size: 10px;">Hexagonal</a> <a href="/tags/Javascript/" style="font-size: 10px;">Javascript</a> <a href="/tags/Kernel-Threads/" style="font-size: 10px;">Kernel Threads</a> <a href="/tags/Logging/" style="font-size: 10px;">Logging</a> <a href="/tags/Loki/" style="font-size: 10px;">Loki</a> <a href="/tags/Maybe-a-rant/" style="font-size: 10px;">Maybe a rant</a> <a href="/tags/Microservices/" style="font-size: 13.33px;">Microservices</a> <a href="/tags/Middleware/" style="font-size: 10px;">Middleware</a> <a href="/tags/Node-js/" style="font-size: 10px;">Node js</a> <a href="/tags/Node-js/" style="font-size: 20px;">Node.js</a> <a href="/tags/Parallelism/" style="font-size: 10px;">Parallelism</a> <a href="/tags/Ports-and-Adapters/" style="font-size: 10px;">Ports and Adapters</a> <a href="/tags/Programming-Paradigms/" style="font-size: 10px;">Programming Paradigms</a> <a href="/tags/Scheduler/" style="font-size: 10px;">Scheduler</a> <a href="/tags/Sidecar-Pattern/" style="font-size: 10px;">Sidecar Pattern</a> <a href="/tags/Software-Architecture/" style="font-size: 20px;">Software Architecture</a> <a href="/tags/Threading-Models/" style="font-size: 10px;">Threading Models</a> <a href="/tags/Threads/" style="font-size: 10px;">Threads</a> <a href="/tags/Tutorial/" style="font-size: 13.33px;">Tutorial</a> <a href="/tags/Typescript/" style="font-size: 10px;">Typescript</a> <a href="/tags/Uncle-Bob/" style="font-size: 10px;">Uncle Bob</a> <a href="/tags/libuv/" style="font-size: 10px;">libuv</a>
     </div>
 </div>
 
@@ -495,7 +501,7 @@ next tick inside promise resolve handler
             <ul class="menu-list"><li>
         <a class="is-flex" href="#What-is-the-event-loop">
         <span class="has-mr-6">1</span>
-        <span>What is the event loop??</span>
+        <span>What is the event loop?</span>
         </a></li><li>
         <a class="is-flex" href="#What-are-the-phases-in-libuv">
         <span class="has-mr-6">2</span>
@@ -521,29 +527,29 @@ next tick inside promise resolve handler
         <span class="has-mr-6">7</span>
         <span>Examples</span>
         </a><ul class="menu-list"><li>
-        <a class="is-flex" href="#Example-1">
+        <a class="is-flex" href="#UV-THREADPOOL-SIZE">
         <span class="has-mr-6">7.1</span>
-        <span>Example 1:</span>
+        <span>UV_THREADPOOL_SIZE</span>
         </a></li><li>
-        <a class="is-flex" href="#Example-2">
+        <a class="is-flex" href="#Timers">
         <span class="has-mr-6">7.2</span>
-        <span>Example 2:</span>
+        <span>Timers</span>
         </a></li><li>
-        <a class="is-flex" href="#Example-3">
+        <a class="is-flex" href="#Timers-IO">
         <span class="has-mr-6">7.3</span>
-        <span>Example 3:</span>
+        <span>Timers + IO</span>
         </a></li><li>
-        <a class="is-flex" href="#Example-4">
+        <a class="is-flex" href="#Recursion-Timers">
         <span class="has-mr-6">7.4</span>
-        <span>Example 4:</span>
+        <span>Recursion + Timers</span>
         </a></li><li>
-        <a class="is-flex" href="#Example-5">
+        <a class="is-flex" href="#Promise-resolve">
         <span class="has-mr-6">7.5</span>
-        <span>Example 5:</span>
+        <span>Promise.resolve</span>
         </a></li><li>
-        <a class="is-flex" href="#Example-6">
+        <a class="is-flex" href="#Promise-resolve-nextTick-Timers">
         <span class="has-mr-6">7.6</span>
-        <span>Example 6:</span>
+        <span>Promise.resolve + nextTick + Timers</span>
         </a></li></ul></li><li>
         <a class="is-flex" href="#Summary">
         <span class="has-mr-6">8</span>
@@ -727,7 +733,7 @@ next tick inside promise resolve handler
             <ul class="menu-list"><li>
         <a class="is-flex" href="#What-is-the-event-loop">
         <span class="has-mr-6">1</span>
-        <span>What is the event loop??</span>
+        <span>What is the event loop?</span>
         </a></li><li>
         <a class="is-flex" href="#What-are-the-phases-in-libuv">
         <span class="has-mr-6">2</span>
@@ -753,29 +759,29 @@ next tick inside promise resolve handler
         <span class="has-mr-6">7</span>
         <span>Examples</span>
         </a><ul class="menu-list"><li>
-        <a class="is-flex" href="#Example-1">
+        <a class="is-flex" href="#UV-THREADPOOL-SIZE">
         <span class="has-mr-6">7.1</span>
-        <span>Example 1:</span>
+        <span>UV_THREADPOOL_SIZE</span>
         </a></li><li>
-        <a class="is-flex" href="#Example-2">
+        <a class="is-flex" href="#Timers">
         <span class="has-mr-6">7.2</span>
-        <span>Example 2:</span>
+        <span>Timers</span>
         </a></li><li>
-        <a class="is-flex" href="#Example-3">
+        <a class="is-flex" href="#Timers-IO">
         <span class="has-mr-6">7.3</span>
-        <span>Example 3:</span>
+        <span>Timers + IO</span>
         </a></li><li>
-        <a class="is-flex" href="#Example-4">
+        <a class="is-flex" href="#Recursion-Timers">
         <span class="has-mr-6">7.4</span>
-        <span>Example 4:</span>
+        <span>Recursion + Timers</span>
         </a></li><li>
-        <a class="is-flex" href="#Example-5">
+        <a class="is-flex" href="#Promise-resolve">
         <span class="has-mr-6">7.5</span>
-        <span>Example 5:</span>
+        <span>Promise.resolve</span>
         </a></li><li>
-        <a class="is-flex" href="#Example-6">
+        <a class="is-flex" href="#Promise-resolve-nextTick-Timers">
         <span class="has-mr-6">7.6</span>
-        <span>Example 6:</span>
+        <span>Promise.resolve + nextTick + Timers</span>
         </a></li></ul></li><li>
         <a class="is-flex" href="#Summary">
         <span class="has-mr-6">8</span>

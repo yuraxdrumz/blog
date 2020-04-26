@@ -3,6 +3,76 @@
 
 
     <url>
+        <loc>https://yuriktech.com/tags/libuv/</loc>
+        <lastmod>2020-04-26T10:31:12.095Z</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.2</priority>
+    </url>
+
+    <url>
+        <loc>https://yuriktech.com/tags/Event-Loop/</loc>
+        <lastmod>2020-04-26T10:31:12.095Z</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.2</priority>
+    </url>
+
+    <url>
+        <loc>https://yuriktech.com/tags/Javascript/</loc>
+        <lastmod>2020-04-26T10:31:12.095Z</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.2</priority>
+    </url>
+
+    <url>
+        <loc>https://yuriktech.com/tags/Node-js/</loc>
+        <lastmod>2020-04-26T10:31:12.095Z</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.2</priority>
+    </url>
+
+    <url>
+        <loc>https://yuriktech.com/tags/Node-js/</loc>
+        <lastmod>2020-04-26T10:31:12.095Z</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.2</priority>
+    </url>
+
+    <url>
+        <loc>https://yuriktech.com/tags/Middleware/</loc>
+        <lastmod>2020-04-26T10:28:57.522Z</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.2</priority>
+    </url>
+
+    <url>
+        <loc>https://yuriktech.com/tags/Authentication/</loc>
+        <lastmod>2020-04-26T10:28:57.522Z</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.2</priority>
+    </url>
+
+    <url>
+        <loc>https://yuriktech.com/tags/Tutorial/</loc>
+        <lastmod>2020-04-26T10:28:57.522Z</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.2</priority>
+    </url>
+
+    <url>
+        <loc>https://yuriktech.com/tags/Functional/</loc>
+        <lastmod>2020-04-26T10:28:57.522Z</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.2</priority>
+    </url>
+
+    <url>
+        <loc>https://yuriktech.com/tags/Elixir/</loc>
+        <lastmod>2020-04-26T10:28:57.522Z</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.2</priority>
+    </url>
+
+    <url>
         <loc>https://yuriktech.com/tags/Containers/</loc>
         <lastmod>2020-03-21T14:10:20.683Z</lastmod>
         <changefreq>weekly</changefreq>
@@ -38,27 +108,6 @@
     </url>
 
     <url>
-        <loc>https://yuriktech.com/tags/Tutorial/</loc>
-        <lastmod>2020-03-21T14:10:20.683Z</lastmod>
-        <changefreq>weekly</changefreq>
-        <priority>0.2</priority>
-    </url>
-
-    <url>
-        <loc>https://yuriktech.com/tags/Functional/</loc>
-        <lastmod>2020-03-20T17:59:24.081Z</lastmod>
-        <changefreq>weekly</changefreq>
-        <priority>0.2</priority>
-    </url>
-
-    <url>
-        <loc>https://yuriktech.com/tags/Elixir/</loc>
-        <lastmod>2020-03-20T17:59:24.081Z</lastmod>
-        <changefreq>weekly</changefreq>
-        <priority>0.2</priority>
-    </url>
-
-    <url>
         <loc>https://yuriktech.com/tags/Uncle-Bob/</loc>
         <lastmod>2020-03-20T13:54:44.278Z</lastmod>
         <changefreq>weekly</changefreq>
@@ -74,13 +123,6 @@
 
     <url>
         <loc>https://yuriktech.com/tags/Typescript/</loc>
-        <lastmod>2020-03-20T13:54:44.278Z</lastmod>
-        <changefreq>weekly</changefreq>
-        <priority>0.2</priority>
-    </url>
-
-    <url>
-        <loc>https://yuriktech.com/tags/Node-js/</loc>
         <lastmod>2020-03-20T13:54:44.278Z</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.2</priority>
@@ -222,27 +264,6 @@
     <url>
         <loc>https://yuriktech.com/tags/Actor-Model/</loc>
         <lastmod>2020-03-19T00:09:37.587Z</lastmod>
-        <changefreq>weekly</changefreq>
-        <priority>0.2</priority>
-    </url>
-
-    <url>
-        <loc>https://yuriktech.com/tags/libuv/</loc>
-        <lastmod>2020-03-19T00:09:37.583Z</lastmod>
-        <changefreq>weekly</changefreq>
-        <priority>0.2</priority>
-    </url>
-
-    <url>
-        <loc>https://yuriktech.com/tags/Event-Loop/</loc>
-        <lastmod>2020-03-19T00:09:37.583Z</lastmod>
-        <changefreq>weekly</changefreq>
-        <priority>0.2</priority>
-    </url>
-
-    <url>
-        <loc>https://yuriktech.com/tags/Javascript/</loc>
-        <lastmod>2020-03-19T00:09:37.583Z</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.2</priority>
     </url>

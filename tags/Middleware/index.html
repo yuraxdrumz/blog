@@ -2,7 +2,7 @@
 <html lang="en">
 <head><meta name="generator" content="Hexo 3.8.0">
     <meta charset="utf-8">
-<title>Tag: DDD - Yurik&#39;s Tech Blog</title>
+<title>Tag: Middleware - Yurik&#39;s Tech Blog</title>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
 <meta>
 <meta>
@@ -12,7 +12,7 @@
     <meta name="keywords" content="Blogger, Software Enginner, Software Architect">
 <meta property="og:type" content="website">
 <meta property="og:title" content="Yurik&#39;s Tech Blog">
-<meta property="og:url" content="https://yuriktech.com/tags/DDD/index.html">
+<meta property="og:url" content="https://yuriktech.com/tags/Middleware/index.html">
 <meta property="og:site_name" content="Yurik&#39;s Tech Blog">
 <meta property="og:locale" content="en">
 <meta property="og:image" content="https://yuriktech.com/images/og_image.png">
@@ -141,7 +141,7 @@
         <nav class="breadcrumb" aria-label="breadcrumbs">
         <ul>
             <li><a href="/tags">Tags</a></li>
-            <li class="is-active"><a href="#" aria-current="page">DDD</a></li>
+            <li class="is-active"><a href="#" aria-current="page">Middleware</a></li>
         </ul>
         </nav>
     </div>
@@ -149,27 +149,21 @@
 
     <div class="card">
     
-    <div class="card-image">
-        <a href="/2019/07/16/Microservices-Epiphany/" class="image is-7by1">
-            <img class="thumbnail" src="/images/what.jpg" alt="Microservices Epiphany">
-        </a>
-    </div>
-    
     <div class="card-content article ">
         
         <div class="level article-meta is-size-7 is-uppercase is-mobile is-overflow-x-auto">
             <div class="level-left">
-                <time class="level-item has-text-grey" datetime="2019-07-15T21:46:10.000Z">2019-07-16</time>
+                <time class="level-item has-text-grey" datetime="2019-07-03T15:44:34.000Z">2019-07-03</time>
                 
                 <div class="level-item">
-                <a class="has-link-grey -link" href="/categories/Architecture/">Architecture</a>
+                <a class="has-link-grey -link" href="/categories/Programming/">Programming</a>
                 </div>
                 
                 
                 <span class="level-item has-text-grey">
                     
                     
-                    4 minutes read (About 558 words)
+                    8 minutes read (About 1151 words)
                 </span>
                 
                 
@@ -178,76 +172,18 @@
         
         <h1 class="title is-size-3 is-size-4-mobile has-text-weight-normal">
             
-                <a class="has-link-black-ter" href="/2019/07/16/Microservices-Epiphany/">Microservices Epiphany</a>
+                <a class="has-link-black-ter" href="/2019/07/03/Authentication-Middleware-In-Elixir/">Authentication Middleware in Elixir</a>
             
         </h1>
         <div class="content">
-            <p>The majority of the posts I see about microservices talk about the differences vs monoliths and how everyone, including myself, is rushing to build microservices in this fast paced world we live in. Recently, I read <em>Implementing Domain Driven Design</em> by Vaughn Vernon, which seemed unrelated to microservices at first but soon changed my perspective on things. What I experienced, like the title suggests, was an epiphany that I was building microservices wrong all along. In fact, I was building smaller monoliths, separated by a url subdomain. <em>Head Explodes!</em> In this short post, I will show a couple of symptoms that I found are a sign your microservices architecture might suffer in the long run.</p>
+            <p>One of the first projects I was working on in Elixir was an API gateway. Like everyone else, I saw Pheonix, which is a cool framework for building web servers which is similar to Express.js, but, for my use case, I wanted raw performance for the API gateway, and one of its features was to have basic authentication as well as bearer authentication for json web tokens. One way to achieve this was using Plugs, which are built in the language. A plug is similar to a middleware in Express.js, it accepts input, does some manipulation and either halts the request or passes it on. In this post I will show how I implemented an authentication plug in Elixir.</p>
         </div>
         
         
         <div class="level is-mobile">
             <div class="level-start">
                 <div class="level-item">
-                <a class="button is-size-7 is-light" href="/2019/07/16/Microservices-Epiphany/#more">Read More</a>
-                </div>
-            </div>
-        </div>
-        
-        
-    </div>
-</div>
-
-
-
-
-
-
-
-
-    <div class="card">
-    
-    <div class="card-image">
-        <a href="/2019/07/10/Context-Maps-In-Domain-Driven-Design/" class="image is-7by1">
-            <img class="thumbnail" src="/images/connections.jpg" alt="Context Maps in Domain Driven Design">
-        </a>
-    </div>
-    
-    <div class="card-content article ">
-        
-        <div class="level article-meta is-size-7 is-uppercase is-mobile is-overflow-x-auto">
-            <div class="level-left">
-                <time class="level-item has-text-grey" datetime="2019-07-10T12:52:33.000Z">2019-07-10</time>
-                
-                <div class="level-item">
-                <a class="has-link-grey -link" href="/categories/Architecture/">Architecture</a>
-                </div>
-                
-                
-                <span class="level-item has-text-grey">
-                    
-                    
-                    4 minutes read (About 613 words)
-                </span>
-                
-                
-            </div>
-        </div>
-        
-        <h1 class="title is-size-3 is-size-4-mobile has-text-weight-normal">
-            
-                <a class="has-link-black-ter" href="/2019/07/10/Context-Maps-In-Domain-Driven-Design/">Context Maps in Domain Driven Design</a>
-            
-        </h1>
-        <div class="content">
-            <p>Ideally, it would be great to have a single place that incorporates all of our models, but in reality, our systems fragment to multiple models and we need to understand how to approach building them in way that allows future changes quickly.<br>Strategic Domain Driven Design is a high level approach to distributed software architecture and is an essential part of DDD. One of its features is context maps, which allows grasping the different relationships between bounded contexts (a boundary within which the ubiquitous language is consistent) and gives the teams a better understanding on how they affect each other. In this short post I will introduce you to the basics of context maps.</p>
-        </div>
-        
-        
-        <div class="level is-mobile">
-            <div class="level-start">
-                <div class="level-item">
-                <a class="button is-size-7 is-light" href="/2019/07/10/Context-Maps-In-Domain-Driven-Design/#more">Read More</a>
+                <a class="button is-size-7 is-light" href="/2019/07/03/Authentication-Middleware-In-Elixir/#more">Read More</a>
                 </div>
             </div>
         </div>
