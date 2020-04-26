@@ -6,6 +6,8 @@ tags:
   - Elixir
   - Functional
   - Tutorial
+  - Authentication
+  - Middleware
 ---
 One of the first projects I was working on in Elixir was an API gateway. Like everyone else, I saw Pheonix, which is a cool framework for building web servers which is similar to Express.js, but, for my use case, I wanted raw performance for the API gateway, and one of its features was to have basic authentication as well as bearer authentication for json web tokens. One way to achieve this was using Plugs, which are built in the language. A plug is similar to a middleware in Express.js, it accepts input, does some manipulation and either halts the request or passes it on. In this post I will show how I implemented an authentication plug in Elixir.
 

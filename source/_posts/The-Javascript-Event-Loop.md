@@ -1,12 +1,14 @@
 ---
-title: How the event loop really works
+title: The Javascript Event Loop
 category: Programming
 date: 2019-06-09 15:50:22
 tags: 
   - Node.js
+  - Node js
   - Javascript 
   - Event Loop
   - libuv
+thumbnail: images/nodejs.png
 ---
 
 After writing in Node.js for 3 years, I felt that the majority of the posts about it were lacking deeper knowledge, especially about the event loops internals, so, I decided to dig deep and give you my insights. Node.js seems like a simple beast to handle but in reality, there are a lot of layers of abstraction behind it. From one perspective, this abstraction is great, but, like everything else in software, abstraction comes at a cost.
@@ -20,7 +22,7 @@ The purpose of this post is to show you a broader picture of how the Node core h
   5. Is Node.js really single threaded?
   6. Why do we have a thread pool if we already have the event loop that does all the async operations?
 
-## What is the event loop??
+## What is the event loop?
 
 From the Node.js website, summarized:
 >Node.js is an event-based platform. This means that everything that happens in Node is the reaction to an event. Abstracted away from the developer, the reactions to events are all handled by a library called **libuv**.
@@ -195,7 +197,7 @@ We will call the crypto.pbkdf2 async implementation.
 I added a comment of how the results look in the previous example with default 4 threads that took 9xx ms completion time
 
 
-### Example 1:
+### UV_THREADPOOL_SIZE
 ```javascript
 const { pbkdf2 } = require('crypto');
 const start = Date.now();
@@ -227,7 +229,7 @@ doExpensiveHashing(); // Done in 2637ms
 
 We saw that we get sequential execution because we have only 1 thread. If you try the sync implementation we will simply block our thread, but the thread pool allows us to do all the non trivial crypto work on another thread and keep our business rolling! Isn't that cool?
 
-### Example 2:
+### Timers
 Before we start, important note, if we set `setTimeout` to 0, it will be 1ms.
 
 Who will execute first? According to what we saw, it will be setImmediate because the timer has not expired yet, but try and run it several times:
@@ -252,7 +254,7 @@ setImmediate
 
 The interesting part here is that we know that when the event loop runs, it checks if the timer expired, which in our case is 1ms, which is a long time for a cpu, and the `setImmediate` will run only on next tick after we defined it and only after poll phase!. If the timer expired on start of next tick it will be called first, if not, the `setImmediate` will be called first and `setTimeout` afterwards.
 
-### Example 3:
+### Timers + IO
 Now, lets add an IO cycle
 ```javascript
 const fs = require('fs')
@@ -264,7 +266,7 @@ fs.readFile('test.txt', ()=>{
 ```
 The fs sends the readFile to our thread pool, when the operation finishes in poll phase, it registers the setTimeout and setImmediate and as we saw, the check phase always comes after the poll phase, so our `setImmediate` is guaranteed to execute first.
 
-### Example 4:
+### Recursion + Timers
 Recursive operations in the event loop:
 
 take this example:
@@ -292,7 +294,7 @@ compute()
 Will our web server answer our requests?
 Remember we said that recursive operations are dangerous on `microTaskQueue` and `nextTickQueue` in JS land? Well, thats true, which means, that a recursive call to `setImmediate` will not be immediate(1 macro per tick, remember?), but split to next tick after each invocation and that means that we pass iterations through poll phase which is responsible for our IO. To answer the question - Yes, we will answer the web requests!
 
-### Example 5:
+### Promise.resolve
 Now, lets see with `Promise.resolve().then(compute)`
 
 ```javascript
@@ -321,7 +323,7 @@ Fun fact - With native promises we could implement long running promises that do
 
 The `process.nextTick` should be obvious by now.
 
-### Example 6:
+### Promise.resolve + nextTick + Timers
 Last one before we wrap up:
 ```javascript
 Promise.resolve().then(() => console.log('promise1 resolved'));
