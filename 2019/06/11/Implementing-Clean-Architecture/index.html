@@ -17,12 +17,12 @@
 <meta property="og:site_name" content="Yurik&#39;s Tech Blog">
 <meta property="og:description" content="Last year, I had the opportunity to design a new project at work and since I had just finished reading Robert Martin’s Clean Architecture I thought to myself, why not implement it on that project ? On">
 <meta property="og:locale" content="en">
-<meta property="og:image" content="https://yuriktech.com/images/og_image.png">
-<meta property="og:updated_time" content="2020-03-20T13:54:44.278Z">
+<meta property="og:image" content="https://yuriktech.com/images/clean.jpg">
+<meta property="og:updated_time" content="2020-04-27T08:18:34.132Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Implementing Clean Architecture">
 <meta name="twitter:description" content="Last year, I had the opportunity to design a new project at work and since I had just finished reading Robert Martin’s Clean Architecture I thought to myself, why not implement it on that project ? On">
-<meta name="twitter:image" content="https://yuriktech.com/images/og_image.png">
+<meta name="twitter:image" content="https://yuriktech.com/images/clean.jpg">
 
 
 
@@ -146,6 +146,12 @@
             <div class="columns">
                 <div class="column is-8-tablet is-8-desktop is-6-widescreen has-order-2 column-main"><div class="card">
     
+    <div class="card-image">
+        <span class="image is-7by1">
+            <img class="thumbnail" src="/images/clean.jpg" alt="Implementing Clean Architecture">
+        </span>
+    </div>
+    
     <div class="card-content article ">
         
         <div class="level article-meta is-size-7 is-uppercase is-mobile is-overflow-x-auto">
@@ -175,7 +181,7 @@
         <div class="content">
             <p>Last year, I had the opportunity to design a new project at work and since I had just finished reading Robert Martin’s <em>Clean Architecture</em> I thought to myself, why not implement it on that project ? One of the reasons, except my usual <em>I have to implement this cool thing right away!</em> was that working on legacy systems in the company was accompanied with the good ol’ <em>big ball of mud</em> code. The purpose of this post is to show you how can one implement <em>Clean Architecture</em> in practice and still understand it years from now, whether you work alone or in a team. Everything shown will be written in <em>Typescript</em> on <em>Node.js</em> using <em>Object Oriented</em> programming paradigm. All of the code will be available <a href="https://github.com/yuraxdrumz/clean-architecture-example" target="_blank" rel="noopener">here</a></p>
 <h2 id="Disclaimer"><a href="#Disclaimer" class="headerlink" title="Disclaimer"></a>Disclaimer</h2><p>Some of the things that I am going to write and show are my personal experiences and opinions, you may have read Robert Martin’s <em>Clean Architecture</em> and thought, interpreted or implemented otherwise. All the architectures have the same goals in the end. Implementing this in production has taught me a lot about how to build better software and expanded my toolbox as I hope it expands yours.</p>
-<h2 id="Core-Idea"><a href="#Core-Idea" class="headerlink" title="Core Idea"></a>Core Idea</h2><p>The idea behind <em>Clean Architecture</em> is that we have layers. Each layer is encapsulated by a higher level layer and the only way to communicate between the layers is with <em>The Dependency Rule</em>. </p>
+<h2 id="Clean-Architecture"><a href="#Clean-Architecture" class="headerlink" title="Clean Architecture"></a>Clean Architecture</h2><p>The idea behind <em>Clean Architecture</em> is that we have layers. Each layer is encapsulated by a higher level layer and the only way to communicate between the layers is with <em>The Dependency Rule</em>. </p>
 <h2 id="The-Dependency-Rule"><a href="#The-Dependency-Rule" class="headerlink" title="The Dependency Rule"></a>The Dependency Rule</h2><p> states that source code dependencies can only point inwards, meaning each layer can be dependant on the layer beneath it, but never the other way around. </p>
 <h2 id="Entities"><a href="#Entities" class="headerlink" title="Entities"></a>Entities</h2><p>The core of this architecture are your entities, which represent your classes/types/interfaces/basic methods.</p>
 <h2 id="Use-Cases"><a href="#Use-Cases" class="headerlink" title="Use-Cases"></a>Use-Cases</h2><p>A layer above the entities layer is your use-cases. Use-cases are your application specific business rules, for example, if we are talking about a shopping cart, then <code>addToCart</code> will be a use case, because it needs to recieve a type <code>product</code> and, for examples sake, check warehouse for availability and then insert new data to a DB and return response. Do not couple your use-cases to some input or output, instead pass a contract (interface) of some type in the constructor and pass the implementation itself at higher layers.</p>
@@ -446,9 +452,9 @@ We wrapped each use-case with a handler which will be part of a web server, in o
         <span class="has-mr-6">1</span>
         <span>Disclaimer</span>
         </a></li><li>
-        <a class="is-flex" href="#Core-Idea">
+        <a class="is-flex" href="#Clean-Architecture">
         <span class="has-mr-6">2</span>
-        <span>Core Idea</span>
+        <span>Clean Architecture</span>
         </a></li><li>
         <a class="is-flex" href="#The-Dependency-Rule">
         <span class="has-mr-6">3</span>
@@ -694,9 +700,9 @@ We wrapped each use-case with a handler which will be part of a web server, in o
         <span class="has-mr-6">1</span>
         <span>Disclaimer</span>
         </a></li><li>
-        <a class="is-flex" href="#Core-Idea">
+        <a class="is-flex" href="#Clean-Architecture">
         <span class="has-mr-6">2</span>
-        <span>Core Idea</span>
+        <span>Clean Architecture</span>
         </a></li><li>
         <a class="is-flex" href="#The-Dependency-Rule">
         <span class="has-mr-6">3</span>
