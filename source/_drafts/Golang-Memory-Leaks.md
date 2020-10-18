@@ -37,7 +37,7 @@ There are a couple of obervations from the image above
 
 
 Before jumping on a profiling adventure (some may call it a nightmare), I made a small checklist of things I want to try:
-- I was using Golang version 1.12.5, so I wanted to make sure that the potential leak is not coming from the runtime (even runtimes have issues). A good place to start is by looking for [open issues on the github page](https://github.com/golang/go/issues)
+- I was using Golang version 1.12.5, so I wanted to make sure that the potential leak is not coming from the runtime (even runtimes have issues). A good place to start is by looking at [open issues on the github page](https://github.com/golang/go/issues)
 - Try agressive garbage collection using [debug.SetGCPercent(10)](https://golang.org/pkg/runtime/debug/#SetGCPercent)
 - Try Manual [debug.FreeOSMemory()](https://golang.org/pkg/runtime/debug/#FreeOSMemory). Runtimes are all about performance, after memory has been garbage collected, it is not freed back to the OS immediately for performance reasons.
 - Try to reproduce the leak in a staging environment with a small load test to confirm my suspicions.
@@ -59,7 +59,7 @@ There are several profiles you can make
 - block        - stack traces that led to blocking on synchronization primitives
 - mutex        - stack traces of holders of contended mutexes
 - profile      - cpu profile
-- trace        - allows collecting all the profiles for a certain duration, `curl http://localhost:8080/debug/pprof/trace?seconds=5 > trace.out`
+- trace        - allows collecting all the profiles for a certain duration
 
 
 #### Profiling Example
@@ -82,10 +82,10 @@ To capture a profile we run `curl http://localhost:6060/debug/pprof/heap?seconds
 To inspect a profile we run `go tool pprof heap.out`.
 
 There are two types of allocations the profile will collect
-- in_use - current allocations
+- in_use - current allocations (Insert pic with memory)
 ![](./pprof_inuse_space.png)
 
-- alloc - total allocations since the program started running, regardless of whether the memory was freed or not.
+- alloc - total allocations since the program started running, regardless of whether the memory was freed or not. (Insert pic with memory)
 ![](./pprof_alloc_space.png)
 
 Entering top will display the top 10 results that make up the most memory consumers. We can write any number after top to see the top results.
@@ -100,13 +100,14 @@ In the image above we can see that `time.NewTicker` holds 8MBs of memory.
 pprof also has a web interface to visually examine the profile.
 To run pprof with the web ui run `go tool pprof -http=':8081' heap.out`, notice the http flag.
 The biggest memory consumers in the profile collected will be shown as red, they are your lookout points.
-We can see in the image below, that there are two red paths, one for the http server and one for `runtime.malg`
+We can see in the image below, that there are two red paths, one for the http server and one for runtime.malg
 
 ![](./malg.png)
 
-Now, because we have a memory leak, the memory will go up, meaning more allocations.
+### Diagnosing the Leak
+Because we have a memory leak, the memory will go up, meaning more allocations.
 We can capture a profile while the server is idle, wait for traffic to hit it and watch the memory go up and afterwards capture another profile.
-Pprof has another helpful feature that allows comparing profiles using the `-base` or the `-diff_base` flags.
+Pprof has another helpful feature that allows comparing profiles using the `-base` and the `-diff_base` flags.
 We run it like so `go tool pprof -http=':8081' -diff_base heap-new-16:22:04:N.out heap-new-17:32:38:N.out`
 
 After comparing snapshots, I noticed one place again called `runtime.malg` that grew in memory.
