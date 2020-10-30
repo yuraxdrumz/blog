@@ -10,7 +10,7 @@ tags:
 thumbnail: images/Golang.png
 ---
 Recently, I had a memory leak in production. I saw that a specific service's memory steadily rises when under load, until the process hits an out of memory exception. After a thorough investigation, I found out the source of the memory leak as well as the reason to why it happened in the first place. To diagnose the problem, I used Golang's profiling tool called `pprof`.
-In this post, I will explain what is `pprof`, how I diagnosed the memory leak and finally show how I used `pprof` to investigate the leak.
+In this post, I will explain what is pprof and how I diagnosed the memory leak.
 
 
 ### Preface
@@ -41,7 +41,7 @@ Before jumping on a profiling adventure (some may call it a nightmare), I made a
 - Try Manual [debug.FreeOSMemory()](https://golang.org/pkg/runtime/debug/#FreeOSMemory). Runtimes are all about performance, after memory has been garbage collected, it is not freed back to the OS immediately for performance reasons.
 - Try to reproduce the leak in a staging environment with a small load test to confirm my suspicions.
 
-After completing my checklist and seeing the leak was still present and that it is reproducible, I started profiling the service with `pprof`.
+After completing my checklist and seeing the leak was still present and that it was reproducible, I started profiling the service with pprof.
 
 ### Golang's Profiling Tool - pprof
 From the [pproff github page](https://github.com/google/pprof)
@@ -105,13 +105,13 @@ We run it like so `go tool pprof -http=':8081' -diff_base heap-new-16:22:04:N.ou
 After collecting a 30 second profile before and after a service got traffic, I compared the snapshots. Immediately, `runtime.malg` that grew in memory caught my eye.
 ![](./malg3.png)
 
-At idle `runtime.malg` was around 1MB and it grew to 38MB.
-When creating a new goroutine the `runtime.malg` function is called. It allocates a stack trace for the newly created goroutine and holds a reference to it until the goroutine finishes execution.
+At idle runtime.malg was around 1MB and it grew to 38MB.
+When creating a new goroutine the runtime.malg function is called. It allocates a stack trace for the newly created goroutine and holds a reference to it until the goroutine finishes execution.
 ![](./malg2.png)
 
 
 ### The Fix
-By now, `pprof` pointed me towards `runtime.malg` that held all goroutine descriptors, and `runtime.malg` led to goroutines that were not being garbage collected due to them never stopping execution. 
+By now, pprof pointed me towards runtime.malg, that held all goroutine descriptors and runtime.malg led to goroutines that were not being garbage collected due to them never stopping execution. 
 A goroutine that never stops means one of two things
 - A `for{}` loop without a stopping condition
 - A `channel` that waits for messages and is not getting closed properly
@@ -119,7 +119,7 @@ A goroutine that never stops means one of two things
 To confirm my suspicions, I took a goroutine profile, which looked like this
 ![](./goroutines.png)
 
-The profile above shows that I have a lot of goroutines spawned that are doing nothing as they are parked, because they are waiting on a channel.
+The profile above shows that I have a lot of goroutines spawned that are doing nothing , because they are waiting on a channel.
 
 I immediately looked at the piece of code that the profile above points at and found the following
 
@@ -135,15 +135,15 @@ go func() {
 ```
 
 The goroutine has a for loop which always listens on a channel from `time.Ticker`.
-Checking how the stopping of the `time.Ticker` occurs looks like this
+Checking how the stopping of the time.Ticker occurs looks like this
 ```golang
   sa.reader.Stop()
 ```
 
-Looking at the [documentation](https://golang.org/pkg/time/#Ticker.Stop) of `time.Ticker`, I noticed this
+Looking at the [documentation](https://golang.org/pkg/time/#Ticker.Stop) of time.Ticker, I noticed this
 > Stop turns off a ticker. After Stop, no more ticks will be sent. `Stop does not close the channel`, to prevent a concurrent goroutine reading from the channel from seeing an erroneous "tick". 
 
-It immediately struck me, the channel is never getting closed, which leaves the goroutine in a waiting state forever, which leads to the `runtime.malg` to accumulate gouroutine descriptors, which increases the heap until we reach OOM exception.
+It immediately struck me, the channel is never getting closed, which leaves the goroutine in a waiting state forever, which leads to the runtime.malg to accumulate gouroutine descriptors, which increases the heap until we reach OOM exception.
 
 I added a done channel to the goroutine and made sure to close it on `ticker.Stop()`
 
@@ -167,10 +167,10 @@ func (r *Reader) Read(){
   go func() {
     for {
       select {
-      case <-r.reader.C:
+      case <-r.reader.C: // previously stuck here indefinitely
         // do something
       case <-r.readerDone:
-        return
+        return // when done channel receives value the return causes the function to exit
       }
     }
   }()
@@ -186,3 +186,5 @@ func (r *Reader) Stop(){
 
 
 ### Conclusion
+Goroutine leaks are usually a lot easier to find thanks to pprof, but sometimes there will be more "ugly" memory leaks, like with strings, maps and slices, which are present in every application.
+The cause of memory leaks will almost always be from your application side rather then the runtime you use, but that is not always the case. That is why I first looked at the Github page to see issues regarding the runtime. After excluding the runtime, I turned to the application code and tried to pinpoint a place for a possible leak, which pprof helped me with. If your codebase is very large, I would consider a different tactic, like taking a diff between the version that caused the leak and a version without the leak.
