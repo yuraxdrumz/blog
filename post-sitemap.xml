@@ -8,6 +8,14 @@
     </url>
 
     <url>
+        <loc>https://yuriktech.com/2020/11/07/Golang-Memory-Leaks/</loc>
+        <lastmod>2020-11-07T17:59:35.261Z</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.6</priority>
+
+    </url>
+
+    <url>
         <loc>https://yuriktech.com/2019/06/11/Implementing-Clean-Architecture/</loc>
         <lastmod>2020-04-27T08:18:34.132Z</lastmod>
         <changefreq>weekly</changefreq>

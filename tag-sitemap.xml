@@ -3,6 +3,41 @@
 
 
     <url>
+        <loc>https://yuriktech.com/tags/Profiling/</loc>
+        <lastmod>2020-11-07T17:59:35.261Z</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.2</priority>
+    </url>
+
+    <url>
+        <loc>https://yuriktech.com/tags/Investigation/</loc>
+        <lastmod>2020-11-07T17:59:35.261Z</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.2</priority>
+    </url>
+
+    <url>
+        <loc>https://yuriktech.com/tags/Green-Threads/</loc>
+        <lastmod>2020-11-07T17:59:35.261Z</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.2</priority>
+    </url>
+
+    <url>
+        <loc>https://yuriktech.com/tags/Memory-Leak/</loc>
+        <lastmod>2020-11-07T17:59:35.261Z</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.2</priority>
+    </url>
+
+    <url>
+        <loc>https://yuriktech.com/tags/Golang/</loc>
+        <lastmod>2020-11-07T17:59:35.261Z</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.2</priority>
+    </url>
+
+    <url>
         <loc>https://yuriktech.com/tags/Uncle-Bob/</loc>
         <lastmod>2020-04-27T08:18:34.132Z</lastmod>
         <changefreq>weekly</changefreq>
@@ -192,13 +227,6 @@
     </url>
 
     <url>
-        <loc>https://yuriktech.com/tags/Green-Threads/</loc>
-        <lastmod>2020-03-19T09:10:43.156Z</lastmod>
-        <changefreq>weekly</changefreq>
-        <priority>0.2</priority>
-    </url>
-
-    <url>
         <loc>https://yuriktech.com/tags/Maybe-a-rant/</loc>
         <lastmod>2020-03-19T09:05:35.747Z</lastmod>
         <changefreq>weekly</changefreq>
@@ -249,13 +277,6 @@
 
     <url>
         <loc>https://yuriktech.com/tags/Ports-and-Adapters/</loc>
-        <lastmod>2020-03-19T09:02:25.008Z</lastmod>
-        <changefreq>weekly</changefreq>
-        <priority>0.2</priority>
-    </url>
-
-    <url>
-        <loc>https://yuriktech.com/tags/Golang/</loc>
         <lastmod>2020-03-19T09:02:25.008Z</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.2</priority>

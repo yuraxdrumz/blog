@@ -6,7 +6,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="https://yuriktech.com/"/>
-  <updated>2020-03-21T14:10:20.683Z</updated>
+  <updated>2020-11-07T17:59:35.261Z</updated>
   <id>https://yuriktech.com/</id>
   
   <author>
@@ -15,6 +15,35 @@
   </author>
   
   <generator uri="http://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>Golang Memory Leaks</title>
+    <link href="https://yuriktech.com/2020/11/07/Golang-Memory-Leaks/"/>
+    <id>https://yuriktech.com/2020/11/07/Golang-Memory-Leaks/</id>
+    <published>2020-11-07T17:59:35.000Z</published>
+    <updated>2020-11-07T17:59:35.261Z</updated>
+    
+    <summary type="html">
+    
+      &lt;p&gt;Recently, I had a memory leak in production. I saw that a specific service’s memory steadily rises when under load, until the process hits an out of memory exception. After a thorough investigation, I found out the source of the memory leak as well as the reason to why it happened in the first place. To diagnose the problem, I used Golang’s profiling tool called &lt;code&gt;pprof&lt;/code&gt;.
+In this post, I will explain what is pprof and show how I diagnosed the memory leak.&lt;/p&gt;
+    
+    </summary>
+    
+      <category term="Programming" scheme="https://yuriktech.com/categories/Programming/"/>
+    
+    
+      <category term="Golang" scheme="https://yuriktech.com/tags/Golang/"/>
+    
+      <category term="Memory Leak" scheme="https://yuriktech.com/tags/Memory-Leak/"/>
+    
+      <category term="Green Threads" scheme="https://yuriktech.com/tags/Green-Threads/"/>
+    
+      <category term="Investigation" scheme="https://yuriktech.com/tags/Investigation/"/>
+    
+      <category term="Profiling" scheme="https://yuriktech.com/tags/Profiling/"/>
+    
+  </entry>
   
   <entry>
     <title>Collecting Docker Logs With Loki</title>
@@ -94,9 +123,9 @@
       <category term="Architecture" scheme="https://yuriktech.com/categories/Architecture/"/>
     
     
-      <category term="Golang" scheme="https://yuriktech.com/tags/Golang/"/>
-    
       <category term="Software Architecture" scheme="https://yuriktech.com/tags/Software-Architecture/"/>
+    
+      <category term="Golang" scheme="https://yuriktech.com/tags/Golang/"/>
     
       <category term="Ports and Adapters" scheme="https://yuriktech.com/tags/Ports-and-Adapters/"/>
     
