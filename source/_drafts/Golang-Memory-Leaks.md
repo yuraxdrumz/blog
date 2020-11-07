@@ -10,14 +10,14 @@ tags:
 thumbnail: images/Golang.png
 ---
 Recently, I had a memory leak in production. I saw that a specific service's memory steadily rises when under load, until the process hits an out of memory exception. After a thorough investigation, I found out the source of the memory leak as well as the reason to why it happened in the first place. To diagnose the problem, I used Golang's profiling tool called `pprof`.
-In this post, I will explain what is pprof and how I diagnosed the memory leak.
+In this post, I will explain what is pprof and show how I diagnosed the memory leak.
 
 
 ### Preface
-Our clients use our system through a proxy service, to which, we provide access to. The said memory leak was in the proxy service.
+Our clients use our system through a proxy service, to which, we provide access to. The said memory leak happened in the proxy service.
 
 ### Disclaimer
-Some of the images here will be cropped and will be missing some information due to security reasons.
+Some of the images here will be cropped and missing some information due to security reasons.
 
 ### The Memory Leak
 After getting complaints from clients about hiccups and disconnects, I started digging for the problem.
@@ -35,7 +35,7 @@ There are a couple of obervations from the image above
 - After traffic stops hitting the single instance, its memory level drops but stays well above the others.
 
 
-Before jumping on a profiling adventure (some may call it a nightmare), I made a small checklist of things I want to try:
+Before jumping on a profiling adventure (some may call it a nightmare), I made a small checklist of things I wanted to exclude:
 - I was using Golang version 1.12.5, so I wanted to make sure that the potential leak was not coming from the runtime (even runtimes have issues). A good place to start is by looking at [open issues on the github page](https://github.com/golang/go/issues)
 - Try agressive garbage collection using [debug.SetGCPercent(10)](https://golang.org/pkg/runtime/debug/#SetGCPercent)
 - Try Manual [debug.FreeOSMemory()](https://golang.org/pkg/runtime/debug/#FreeOSMemory). Runtimes are all about performance, after memory has been garbage collected, it is not freed back to the OS immediately for performance reasons.
@@ -73,7 +73,7 @@ go func() {
 }()
 ```
 
-For memory leaks, we want to look at the heap profile. 
+For memory leaks, we want to start with the heap profile. 
 
 To capture a profile we run `curl http://localhost:6060/debug/pprof/heap?seconds=30 > heap.out`.
 
@@ -93,7 +93,7 @@ We have two important fields to look out for
 
 pprof also has a web interface to visually examine the profile.
 To run pprof with the web ui run `go tool pprof -http=':8081' heap.out`, notice the http flag.
-The biggest memory consumers in the profile collected will be shown as red, they are your lookout points.
+The biggest memory consumers in the profile collected will be shown as red, which are your points of reference.
 We can see in the image below, that there are two red paths, one for the http server and one for runtime.malg
 
 ![](./malg.png)
@@ -102,7 +102,7 @@ We can see in the image below, that there are two red paths, one for the http se
 Pprof has another helpful feature that allows comparing profiles using the `-base` and the `-diff_base` flags.
 We run it like so `go tool pprof -http=':8081' -diff_base heap-new-16:22:04:N.out heap-new-17:32:38:N.out`
 
-After collecting a 30 second profile before and after a service got traffic, I compared the snapshots. Immediately, `runtime.malg` that grew in memory caught my eye.
+After collecting a 30 second profile before and after a service got traffic, I compared the profiles. Immediately, `runtime.malg` that grew in memory caught my eye.
 ![](./malg3.png)
 
 At idle runtime.malg was around 1MB and it grew to 38MB.
@@ -111,9 +111,9 @@ When creating a new goroutine the runtime.malg function is called. It allocates 
 
 
 ### The Fix
-By now, pprof pointed me towards runtime.malg, that held all goroutine descriptors and runtime.malg led to goroutines that were not being garbage collected due to them never stopping execution. 
-A goroutine that never stops means one of two things
-- A `for{}` loop without a stopping condition
+By now, pprof pointed me towards runtime.malg, that held all goroutine descriptors, which did not get garbage collected. 
+A goroutine that is never garbage collected means it never finishes execution, which happens on two occasions
+- A `for{}` or a `select{}` loop without a stopping condition
 - A `channel` that waits for messages and is not getting closed properly
 
 To confirm my suspicions, I took a goroutine profile, which looked like this
@@ -185,6 +185,12 @@ func (r *Reader) Stop(){
 ```
 
 
-### Conclusion
-Goroutine leaks are usually a lot easier to find thanks to pprof, but sometimes there will be more "ugly" memory leaks, like with strings, maps and slices, which are present in every application.
-The cause of memory leaks will almost always be from your application side rather then the runtime you use, but that is not always the case. That is why I first looked at the Github page to see issues regarding the runtime. After excluding the runtime, I turned to the application code and tried to pinpoint a place for a possible leak, which pprof helped me with. If your codebase is very large, I would consider a different tactic, like taking a diff between the version that caused the leak and a version without the leak.
+### Summary
+The memory leak above turned out to be a forgotten channel that caused a goroutine leak. A goroutine leak happens when goroutines never finish execution, which leads to their stack stay on the heap and never get garbage collected, which eventually leads to an out of memory exception.
+The cause of memory leaks will **almost** always be from your applications side, but as I crunched through several of them, I noticed it is easier to start with the small things, like, checking the runtime Github page for new issues, or, if the leak started after a new release, comparing it to a previous release without the leak. These small things can save you tens if not hundreds of profiling hours. Regardless of where you choose to start, pprof can come to your aid. Pprof is Golang's profiling tool which allows you to take cpu, heap, OS thread and goroutines profiles and compare them visually.
+
+
+### Bibliography
+- [memory-leaking](https://go101.org/article/memory-leaking.html)
+- [how-we-tracked-down-a-memory-leak-in-one-of-our-go-microservices](https://blog.detectify.com/2019/09/05/how-we-tracked-down-a-memory-leak-in-one-of-our-go-microservices/)
+- [how-i-investigated-memory-leaks-in-go-using-pprof-on-a-large-codebase](https://www.freecodecamp.org/news/how-i-investigated-memory-leaks-in-go-using-pprof-on-a-large-codebase-4bec4325e192/)
