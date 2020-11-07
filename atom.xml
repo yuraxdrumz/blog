@@ -62,6 +62,8 @@
       <category term="Programming" scheme="https://yuriktech.com/categories/Programming/"/>
     
     
+      <category term="Green Threads" scheme="https://yuriktech.com/tags/Green-Threads/"/>
+    
       <category term="Concurrency" scheme="https://yuriktech.com/tags/Concurrency/"/>
     
       <category term="Parallelism" scheme="https://yuriktech.com/tags/Parallelism/"/>
@@ -69,8 +71,6 @@
       <category term="Threads" scheme="https://yuriktech.com/tags/Threads/"/>
     
       <category term="Scheduler" scheme="https://yuriktech.com/tags/Scheduler/"/>
-    
-      <category term="Green Threads" scheme="https://yuriktech.com/tags/Green-Threads/"/>
     
       <category term="Kernel Threads" scheme="https://yuriktech.com/tags/Kernel-Threads/"/>
     
@@ -87,18 +87,18 @@
     
     <summary type="html">
     
-      &lt;p&gt;There are different architectures that allow you to keep focus on your business domain and allow for fast paced development and changes. Examples would be: Clean Architecture, Onion Architecture and Ports and Adapters (also called hexagonal).&lt;br&gt;&lt;a href=&quot;/2019/06/11/Implementing-Clean-Architecture/&quot;&gt;In my previous post&lt;/a&gt;, I talked about Clean Architecture and how it helps get your code more modular and developer friendly after a somewhat short learning curve. After joining a new team, I noticed Clean Architecture did not really settle and the team found it to be somewhat over abstracted, so I decided to play around with a variation of Ports and Adapters.&lt;br&gt;In this post I will show what is Ports and Adapters and how I implemented it in Golang. Github repo is available &lt;a href=&quot;https://github.com/yuraxdrumz/ports-and-adapters-golang&quot; target=&quot;_blank&quot; rel=&quot;noopener&quot;&gt;here&lt;/a&gt;.&lt;/p&gt;
+      &lt;p&gt;There are different architectures that allow you to keep focus on your business domain and allow for fast paced development and changes. Examples would be: Clean Architecture, Onion Architecture and Ports and Adapters (also called hexagonal).&lt;br&gt;&lt;a href=&quot;/2019/06/11/Implementing-Clean-Architecture/&quot;&gt;In my previous post&lt;/a&gt;, I talked about Clean Architecture and how it helps get your code more modular and developer friendly after a somewhat short learning curve. After joining a new team, I noticed Clean Architecture did not really settle and the team found it to be somewhat over abstracted, so I decided to play around with a variation of Ports and Adapters.&lt;br&gt;In this post I will show what is Ports and Adapters and how I implemented it in Golang. Github repo is available &lt;a href=&quot;https://github.com/yuraxdrumz/ports-and-adapters-golang&quot;&gt;here&lt;/a&gt;.&lt;/p&gt;
     
     </summary>
     
       <category term="Architecture" scheme="https://yuriktech.com/categories/Architecture/"/>
     
     
+      <category term="Golang" scheme="https://yuriktech.com/tags/Golang/"/>
+    
       <category term="Software Architecture" scheme="https://yuriktech.com/tags/Software-Architecture/"/>
     
       <category term="Ports and Adapters" scheme="https://yuriktech.com/tags/Ports-and-Adapters/"/>
-    
-      <category term="Golang" scheme="https://yuriktech.com/tags/Golang/"/>
     
       <category term="Hexagonal" scheme="https://yuriktech.com/tags/Hexagonal/"/>
     
@@ -270,7 +270,7 @@ In a search for a new programming language, I asked myself two questions - &lt;e
     
     <summary type="html">
     
-      &lt;p&gt;Last year, I had the opportunity to design a new project at work and since I had just finished reading Robert Martin’s &lt;em&gt;Clean Architecture&lt;/em&gt; I thought to myself, why not implement it on that project ? One of the reasons, except my usual &lt;em&gt;I have to implement this cool thing right away!&lt;/em&gt; was that working on legacy systems in the company was accompanied with the good ol’ &lt;em&gt;big ball of mud&lt;/em&gt; code. The purpose of this post is to show you how can one implement &lt;em&gt;Clean Architecture&lt;/em&gt; in practice and still understand it years from now, whether you work alone or in a team. Everything shown will be written in &lt;em&gt;Typescript&lt;/em&gt; on &lt;em&gt;Node.js&lt;/em&gt; using &lt;em&gt;Object Oriented&lt;/em&gt; programming paradigm. All of the code will be available &lt;a href=&quot;https://github.com/yuraxdrumz/clean-architecture-example&quot; target=&quot;_blank&quot; rel=&quot;noopener&quot;&gt;here&lt;/a&gt;&lt;/p&gt;
+      &lt;p&gt;Last year, I had the opportunity to design a new project at work and since I had just finished reading Robert Martin’s &lt;em&gt;Clean Architecture&lt;/em&gt; I thought to myself, why not implement it on that project ? One of the reasons, except my usual &lt;em&gt;I have to implement this cool thing right away!&lt;/em&gt; was that working on legacy systems in the company was accompanied with the good ol’ &lt;em&gt;big ball of mud&lt;/em&gt; code. The purpose of this post is to show you how can one implement &lt;em&gt;Clean Architecture&lt;/em&gt; in practice and still understand it years from now, whether you work alone or in a team. Everything shown will be written in &lt;em&gt;Typescript&lt;/em&gt; on &lt;em&gt;Node.js&lt;/em&gt; using &lt;em&gt;Object Oriented&lt;/em&gt; programming paradigm. All of the code will be available &lt;a href=&quot;https://github.com/yuraxdrumz/clean-architecture-example&quot;&gt;here&lt;/a&gt;&lt;/p&gt;
     
     </summary>
     

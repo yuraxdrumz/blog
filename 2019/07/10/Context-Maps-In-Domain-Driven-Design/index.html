@@ -1,27 +1,29 @@
 <!DOCTYPE html>
-<html lang="en">
-<head><meta name="generator" content="Hexo 3.8.0">
+<html  lang="en">
+<head>
     <meta charset="utf-8">
 <title>Context Maps in Domain Driven Design - Yurik&#39;s Tech Blog</title>
-<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-<meta>
-<meta>
-<meta>
-<meta>
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+<meta  />
+<meta  />
+<meta  />
+<meta  />
 
     <meta name="description" content="Ideally, it would be great to have a single place that incorporates all of our models, but in reality, our systems fragment to multiple models and we need to understand how to approach building them i">
-<meta name="keywords" content="DDD,Software Architecture,Context Maps">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Context Maps in Domain Driven Design">
 <meta property="og:url" content="https://yuriktech.com/2019/07/10/Context-Maps-In-Domain-Driven-Design/index.html">
 <meta property="og:site_name" content="Yurik&#39;s Tech Blog">
 <meta property="og:description" content="Ideally, it would be great to have a single place that incorporates all of our models, but in reality, our systems fragment to multiple models and we need to understand how to approach building them i">
-<meta property="og:locale" content="en">
+<meta property="og:locale" content="en_US">
 <meta property="og:image" content="https://yuriktech.com/images/connections.jpg">
-<meta property="og:updated_time" content="2020-03-19T09:18:04.574Z">
+<meta property="article:published_time" content="2019-07-10T12:52:33.000Z">
+<meta property="article:modified_time" content="2020-03-19T09:18:04.574Z">
+<meta property="article:author" content="Yuri Khomyakov">
+<meta property="article:tag" content="DDD">
+<meta property="article:tag" content="Software Architecture">
+<meta property="article:tag" content="Context Maps">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Context Maps in Domain Driven Design">
-<meta name="twitter:description" content="Ideally, it would be great to have a single place that incorporates all of our models, but in reality, our systems fragment to multiple models and we need to understand how to approach building them i">
 <meta name="twitter:image" content="https://yuriktech.com/images/connections.jpg">
 
 
@@ -98,7 +100,7 @@
 
 
 <link rel="stylesheet" href="/css/style.css">
-</head>
+<meta name="generator" content="Hexo 5.2.0"></head>
 <body class="is-3-column">
     <nav class="navbar navbar-main">
     <div class="container">
@@ -107,11 +109,14 @@
             
             <div class="navbar-start">
                 
-                <a class="navbar-item" href="/">Home</a>
+                <a class="navbar-item"
+                href="/">Home</a>
                 
-                <a class="navbar-item" href="/archives">Archives</a>
+                <a class="navbar-item"
+                href="/archives">Archives</a>
                 
-                <a class="navbar-item" href="/about">About</a>
+                <a class="navbar-item"
+                href="/about">About</a>
                 
             </div>
             
@@ -147,7 +152,7 @@
                 <div class="column is-8-tablet is-8-desktop is-6-widescreen has-order-2 column-main"><div class="card">
     
     <div class="card-image">
-        <span class="image is-7by1">
+        <span  class="image is-7by1">
             <img class="thumbnail" src="/images/connections.jpg" alt="Context Maps in Domain Driven Design">
         </span>
     </div>
@@ -192,7 +197,7 @@
 <li>Anticorruption Layer (ACL) - A layer that isolates/abstracts the downstream’s models from another system’s models by translation.</li>
 <li>Separate Ways - There is no connection between the bounded contexts. The teams can find their own solutions in ther domains.</li>
 </ul>
-<h2 id="Example"><a href="#Example" class="headerlink" title="Example"></a>Example</h2><p><img src="/2019/07/10/Context-Maps-In-Domain-Driven-Design/./sddd.jpg" alt><br>Once we identify what are our domains and boundaries we can start drawing context maps between them. In this example we can see the U for upstream and D for downstream. The online banking services acts as a supporting or a generic subdomain to our core PFM Banking domain. We use ACL when we receive a response and model it appropriately internally. We have a partnership relationship with the Expense Tracking Domain, which means we need to deliver together as we may have a mutual dependency. Last, we have a conformist relationship with the Web User Profiling. Maybe, the team cant change or wont change their implementation of a model, so we need to do it on our side, on the core domain.</p>
+<h2 id="Example"><a href="#Example" class="headerlink" title="Example"></a>Example</h2><p><img src="/2019/07/10/Context-Maps-In-Domain-Driven-Design/sddd.jpg" alt><br>Once we identify what are our domains and boundaries we can start drawing context maps between them. In this example we can see the U for upstream and D for downstream. The online banking services acts as a supporting or a generic subdomain to our core PFM Banking domain. We use ACL when we receive a response and model it appropriately internally. We have a partnership relationship with the Expense Tracking Domain, which means we need to deliver together as we may have a mutual dependency. Last, we have a conformist relationship with the Web User Profiling. Maybe, the team cant change or wont change their implementation of a model, so we need to do it on our side, on the core domain.</p>
 <h2 id="Summary"><a href="#Summary" class="headerlink" title="Summary"></a>Summary</h2><p>We saw why do we need Strategic Domain Driven Design and how we can leverage a part of it called context maps to help us build better systems. We saw what kinds of context maps exist, what each one does and at last, we saw a small example with a few context maps.</p>
 
         </div>
@@ -201,7 +206,7 @@
             <div class="level-start">
                 <div class="level-item custom-tags">
                     <span class="is-size-6 has-text-grey has-mr-7">#</span>
-                    <a class="has-link-grey -link" href="/tags/Context-Maps/">Context Maps</a>, <a class="has-link-grey -link" href="/tags/DDD/">DDD</a>, <a class="has-link-grey -link" href="/tags/Software-Architecture/">Software Architecture</a>
+                    <a class="has-link-grey -link-link" href="/tags/Context-Maps/" rel="tag">Context Maps</a>, <a class="has-link-grey -link-link" href="/tags/DDD/" rel="tag">DDD</a>, <a class="has-link-grey -link-link" href="/tags/Software-Architecture/" rel="tag">Software Architecture</a>
                 </div>
             </div>
         </div>
@@ -257,7 +262,7 @@
 
 <div id="disqus_thread">
     
-    <noscript>Please enable JavaScript to view the <a href="//disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+    <noscript>Please enable JavaScript to view the <a target="_blank" rel="noopener" href="//disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
 </div>
     </div>
 </div>
@@ -332,25 +337,29 @@
         
         <div class="level is-mobile">
             
-            <a class="level-item button is-white is-marginless" target="_blank" title="Email" href="mailto:yurik1776@gmail.com">
+            <a class="level-item button is-white is-marginless" target="_blank"
+                title="Email" href="mailto:yurik1776@gmail.com">
                 
                 <i class="far fa-envelope"></i>
                 
             </a>
             
-            <a class="level-item button is-white is-marginless" target="_blank" title="LinkedIn" href="https://www.linkedin.com/in/yuri-khomyakov-383278125/">
+            <a class="level-item button is-white is-marginless" target="_blank"
+                title="LinkedIn" href="https://www.linkedin.com/in/yuri-khomyakov-383278125/">
                 
                 <i class="fab fa-linkedin"></i>
                 
             </a>
             
-            <a class="level-item button is-white is-marginless" target="_blank" title="Github" href="https://github.com/yuraxdrumz">
+            <a class="level-item button is-white is-marginless" target="_blank"
+                title="Github" href="https://github.com/yuraxdrumz">
                 
                 <i class="fab fa-github"></i>
                 
             </a>
             
-            <a class="level-item button is-white is-marginless" target="_blank" title="RSS" href="/atom.xml">
+            <a class="level-item button is-white is-marginless" target="_blank"
+                title="RSS" href="/atom.xml">
                 
                 <i class="fas fa-rss"></i>
                 
@@ -760,7 +769,8 @@
             <div class="level-start has-text-centered-mobile">
                 <p class="is-size-7">
                 &copy; 2020 Yuri Khomyakov&nbsp;
-                Powered by <a href="https://hexo.io/" target="_blank">Hexo</a> & <a href="https://github.com/ppoffice/hexo-theme-icarus" target="_blank">Icarus</a>
+                Powered by <a href="https://hexo.io/" target="_blank">Hexo</a> & <a
+                        href="https://github.com/ppoffice/hexo-theme-icarus" target="_blank">Icarus</a>
                 
                 </p>
             </div>
@@ -807,7 +817,7 @@
 
 <div id="outdated">
     <h6>Your browser is out-of-date!</h6>
-    <p>Update your browser to view this website correctly. <a id="btnUpdateBrowser" href="http://outdatedbrowser.com/">Update
+    <p>Update your browser to view this website correctly. <a id="btnUpdateBrowser" target="_blank" rel="noopener" href="http://outdatedbrowser.com/">Update
             my browser now </a></p>
     <p class="last"><a href="#" id="btnCloseUpdateBrowser" title="Close">&times;</a></p>
 </div>
@@ -885,7 +895,7 @@ document.addEventListener('DOMContentLoaded', function () {
     <div class="searchbox ins-search">
     <div class="searchbox-container ins-search-container">
         <div class="searchbox-input-wrapper">
-            <input type="text" class="searchbox-input ins-search-input" placeholder="Type something...">
+            <input type="text" class="searchbox-input ins-search-input" placeholder="Type something..." />
             <span class="searchbox-close ins-close ins-selectable"><i class="fa fa-times-circle"></i></span>
         </div>
         <div class="searchbox-result-wrapper ins-section-wrapper">

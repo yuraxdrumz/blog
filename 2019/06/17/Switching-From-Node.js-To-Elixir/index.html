@@ -1,27 +1,30 @@
 <!DOCTYPE html>
-<html lang="en">
-<head><meta name="generator" content="Hexo 3.8.0">
+<html  lang="en">
+<head>
     <meta charset="utf-8">
 <title>Switching From Node.js to Elixir - Yurik&#39;s Tech Blog</title>
-<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-<meta>
-<meta>
-<meta>
-<meta>
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+<meta  />
+<meta  />
+<meta  />
+<meta  />
 
     <meta name="description" content="After writing software for the past 6 years, I realized that the implementations that we write are far more important than the languages we choose, but, having a developer friendly, safe, strict langu">
-<meta name="keywords" content="Elixir,Functional,Actor Model,Node.js">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Switching From Node.js to Elixir">
 <meta property="og:url" content="https://yuriktech.com/2019/06/17/Switching-From-Node.js-To-Elixir/index.html">
 <meta property="og:site_name" content="Yurik&#39;s Tech Blog">
 <meta property="og:description" content="After writing software for the past 6 years, I realized that the implementations that we write are far more important than the languages we choose, but, having a developer friendly, safe, strict langu">
-<meta property="og:locale" content="en">
+<meta property="og:locale" content="en_US">
 <meta property="og:image" content="https://yuriktech.com/images/og_image.png">
-<meta property="og:updated_time" content="2020-03-19T00:09:37.587Z">
+<meta property="article:published_time" content="2019-06-17T18:11:52.000Z">
+<meta property="article:modified_time" content="2020-03-19T00:09:37.587Z">
+<meta property="article:author" content="Yuri Khomyakov">
+<meta property="article:tag" content="Elixir">
+<meta property="article:tag" content="Functional">
+<meta property="article:tag" content="Actor Model">
+<meta property="article:tag" content="Node.js">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Switching From Node.js to Elixir">
-<meta name="twitter:description" content="After writing software for the past 6 years, I realized that the implementations that we write are far more important than the languages we choose, but, having a developer friendly, safe, strict langu">
 <meta name="twitter:image" content="https://yuriktech.com/images/og_image.png">
 
 
@@ -98,7 +101,7 @@
 
 
 <link rel="stylesheet" href="/css/style.css">
-</head>
+<meta name="generator" content="Hexo 5.2.0"></head>
 <body class="is-3-column">
     <nav class="navbar navbar-main">
     <div class="container">
@@ -107,11 +110,14 @@
             
             <div class="navbar-start">
                 
-                <a class="navbar-item" href="/">Home</a>
+                <a class="navbar-item"
+                href="/">Home</a>
                 
-                <a class="navbar-item" href="/archives">Archives</a>
+                <a class="navbar-item"
+                href="/archives">Archives</a>
                 
-                <a class="navbar-item" href="/about">About</a>
+                <a class="navbar-item"
+                href="/about">About</a>
                 
             </div>
             
@@ -191,7 +197,7 @@ In a search for a new programming language, I asked myself two questions - <em>w
 </ol>
 <h2 id="Do-Javascript’s-pros-outweigh-its-cons"><a href="#Do-Javascript’s-pros-outweigh-its-cons" class="headerlink" title="Do Javascript’s pros outweigh its cons ?"></a>Do Javascript’s pros outweigh its cons ?</h2><p>After having to deal with nasty memory leaks, tough debugging sessions and data being mutated wherever and whenever, I decided to tilt towards <strong>no</strong>. The single threaded nature is both good and bad, the syntax changes so fast, I have seen callbacks wrapped in promises and awaited on using the new async await syntax and debugging in production <strong>can</strong> be a nightmare in large projects.</p>
 <h2 id="What-are-some-of-the-things-I-expect-from-a-programming-language"><a href="#What-are-some-of-the-things-I-expect-from-a-programming-language" class="headerlink" title="What are some of the things I expect from a programming language"></a>What are some of the things I expect from a programming language</h2><ol>
-<li>Functional programming paradigm - Writing in a functional style for the past 3 years with <a href="https://ramdajs.com/" target="_blank" rel="noopener">Ramda.js</a> has taught me a lot and I wanted a purely functional language. Switching to legacy projects written in an OO way always felt harder to reason about. I believe currying, functions as first class citizens and data immutability helps with the struggles of debugging.</li>
+<li>Functional programming paradigm - Writing in a functional style for the past 3 years with <a target="_blank" rel="noopener" href="https://ramdajs.com/">Ramda.js</a> has taught me a lot and I wanted a purely functional language. Switching to legacy projects written in an OO way always felt harder to reason about. I believe currying, functions as first class citizens and data immutability helps with the struggles of debugging.</li>
 <li>Language syntax - I wanted a simple to understand syntax that has no drastic changes throughout its lifespan.</li>
 <li>Compiled language - If everything compiled, I can sleep better at night. I am not expecting runtime errors to be unheard of, but, if I can minimize them, why not?</li>
 <li>Good standard library - To minimize the need for 3rd party modules.</li>
@@ -199,18 +205,18 @@ In a search for a new programming language, I asked myself two questions - <em>w
 <li>Concurrency - I want a language that can handle concurrency, without worrying about a single thread struggling to keep up or handling a threadpool and the accompanied mutexes/locks/deadlocks.</li>
 </ol>
 <p>After playing with a few languages, I stumbled across Elixir.</p>
-<h2 id="What-is-Elixir"><a href="#What-is-Elixir" class="headerlink" title="What is Elixir ?"></a>What is Elixir ?</h2><p>from the elixir <a href="https://elixir-lang.org/" target="_blank" rel="noopener">website</a></p>
+<h2 id="What-is-Elixir"><a href="#What-is-Elixir" class="headerlink" title="What is Elixir ?"></a>What is Elixir ?</h2><p>from the elixir <a target="_blank" rel="noopener" href="https://elixir-lang.org/">website</a></p>
 <blockquote>
 <p>Elixir is a dynamic, functional language designed for building scalable and maintainable applications. Elixir leverages the Erlang VM, known for running low-latency, distributed and fault-tolerant systems, while also being successfully used in web development and the embedded software domain.</p>
 </blockquote>
-<p>After reading the initial documentation, seeing that there is less than 10 open issues in the language’s <a href="https://github.com/elixir-lang/elixir" target="_blank" rel="noopener">github</a> and writing a couple of projects for the past few months, I came back to my list and looked if <code>Elixir</code> has ticked all the boxes.</p>
+<p>After reading the initial documentation, seeing that there is less than 10 open issues in the language’s <a target="_blank" rel="noopener" href="https://github.com/elixir-lang/elixir">github</a> and writing a couple of projects for the past few months, I came back to my list and looked if <code>Elixir</code> has ticked all the boxes.</p>
 <ul>
 <li><input checked disabled type="checkbox"> <em>Is it Functional?</em></li>
 <li><input checked disabled type="checkbox"> <em>Is the syntax simple?</em> inspired by <code>Ruby</code>, which is very easy to understand.</li>
 <li><input checked disabled type="checkbox"> <em>Is is compiled?</em> It is still dynamic typed though, so run time type errors will occur, but Elixir has guards and pattern matching for that.</li>
 <li><input checked disabled type="checkbox"> <em>Does it have a good standard library?</em> It has a detailed and well documented standard library.</li>
 <li><input checked disabled type="checkbox"> <em>Is the community active?</em> Elixir has its own forums, which are really active.</li>
-<li><input checked disabled type="checkbox"> <em>Is it concurrent?</em> All Elixir code runs inside lightweight threads of execution (called processes) that are isolated and exchange information via messages - <a href="https://en.wikipedia.org/wiki/Actor_model" target="_blank" rel="noopener">Actor Model</a>.</li>
+<li><input checked disabled type="checkbox"> <em>Is it concurrent?</em> All Elixir code runs inside lightweight threads of execution (called processes) that are isolated and exchange information via messages - <a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Actor_model">Actor Model</a>.</li>
 </ul>
 <h2 id="Elixir-The-Pros"><a href="#Elixir-The-Pros" class="headerlink" title="Elixir - The Pros"></a>Elixir - The Pros</h2><ol>
 <li>Highly concurrent - thanks to the Actor Model</li>
@@ -234,7 +240,7 @@ In a search for a new programming language, I asked myself two questions - <em>w
             <div class="level-start">
                 <div class="level-item custom-tags">
                     <span class="is-size-6 has-text-grey has-mr-7">#</span>
-                    <a class="has-link-grey -link" href="/tags/Actor-Model/">Actor Model</a>, <a class="has-link-grey -link" href="/tags/Elixir/">Elixir</a>, <a class="has-link-grey -link" href="/tags/Functional/">Functional</a>, <a class="has-link-grey -link" href="/tags/Node-js/">Node.js</a>
+                    <a class="has-link-grey -link-link" href="/tags/Actor-Model/" rel="tag">Actor Model</a>, <a class="has-link-grey -link-link" href="/tags/Elixir/" rel="tag">Elixir</a>, <a class="has-link-grey -link-link" href="/tags/Functional/" rel="tag">Functional</a>, <a class="has-link-grey -link-link" href="/tags/Node-js/" rel="tag">Node.js</a>
                 </div>
             </div>
         </div>
@@ -290,7 +296,7 @@ In a search for a new programming language, I asked myself two questions - <em>w
 
 <div id="disqus_thread">
     
-    <noscript>Please enable JavaScript to view the <a href="//disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+    <noscript>Please enable JavaScript to view the <a target="_blank" rel="noopener" href="//disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
 </div>
     </div>
 </div>
@@ -365,25 +371,29 @@ In a search for a new programming language, I asked myself two questions - <em>w
         
         <div class="level is-mobile">
             
-            <a class="level-item button is-white is-marginless" target="_blank" title="Email" href="mailto:yurik1776@gmail.com">
+            <a class="level-item button is-white is-marginless" target="_blank"
+                title="Email" href="mailto:yurik1776@gmail.com">
                 
                 <i class="far fa-envelope"></i>
                 
             </a>
             
-            <a class="level-item button is-white is-marginless" target="_blank" title="LinkedIn" href="https://www.linkedin.com/in/yuri-khomyakov-383278125/">
+            <a class="level-item button is-white is-marginless" target="_blank"
+                title="LinkedIn" href="https://www.linkedin.com/in/yuri-khomyakov-383278125/">
                 
                 <i class="fab fa-linkedin"></i>
                 
             </a>
             
-            <a class="level-item button is-white is-marginless" target="_blank" title="Github" href="https://github.com/yuraxdrumz">
+            <a class="level-item button is-white is-marginless" target="_blank"
+                title="Github" href="https://github.com/yuraxdrumz">
                 
                 <i class="fab fa-github"></i>
                 
             </a>
             
-            <a class="level-item button is-white is-marginless" target="_blank" title="RSS" href="/atom.xml">
+            <a class="level-item button is-white is-marginless" target="_blank"
+                title="RSS" href="/atom.xml">
                 
                 <i class="fas fa-rss"></i>
                 
@@ -825,7 +835,8 @@ In a search for a new programming language, I asked myself two questions - <em>w
             <div class="level-start has-text-centered-mobile">
                 <p class="is-size-7">
                 &copy; 2020 Yuri Khomyakov&nbsp;
-                Powered by <a href="https://hexo.io/" target="_blank">Hexo</a> & <a href="https://github.com/ppoffice/hexo-theme-icarus" target="_blank">Icarus</a>
+                Powered by <a href="https://hexo.io/" target="_blank">Hexo</a> & <a
+                        href="https://github.com/ppoffice/hexo-theme-icarus" target="_blank">Icarus</a>
                 
                 </p>
             </div>
@@ -872,7 +883,7 @@ In a search for a new programming language, I asked myself two questions - <em>w
 
 <div id="outdated">
     <h6>Your browser is out-of-date!</h6>
-    <p>Update your browser to view this website correctly. <a id="btnUpdateBrowser" href="http://outdatedbrowser.com/">Update
+    <p>Update your browser to view this website correctly. <a id="btnUpdateBrowser" target="_blank" rel="noopener" href="http://outdatedbrowser.com/">Update
             my browser now </a></p>
     <p class="last"><a href="#" id="btnCloseUpdateBrowser" title="Close">&times;</a></p>
 </div>
@@ -950,7 +961,7 @@ document.addEventListener('DOMContentLoaded', function () {
     <div class="searchbox ins-search">
     <div class="searchbox-container ins-search-container">
         <div class="searchbox-input-wrapper">
-            <input type="text" class="searchbox-input ins-search-input" placeholder="Type something...">
+            <input type="text" class="searchbox-input ins-search-input" placeholder="Type something..." />
             <span class="searchbox-close ins-close ins-selectable"><i class="fa fa-times-circle"></i></span>
         </div>
         <div class="searchbox-result-wrapper ins-section-wrapper">

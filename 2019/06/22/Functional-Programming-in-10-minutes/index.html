@@ -1,27 +1,28 @@
 <!DOCTYPE html>
-<html lang="en">
-<head><meta name="generator" content="Hexo 3.8.0">
+<html  lang="en">
+<head>
     <meta charset="utf-8">
 <title>Functional Programming in 10 Minutes - Yurik&#39;s Tech Blog</title>
-<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-<meta>
-<meta>
-<meta>
-<meta>
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+<meta  />
+<meta  />
+<meta  />
+<meta  />
 
     <meta name="description" content="When I first saw the ideas of functional programming, I found them very strange due to the fact that, I, like most people, got used to structural and object oriented programming paradigms. The structu">
-<meta name="keywords" content="Functional,Programming Paradigms">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Functional Programming in 10 Minutes">
 <meta property="og:url" content="https://yuriktech.com/2019/06/22/Functional-Programming-in-10-minutes/index.html">
 <meta property="og:site_name" content="Yurik&#39;s Tech Blog">
 <meta property="og:description" content="When I first saw the ideas of functional programming, I found them very strange due to the fact that, I, like most people, got used to structural and object oriented programming paradigms. The structu">
-<meta property="og:locale" content="en">
+<meta property="og:locale" content="en_US">
 <meta property="og:image" content="https://yuriktech.com/images/og_image.png">
-<meta property="og:updated_time" content="2020-03-19T00:09:37.572Z">
+<meta property="article:published_time" content="2019-06-22T15:13:57.000Z">
+<meta property="article:modified_time" content="2020-03-19T00:09:37.572Z">
+<meta property="article:author" content="Yuri Khomyakov">
+<meta property="article:tag" content="Functional">
+<meta property="article:tag" content="Programming Paradigms">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Functional Programming in 10 Minutes">
-<meta name="twitter:description" content="When I first saw the ideas of functional programming, I found them very strange due to the fact that, I, like most people, got used to structural and object oriented programming paradigms. The structu">
 <meta name="twitter:image" content="https://yuriktech.com/images/og_image.png">
 
 
@@ -98,7 +99,7 @@
 
 
 <link rel="stylesheet" href="/css/style.css">
-</head>
+<meta name="generator" content="Hexo 5.2.0"></head>
 <body class="is-3-column">
     <nav class="navbar navbar-main">
     <div class="container">
@@ -107,11 +108,14 @@
             
             <div class="navbar-start">
                 
-                <a class="navbar-item" href="/">Home</a>
+                <a class="navbar-item"
+                href="/">Home</a>
                 
-                <a class="navbar-item" href="/archives">Archives</a>
+                <a class="navbar-item"
+                href="/archives">Archives</a>
                 
-                <a class="navbar-item" href="/about">About</a>
+                <a class="navbar-item"
+                href="/about">About</a>
                 
             </div>
             
@@ -185,33 +189,28 @@
 </ol>
 <p>We saw some characteristics, now, lets see what are closures, currying, partial application, side effects and tail call recursions.</p>
 <h2 id="Closures"><a href="#Closures" class="headerlink" title="Closures"></a>Closures</h2><p>Think of a function’s variables as a bag. When the function is returned (removed from the stack and its frame is destroyed), its bag remains. We previously said that functions can return other functions and closures come into play when an outer function is destroyed and the inner function wants to access previously passed arguments (the outer functions bag).</p>
-<figure class="highlight javascript hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">firstName</span>(<span class="hljs-params">firstName</span>)</span>&#123;</span><br><span class="line">  <span class="hljs-keyword">return</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">lastName</span>(<span class="hljs-params">lastName</span>)</span>&#123;</span><br><span class="line">    <span class="hljs-keyword">return</span> firstName + lastName</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="hljs-keyword">const</span> firstNameWill = firstName(<span class="hljs-string">"Will"</span>)</span><br><span class="line"><span class="hljs-keyword">const</span> lastNameSmith = firstNameWill(<span class="hljs-string">"Smith"</span>)</span><br><span class="line"><span class="hljs-keyword">const</span> lastNameIAM = firstNameWill(<span class="hljs-string">".I.AM"</span>)</span><br><span class="line"><span class="hljs-comment">/* prints Will Smith */</span></span><br><span class="line"><span class="hljs-built_in">console</span>.log(lastNameSmith) </span><br><span class="line"><span class="hljs-comment">/* prints Will.I.AM */</span></span><br><span class="line"><span class="hljs-built_in">console</span>.log(lastNameIAM)</span><br></pre></td></tr></table></figure>
-
+<figure class="highlight javascript hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">firstName</span>(<span class="hljs-params">firstName</span>)</span>&#123;</span><br><span class="line">  <span class="hljs-keyword">return</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">lastName</span>(<span class="hljs-params">lastName</span>)</span>&#123;</span><br><span class="line">    <span class="hljs-keyword">return</span> firstName + lastName</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="hljs-keyword">const</span> firstNameWill = firstName(<span class="hljs-string">&quot;Will&quot;</span>)</span><br><span class="line"><span class="hljs-keyword">const</span> lastNameSmith = firstNameWill(<span class="hljs-string">&quot;Smith&quot;</span>)</span><br><span class="line"><span class="hljs-keyword">const</span> lastNameIAM = firstNameWill(<span class="hljs-string">&quot;.I.AM&quot;</span>)</span><br><span class="line"><span class="hljs-comment">/* prints Will Smith */</span></span><br><span class="line"><span class="hljs-built_in">console</span>.log(lastNameSmith) </span><br><span class="line"><span class="hljs-comment">/* prints Will.I.AM */</span></span><br><span class="line"><span class="hljs-built_in">console</span>.log(lastNameIAM) </span><br></pre></td></tr></table></figure>
 <p>You see how we stored <code>&quot;Will&quot;</code> in the “bag” of the firstName function. Even after it returned, we still had access to its variables. It allowed us to reuse the name Will and call it with different last names.</p>
 <h2 id="Currying"><a href="#Currying" class="headerlink" title="Currying"></a>Currying</h2><p>In mathematics and computer science, currying is the technique of translating the evaluation of a function that takes multiple arguments into evaluating a sequence of functions, each with a single argument.</p>
 <p>Lets see an example without currying</p>
-<figure class="highlight javascript hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">entireName</span>(<span class="hljs-params">firstName, middleName, lastName</span>)</span>&#123;</span><br><span class="line">  <span class="hljs-keyword">return</span> firstName + middleName + lastName</span><br><span class="line">&#125;</span><br><span class="line"><span class="hljs-built_in">console</span>.log(entireName(<span class="hljs-string">"Will"</span>))</span><br><span class="line"><span class="hljs-comment">// prints "Will undefined undefined"</span></span><br></pre></td></tr></table></figure>
-
+<figure class="highlight javascript hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">entireName</span>(<span class="hljs-params">firstName, middleName, lastName</span>)</span>&#123;</span><br><span class="line">  <span class="hljs-keyword">return</span> firstName + middleName + lastName</span><br><span class="line">&#125;</span><br><span class="line"><span class="hljs-built_in">console</span>.log(entireName(<span class="hljs-string">&quot;Will&quot;</span>))</span><br><span class="line"><span class="hljs-comment">// prints &quot;Will undefined undefined&quot;</span></span><br></pre></td></tr></table></figure>
 <p>With function currying, if we pass 1 argument, we will recieve a function back and only when all arguments are passed, our function will execute.</p>
-<figure class="highlight javascript hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">entireName</span>(<span class="hljs-params">firstName, middleName, lastName</span>)</span>&#123;</span><br><span class="line">  <span class="hljs-keyword">return</span> firstName + middleName + lastName</span><br><span class="line">&#125;</span><br><span class="line"><span class="hljs-comment">/*</span></span><br><span class="line"><span class="hljs-comment">  the above in its curried form lookes like this:</span></span><br><span class="line"><span class="hljs-comment">*/</span></span><br><span class="line"><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">entireName</span>(<span class="hljs-params">firstName</span>)</span>&#123;</span><br><span class="line">  <span class="hljs-keyword">return</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">middleName</span>(<span class="hljs-params">middleName</span>)</span>&#123;</span><br><span class="line">    <span class="hljs-keyword">return</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">lastName</span>(<span class="hljs-params">lastName</span>)</span>&#123;</span><br><span class="line">      <span class="hljs-keyword">return</span> firstName + middleName + lastName</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="hljs-keyword">const</span> withNameWill = entireName(<span class="hljs-string">"Will"</span>)</span><br><span class="line"><span class="hljs-keyword">const</span> withMiddleNameI = withNameWill(<span class="hljs-string">"I"</span>)</span><br><span class="line"><span class="hljs-keyword">const</span> withLastNameAM = withMiddleNameI(<span class="hljs-string">"AM"</span>)</span><br><span class="line"><span class="hljs-comment">/*</span></span><br><span class="line"><span class="hljs-comment">Note that purely functional languages curry by default, like `Haskell`, others have different libraries for automatic currying of functions</span></span><br><span class="line"><span class="hljs-comment">for example with ramda.js we could wrap our entireName function in a curry function</span></span><br><span class="line"><span class="hljs-comment">*/</span></span><br><span class="line"><span class="hljs-keyword">const</span> &#123; curry &#125; = <span class="hljs-built_in">require</span>(<span class="hljs-string">"ramda"</span>)</span><br><span class="line"><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">entireName</span>(<span class="hljs-params">firstName, middleName, lastName</span>)</span>&#123;</span><br><span class="line">  <span class="hljs-keyword">return</span> firstName + middleName + lastName</span><br><span class="line">&#125;</span><br><span class="line"><span class="hljs-comment">/* Below function is automatically curried like the example above and it is a lot more readable */</span></span><br><span class="line"><span class="hljs-keyword">const</span> curriedEntireName = curry(entireName)</span><br></pre></td></tr></table></figure>
+<figure class="highlight javascript hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">entireName</span>(<span class="hljs-params">firstName, middleName, lastName</span>)</span>&#123;</span><br><span class="line">  <span class="hljs-keyword">return</span> firstName + middleName + lastName</span><br><span class="line">&#125;</span><br><span class="line"><span class="hljs-comment">/*</span></span><br><span class="line"><span class="hljs-comment">  the above in its curried form lookes like this:</span></span><br><span class="line"><span class="hljs-comment">*/</span></span><br><span class="line"><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">entireName</span>(<span class="hljs-params">firstName</span>)</span>&#123;</span><br><span class="line">  <span class="hljs-keyword">return</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">middleName</span>(<span class="hljs-params">middleName</span>)</span>&#123;</span><br><span class="line">    <span class="hljs-keyword">return</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">lastName</span>(<span class="hljs-params">lastName</span>)</span>&#123;</span><br><span class="line">      <span class="hljs-keyword">return</span> firstName + middleName + lastName</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="hljs-keyword">const</span> withNameWill = entireName(<span class="hljs-string">&quot;Will&quot;</span>)</span><br><span class="line"><span class="hljs-keyword">const</span> withMiddleNameI = withNameWill(<span class="hljs-string">&quot;I&quot;</span>)</span><br><span class="line"><span class="hljs-keyword">const</span> withLastNameAM = withMiddleNameI(<span class="hljs-string">&quot;AM&quot;</span>)</span><br><span class="line"><span class="hljs-comment">/*</span></span><br><span class="line"><span class="hljs-comment">Note that purely functional languages curry by default, like `Haskell`, others have different libraries for automatic currying of functions</span></span><br><span class="line"><span class="hljs-comment">for example with ramda.js we could wrap our entireName function in a curry function</span></span><br><span class="line"><span class="hljs-comment">*/</span></span><br><span class="line"><span class="hljs-keyword">const</span> &#123; curry &#125; = <span class="hljs-built_in">require</span>(<span class="hljs-string">&quot;ramda&quot;</span>)</span><br><span class="line"><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">entireName</span>(<span class="hljs-params">firstName, middleName, lastName</span>)</span>&#123;</span><br><span class="line">  <span class="hljs-keyword">return</span> firstName + middleName + lastName</span><br><span class="line">&#125;</span><br><span class="line"><span class="hljs-comment">/* Below function is automatically curried like the example above and it is a lot more readable */</span></span><br><span class="line"><span class="hljs-keyword">const</span> curriedEntireName = curry(entireName)</span><br></pre></td></tr></table></figure>
 
 <h2 id="Partial-Application"><a href="#Partial-Application" class="headerlink" title="Partial Application"></a>Partial Application</h2><p>Partial application works similar to currying. The difference between them is that currying splits a function to functions that receive one argument, also called unary, while partial application allows passing multiple arguments. Lets see an example</p>
-<figure class="highlight javascript hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">entireName</span>(<span class="hljs-params">firstName, middleName, lastName</span>)</span>&#123;</span><br><span class="line">  <span class="hljs-keyword">return</span> firstName + middleName + lastName</span><br><span class="line">&#125;</span><br><span class="line"><span class="hljs-comment">/*</span></span><br><span class="line"><span class="hljs-comment">  Look how we passed "Will" and "I" together. With currying you have to pass a single argument at a time</span></span><br><span class="line"><span class="hljs-comment">  until all arguments are passed. With partial Application you can pass any number of arguments and it will either execute if all arguments were given, or return a function that expects the original number of arguments minus the ones passed.</span></span><br><span class="line"><span class="hljs-comment">*/</span></span><br><span class="line"><span class="hljs-keyword">const</span> &#123; partial &#125; = <span class="hljs-built_in">require</span>(<span class="hljs-string">"ramda"</span>)</span><br><span class="line"><span class="hljs-keyword">const</span> partialWithTwoArgs = partial(entireName, [<span class="hljs-string">"Will"</span>, <span class="hljs-string">"I"</span>])</span><br><span class="line"><span class="hljs-keyword">const</span> fullName = partial(partialWithTwoArgs, [<span class="hljs-string">"AM"</span>])</span><br><span class="line"><span class="hljs-built_in">console</span>.log(fullName)</span><br><span class="line"><span class="hljs-comment">/*</span></span><br><span class="line"><span class="hljs-comment">  prints "Will I AM"</span></span><br><span class="line"><span class="hljs-comment">*/</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight javascript hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">entireName</span>(<span class="hljs-params">firstName, middleName, lastName</span>)</span>&#123;</span><br><span class="line">  <span class="hljs-keyword">return</span> firstName + middleName + lastName</span><br><span class="line">&#125;</span><br><span class="line"><span class="hljs-comment">/*</span></span><br><span class="line"><span class="hljs-comment">  Look how we passed &quot;Will&quot; and &quot;I&quot; together. With currying you have to pass a single argument at a time</span></span><br><span class="line"><span class="hljs-comment">  until all arguments are passed. With partial Application you can pass any number of arguments and it will either execute if all arguments were given, or return a function that expects the original number of arguments minus the ones passed.</span></span><br><span class="line"><span class="hljs-comment">*/</span></span><br><span class="line"><span class="hljs-keyword">const</span> &#123; partial &#125; = <span class="hljs-built_in">require</span>(<span class="hljs-string">&quot;ramda&quot;</span>)</span><br><span class="line"><span class="hljs-keyword">const</span> partialWithTwoArgs = partial(entireName, [<span class="hljs-string">&quot;Will&quot;</span>, <span class="hljs-string">&quot;I&quot;</span>])</span><br><span class="line"><span class="hljs-keyword">const</span> fullName = partial(partialWithTwoArgs, [<span class="hljs-string">&quot;AM&quot;</span>])</span><br><span class="line"><span class="hljs-built_in">console</span>.log(fullName)</span><br><span class="line"><span class="hljs-comment">/*</span></span><br><span class="line"><span class="hljs-comment">  prints &quot;Will I AM&quot;</span></span><br><span class="line"><span class="hljs-comment">*/</span></span><br></pre></td></tr></table></figure>
 
 <h2 id="Side-Effects"><a href="#Side-Effects" class="headerlink" title="Side Effects"></a>Side Effects</h2><p>In programming, a side effect is when a procedure changes a variable from outside its scope.<br>For example:</p>
-<figure class="highlight javascript hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">updateVariable</span>(<span class="hljs-params"></span>)</span>&#123;</span><br><span class="line">  dbConnection.set(<span class="hljs-string">"side_effect"</span>, <span class="hljs-literal">true</span>)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
+<figure class="highlight javascript hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">updateVariable</span>(<span class="hljs-params"></span>)</span>&#123;</span><br><span class="line">  dbConnection.set(<span class="hljs-string">&quot;side_effect&quot;</span>, <span class="hljs-literal">true</span>)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p>We changed some state outside of our function - this is called a side effect.<br>Functional programming is against side effects, but without side effects we would not be able to write software. Instead we try to limit the amount of side effects, allowing only a portion of our code to carefully do them.</p>
 <h2 id="Recursion"><a href="#Recursion" class="headerlink" title="Recursion"></a>Recursion</h2><p>Recursion in computer science is a method of solving a problem where the solution depends on solutions to smaller instances of the same problem (as opposed to iteration). Basically, a function calls itself multiple times until some condition is met.<br>For example, lets see a fibonacci recursion, do not mind the big O notation:</p>
 <figure class="highlight javascript hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">fibonacci</span>(<span class="hljs-params">num</span>) </span>&#123;</span><br><span class="line">  <span class="hljs-keyword">if</span> (num &lt;= <span class="hljs-number">1</span>) <span class="hljs-keyword">return</span> <span class="hljs-number">1</span>;</span><br><span class="line">  <span class="hljs-keyword">return</span> fibonacci(num - <span class="hljs-number">1</span>) + fibonacci(num - <span class="hljs-number">2</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
 <p>This function will call itself repeatedly until the condition above is met and until it does that, the function will create multiple frames of itself, possibly leading to stackoverflow.<br>To address the recursion problem, tail-call optimization is used. Tail-call optimization is where you are able to avoid allocating a new stack frame for a function because the calling function will simply return the value that it gets from the called function. Usually, the compiler takes care of tail call optimization in functional languages, I will not elaborate on when tail call optimization does not occur, but if you get into FP in more detail, make sure to read about it.</p>
 <h2 id="Bonus-Pipes"><a href="#Bonus-Pipes" class="headerlink" title="Bonus: Pipes"></a>Bonus: Pipes</h2><p>Lets see how we put to practice all the above. In functional languages we usually have a pipe operator that allows an argument to pass through a series of functions. </p>
 <figure class="highlight javascript hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-comment">/*</span></span><br><span class="line"><span class="hljs-comment">  Math: f(g(h(x, y)))</span></span><br><span class="line"><span class="hljs-comment">*/</span></span><br><span class="line"><span class="hljs-comment">/*</span></span><br><span class="line"><span class="hljs-comment">  Equivalent JS</span></span><br><span class="line"><span class="hljs-comment">*/</span></span><br><span class="line"><span class="hljs-keyword">const</span> operate = <span class="hljs-function">(<span class="hljs-params">x, y</span>) =&gt;</span> square(addOne(multiply(x, y)))</span><br><span class="line"></span><br><span class="line"><span class="hljs-comment">/*</span></span><br><span class="line"><span class="hljs-comment">  Same as above with pipe</span></span><br><span class="line"><span class="hljs-comment">*/</span></span><br><span class="line"><span class="hljs-keyword">const</span> operate = pipe(</span><br><span class="line">  square,</span><br><span class="line">  addOne,</span><br><span class="line">  multiply</span><br><span class="line">)(x, y)</span><br></pre></td></tr></table></figure>
 
 <p>If you are familiar with UNIX style programming, FP looks similar.</p>
 <figure class="highlight bash hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ls -l | uniq | wc -l</span><br></pre></td></tr></table></figure>
-
 <p>If you did the above in a terminal before, you have used functional programming!
 Each of the functions above does one thing without mutating side effects and with the use of the pipe(|) operator we are able to combine our functions to achieve our end goal.</p>
 <h2 id="What-functional-programming-helps-achieve"><a href="#What-functional-programming-helps-achieve" class="headerlink" title="What functional programming helps achieve"></a>What functional programming helps achieve</h2><p>All race conditions, deadlock conditions, and concurrent update problems are due to mutable variables. Instead of wiring a solution to these problems, we avoid them altogether ahead of time using functional programming!</p>
@@ -223,7 +222,7 @@ Each of the functions above does one thing without mutating side effects and wit
             <div class="level-start">
                 <div class="level-item custom-tags">
                     <span class="is-size-6 has-text-grey has-mr-7">#</span>
-                    <a class="has-link-grey -link" href="/tags/Functional/">Functional</a>, <a class="has-link-grey -link" href="/tags/Programming-Paradigms/">Programming Paradigms</a>
+                    <a class="has-link-grey -link-link" href="/tags/Functional/" rel="tag">Functional</a>, <a class="has-link-grey -link-link" href="/tags/Programming-Paradigms/" rel="tag">Programming Paradigms</a>
                 </div>
             </div>
         </div>
@@ -279,7 +278,7 @@ Each of the functions above does one thing without mutating side effects and wit
 
 <div id="disqus_thread">
     
-    <noscript>Please enable JavaScript to view the <a href="//disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+    <noscript>Please enable JavaScript to view the <a target="_blank" rel="noopener" href="//disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
 </div>
     </div>
 </div>
@@ -354,25 +353,29 @@ Each of the functions above does one thing without mutating side effects and wit
         
         <div class="level is-mobile">
             
-            <a class="level-item button is-white is-marginless" target="_blank" title="Email" href="mailto:yurik1776@gmail.com">
+            <a class="level-item button is-white is-marginless" target="_blank"
+                title="Email" href="mailto:yurik1776@gmail.com">
                 
                 <i class="far fa-envelope"></i>
                 
             </a>
             
-            <a class="level-item button is-white is-marginless" target="_blank" title="LinkedIn" href="https://www.linkedin.com/in/yuri-khomyakov-383278125/">
+            <a class="level-item button is-white is-marginless" target="_blank"
+                title="LinkedIn" href="https://www.linkedin.com/in/yuri-khomyakov-383278125/">
                 
                 <i class="fab fa-linkedin"></i>
                 
             </a>
             
-            <a class="level-item button is-white is-marginless" target="_blank" title="Github" href="https://github.com/yuraxdrumz">
+            <a class="level-item button is-white is-marginless" target="_blank"
+                title="Github" href="https://github.com/yuraxdrumz">
                 
                 <i class="fab fa-github"></i>
                 
             </a>
             
-            <a class="level-item button is-white is-marginless" target="_blank" title="RSS" href="/atom.xml">
+            <a class="level-item button is-white is-marginless" target="_blank"
+                title="RSS" href="/atom.xml">
                 
                 <i class="fas fa-rss"></i>
                 
@@ -830,7 +833,8 @@ Each of the functions above does one thing without mutating side effects and wit
             <div class="level-start has-text-centered-mobile">
                 <p class="is-size-7">
                 &copy; 2020 Yuri Khomyakov&nbsp;
-                Powered by <a href="https://hexo.io/" target="_blank">Hexo</a> & <a href="https://github.com/ppoffice/hexo-theme-icarus" target="_blank">Icarus</a>
+                Powered by <a href="https://hexo.io/" target="_blank">Hexo</a> & <a
+                        href="https://github.com/ppoffice/hexo-theme-icarus" target="_blank">Icarus</a>
                 
                 </p>
             </div>
@@ -877,7 +881,7 @@ Each of the functions above does one thing without mutating side effects and wit
 
 <div id="outdated">
     <h6>Your browser is out-of-date!</h6>
-    <p>Update your browser to view this website correctly. <a id="btnUpdateBrowser" href="http://outdatedbrowser.com/">Update
+    <p>Update your browser to view this website correctly. <a id="btnUpdateBrowser" target="_blank" rel="noopener" href="http://outdatedbrowser.com/">Update
             my browser now </a></p>
     <p class="last"><a href="#" id="btnCloseUpdateBrowser" title="Close">&times;</a></p>
 </div>
@@ -955,7 +959,7 @@ document.addEventListener('DOMContentLoaded', function () {
     <div class="searchbox ins-search">
     <div class="searchbox-container ins-search-container">
         <div class="searchbox-input-wrapper">
-            <input type="text" class="searchbox-input ins-search-input" placeholder="Type something...">
+            <input type="text" class="searchbox-input ins-search-input" placeholder="Type something..." />
             <span class="searchbox-close ins-close ins-selectable"><i class="fa fa-times-circle"></i></span>
         </div>
         <div class="searchbox-result-wrapper ins-section-wrapper">

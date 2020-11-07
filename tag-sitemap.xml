@@ -164,13 +164,6 @@
     </url>
 
     <url>
-        <loc>https://yuriktech.com/tags/Green-Threads/</loc>
-        <lastmod>2020-03-19T09:10:43.156Z</lastmod>
-        <changefreq>weekly</changefreq>
-        <priority>0.2</priority>
-    </url>
-
-    <url>
         <loc>https://yuriktech.com/tags/Scheduler/</loc>
         <lastmod>2020-03-19T09:10:43.156Z</lastmod>
         <changefreq>weekly</changefreq>
@@ -193,6 +186,13 @@
 
     <url>
         <loc>https://yuriktech.com/tags/Concurrency/</loc>
+        <lastmod>2020-03-19T09:10:43.156Z</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.2</priority>
+    </url>
+
+    <url>
+        <loc>https://yuriktech.com/tags/Green-Threads/</loc>
         <lastmod>2020-03-19T09:10:43.156Z</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.2</priority>
@@ -248,14 +248,14 @@
     </url>
 
     <url>
-        <loc>https://yuriktech.com/tags/Golang/</loc>
+        <loc>https://yuriktech.com/tags/Ports-and-Adapters/</loc>
         <lastmod>2020-03-19T09:02:25.008Z</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.2</priority>
     </url>
 
     <url>
-        <loc>https://yuriktech.com/tags/Ports-and-Adapters/</loc>
+        <loc>https://yuriktech.com/tags/Golang/</loc>
         <lastmod>2020-03-19T09:02:25.008Z</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.2</priority>
