@@ -1,14 +1,16 @@
 ---
 title: Golang Memory Leaks
-category: Programming
-tags: 
+tags:
   - Golang
   - Memory Leak
   - Green Threads
   - Investigation
   - Profiling
+category: Programming
 thumbnail: images/Golang.png
+date: 2020-11-07 19:59:35
 ---
+
 Recently, I had a memory leak in production. I saw that a specific service's memory steadily rises when under load, until the process hits an out of memory exception. After a thorough investigation, I found out the source of the memory leak as well as the reason to why it happened in the first place. To diagnose the problem, I used Golang's profiling tool called `pprof`.
 In this post, I will explain what is pprof and show how I diagnosed the memory leak.
 
