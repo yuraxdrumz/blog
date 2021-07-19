@@ -30,6 +30,6 @@
     "node-sass": "^5.0.0"
   },
   "devDependencies": {
-    "hexo": "^5.2.0"
+    "hexo": "^5.4.0"
   }
 }
