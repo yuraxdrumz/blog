@@ -1,0 +1,1004 @@
+<!DOCTYPE html>
+<html  lang="en">
+<head>
+    <meta charset="utf-8">
+<title>Collecting Docker Logs With Loki - Yurik&#39;s Tech Blog</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+<meta  />
+<meta  />
+<meta  />
+<meta  />
+
+    <meta name="description" content="Loki is a multi-tenant log aggregation system inspired by Prometheus.It is cost effective, easy to operate and allows viewing logs directly in Grafana.In this blog post, I will show how to setup a Lok">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Collecting Docker Logs With Loki">
+<meta property="og:url" content="https://yuriktech.com/2020/03/21/Collecting-Docker-Logs-With-Loki/index.html">
+<meta property="og:site_name" content="Yurik&#39;s Tech Blog">
+<meta property="og:description" content="Loki is a multi-tenant log aggregation system inspired by Prometheus.It is cost effective, easy to operate and allows viewing logs directly in Grafana.In this blog post, I will show how to setup a Lok">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://yuriktech.com/images/loki.jpg">
+<meta property="article:published_time" content="2020-03-21T14:10:20.000Z">
+<meta property="article:modified_time" content="2021-01-22T11:07:55.924Z">
+<meta property="article:author" content="Yuri Khomyakov">
+<meta property="article:tag" content="Tutorial">
+<meta property="article:tag" content="Docker">
+<meta property="article:tag" content="Logging">
+<meta property="article:tag" content="Loki">
+<meta property="article:tag" content="Development">
+<meta property="article:tag" content="Containers">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://yuriktech.com/images/loki.jpg">
+
+
+
+
+
+
+
+<link rel="icon" href="/favicon.ico">
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.7.2/css/bulma.css">
+<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.4.1/css/all.css">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Ubuntu:400,600|Source+Code+Pro">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@9.12.0/styles/monokai.css">
+
+
+    
+    
+    
+    <style>body>.footer,body>.navbar,body>.section{opacity:0}</style>
+    
+
+    
+    
+    
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/lightgallery@1.6.8/dist/css/lightgallery.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/justifiedGallery@3.7.0/dist/css/justifiedGallery.min.css">
+    
+
+    
+    
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/outdatedbrowser@1.1.5/outdatedbrowser/outdatedbrowser.min.css">
+
+
+    
+    
+    
+    
+
+<link rel="stylesheet" href="/css/back-to-top.css">
+
+
+    
+    
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-142167807-1"></script>
+<script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'UA-142167807-1');
+</script>
+
+
+    
+    
+    
+    
+
+    
+    
+<link rel="stylesheet" href="/css/progressbar.css">
+<script src="https://cdn.jsdelivr.net/npm/pace-js@1.0.2/pace.min.js"></script>
+
+    
+    
+    
+
+    
+    
+    
+
+
+<link rel="stylesheet" href="/css/style.css">
+<meta name="generator" content="Hexo 5.4.0"></head>
+<body class="is-3-column">
+    <nav class="navbar navbar-main">
+    <div class="container">
+
+        <div class="navbar-menu">
+            
+            <div class="navbar-start">
+                
+                <a class="navbar-item"
+                href="/">Home</a>
+                
+                <a class="navbar-item"
+                href="/archives">Archives</a>
+                
+                <a class="navbar-item"
+                href="/about">About</a>
+                
+            </div>
+            
+            <div class="navbar-end">
+                
+                    
+                    
+                    <a class="navbar-item" target="_blank" title="GitHub" href="https://github.com/yuraxdrumz">
+                        
+                        <i class="fab fa-github"></i>
+                        
+                    </a>
+                    
+                
+                
+                <a class="navbar-item is-hidden-tablet catalogue" title="Catalogue" href="javascript:;">
+                    <i class="fas fa-list-ul"></i>
+                </a>
+                
+                
+                <a class="navbar-item search" title="Search" href="javascript:;">
+                    <i class="fas fa-search"></i>
+                </a>
+                
+            </div>
+        </div>
+    </div>
+</nav>
+    
+    <section class="section">
+        <div class="container">
+            <div class="columns">
+                <div class="column is-8-tablet is-8-desktop is-6-widescreen has-order-2 column-main"><div class="card">
+    
+    <div class="card-image">
+        <span  class="image is-7by1">
+            <img class="thumbnail" src="/images/loki.jpg" alt="Collecting Docker Logs With Loki">
+        </span>
+    </div>
+    
+    <div class="card-content article ">
+        
+        <div class="level article-meta is-size-7 is-uppercase is-mobile is-overflow-x-auto">
+            <div class="level-left">
+                <time class="level-item has-text-grey" datetime="2020-03-21T14:10:20.000Z">2020-03-21</time>
+                
+                <div class="level-item">
+                <a class="has-link-grey -link" href="/categories/DevOps/">DevOps</a>
+                </div>
+                
+                
+                <span class="level-item has-text-grey">
+                    
+                    
+                    7 minutes read (About 1063 words)
+                </span>
+                
+                
+            </div>
+        </div>
+        
+        <h1 class="title is-size-3 is-size-4-mobile has-text-weight-normal">
+            
+                Collecting Docker Logs With Loki
+            
+        </h1>
+        <div class="content">
+            <p>Loki is a multi-tenant log aggregation system inspired by Prometheus.<br>It is cost effective, easy to operate and allows viewing logs directly in Grafana.<br>In this blog post, I will show how to setup a Loki container using docker compose, how to define the Loki logging driver to automatically ship all container logs and finally, how to view the logs in Grafana.</p>
+<h3 id="Disclaimer"><a href="#Disclaimer" class="headerlink" title="Disclaimer"></a>Disclaimer</h3><p>I have been using Loki in a development setup with 24 services for three months now and had zero problems with it.<br>It really makes the developers life easier, especially after chasing log files in 20 different terminals.<br>From what I have read, Loki was battle tested by Grafana, so I am sure it is capable of running in production just fine.</p>
+<h3 id="Setup-Loki-Container"><a href="#Setup-Loki-Container" class="headerlink" title="Setup Loki Container"></a>Setup Loki Container</h3><p>First of all, we will need to define a Loki container in the <code>docker-compose.yml</code>.
+The command part tells Loki to read the config from the <code>local-config.yaml</code> which is added as a volume.</p>
+<figure class="highlight yaml hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-attr">services:</span></span><br><span class="line">  <span class="hljs-attr">loki:</span></span><br><span class="line">    <span class="hljs-attr">container_name:</span> <span class="hljs-string">loki</span></span><br><span class="line">    <span class="hljs-attr">image:</span> <span class="hljs-string">grafana/loki:latest</span></span><br><span class="line">    <span class="hljs-attr">ports:</span></span><br><span class="line">      <span class="hljs-bullet">-</span> <span class="hljs-string">&quot;3100:3100&quot;</span></span><br><span class="line">    <span class="hljs-attr">command:</span> <span class="hljs-string">-config.file=/etc/loki/local-config.yaml</span></span><br><span class="line">    <span class="hljs-attr">volumes:</span></span><br><span class="line">      <span class="hljs-bullet">-</span> <span class="hljs-string">./volumes/loki/etc:/etc/loki</span></span><br></pre></td></tr></table></figure>
+
+<p>The <code>local-config.yaml</code> is a default from the <a target="_blank" rel="noopener" href="https://github.com/grafana/loki/blob/master/docs/configuration/README.md">Loki Github page</a>.</p>
+<p>Here is an example config.</p>
+<figure class="highlight yaml hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-attr">auth_enabled:</span> <span class="hljs-literal">false</span></span><br><span class="line"></span><br><span class="line"><span class="hljs-attr">server:</span></span><br><span class="line">  <span class="hljs-attr">http_listen_port:</span> <span class="hljs-number">3100</span></span><br><span class="line">  <span class="hljs-attr">log_level:</span> <span class="hljs-string">error</span></span><br><span class="line"></span><br><span class="line"><span class="hljs-attr">ingester:</span></span><br><span class="line">  <span class="hljs-attr">lifecycler:</span></span><br><span class="line">    <span class="hljs-attr">address:</span> <span class="hljs-number">127.0</span><span class="hljs-number">.0</span><span class="hljs-number">.1</span></span><br><span class="line">    <span class="hljs-attr">ring:</span></span><br><span class="line">      <span class="hljs-attr">kvstore:</span></span><br><span class="line">        <span class="hljs-attr">store:</span> <span class="hljs-string">inmemory</span></span><br><span class="line">      <span class="hljs-attr">replication_factor:</span> <span class="hljs-number">1</span></span><br><span class="line">    <span class="hljs-attr">final_sleep:</span> <span class="hljs-string">0s</span></span><br><span class="line">  <span class="hljs-attr">chunk_idle_period:</span> <span class="hljs-string">5m</span></span><br><span class="line">  <span class="hljs-attr">chunk_retain_period:</span> <span class="hljs-string">30s</span></span><br><span class="line"></span><br><span class="line"><span class="hljs-attr">schema_config:</span></span><br><span class="line">  <span class="hljs-attr">configs:</span></span><br><span class="line">    <span class="hljs-bullet">-</span> <span class="hljs-attr">from:</span> <span class="hljs-number">2018-04-15</span></span><br><span class="line">      <span class="hljs-attr">store:</span> <span class="hljs-string">boltdb</span></span><br><span class="line">      <span class="hljs-attr">object_store:</span> <span class="hljs-string">filesystem</span></span><br><span class="line">      <span class="hljs-attr">schema:</span> <span class="hljs-string">v9</span></span><br><span class="line">      <span class="hljs-attr">index:</span></span><br><span class="line">        <span class="hljs-attr">prefix:</span> <span class="hljs-string">index_</span></span><br><span class="line">        <span class="hljs-attr">period:</span> <span class="hljs-string">168h</span></span><br><span class="line"></span><br><span class="line"><span class="hljs-attr">storage_config:</span></span><br><span class="line">  <span class="hljs-attr">boltdb:</span></span><br><span class="line">    <span class="hljs-attr">directory:</span> <span class="hljs-string">/tmp/loki/index</span></span><br><span class="line"></span><br><span class="line">  <span class="hljs-attr">filesystem:</span></span><br><span class="line">    <span class="hljs-attr">directory:</span> <span class="hljs-string">/tmp/loki/chunks</span></span><br><span class="line"></span><br><span class="line"><span class="hljs-attr">limits_config:</span></span><br><span class="line">  <span class="hljs-attr">enforce_metric_name:</span> <span class="hljs-literal">false</span></span><br><span class="line">  <span class="hljs-attr">reject_old_samples:</span> <span class="hljs-literal">true</span></span><br><span class="line">  <span class="hljs-attr">reject_old_samples_max_age:</span> <span class="hljs-string">168h</span></span><br><span class="line"></span><br><span class="line"><span class="hljs-attr">chunk_store_config:</span></span><br><span class="line">  <span class="hljs-attr">max_look_back_period:</span> <span class="hljs-number">0</span></span><br><span class="line"></span><br><span class="line"><span class="hljs-attr">table_manager:</span></span><br><span class="line">  <span class="hljs-attr">chunk_tables_provisioning:</span></span><br><span class="line">    <span class="hljs-attr">inactive_read_throughput:</span> <span class="hljs-number">0</span></span><br><span class="line">    <span class="hljs-attr">inactive_write_throughput:</span> <span class="hljs-number">0</span></span><br><span class="line">    <span class="hljs-attr">provisioned_read_throughput:</span> <span class="hljs-number">0</span></span><br><span class="line">    <span class="hljs-attr">provisioned_write_throughput:</span> <span class="hljs-number">0</span></span><br><span class="line">  <span class="hljs-attr">index_tables_provisioning:</span></span><br><span class="line">    <span class="hljs-attr">inactive_read_throughput:</span> <span class="hljs-number">0</span></span><br><span class="line">    <span class="hljs-attr">inactive_write_throughput:</span> <span class="hljs-number">0</span></span><br><span class="line">    <span class="hljs-attr">provisioned_read_throughput:</span> <span class="hljs-number">0</span></span><br><span class="line">    <span class="hljs-attr">provisioned_write_throughput:</span> <span class="hljs-number">0</span></span><br><span class="line">  <span class="hljs-attr">retention_deletes_enabled:</span> <span class="hljs-literal">false</span></span><br><span class="line">  <span class="hljs-attr">retention_period:</span> <span class="hljs-number">0</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="Adding-Loki-as-a-Logging-Driver"><a href="#Adding-Loki-as-a-Logging-Driver" class="headerlink" title="Adding Loki as a Logging Driver"></a>Adding Loki as a Logging Driver</h3><p>To ship logs to Loki automatically for every container we add to our setup, we need to add the loki logging driver.<br>The easiest way to add the loki logging driver is with a docker plugin. </p>
+<figure class="highlight shell hljs"><figcaption><span>script</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker plugin install grafana/loki-docker-driver:latest --alias loki --grant-all-permissions</span><br></pre></td></tr></table></figure>
+<p>Don’t forget to restart the docker daemon after installing the plugin.</p>
+<p>If you are on Mac:</p>
+<figure class="highlight shell hljs"><figcaption><span>script</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">killall Docker &amp;&amp; open /Applications/Docker.app</span><br></pre></td></tr></table></figure>
+<p>If you are on Linux:</p>
+<figure class="highlight shell hljs"><figcaption><span>script</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo systemctl restart docker</span><br></pre></td></tr></table></figure>
+
+<p>After installing the plugin, verify it is enabled.</p>
+<figure class="highlight shell hljs"><figcaption><span>script</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker plugin ls</span><br></pre></td></tr></table></figure>
+<p>Should output</p>
+<figure class="highlight plaintext hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">ID                  NAME                DESCRIPTION           ENABLED</span><br><span class="line">412df8a79e8e        loki:latest         Loki Logging Driver   true</span><br></pre></td></tr></table></figure>
+
+<h3 id="Using-Loki-as-a-Logging-Driver"><a href="#Using-Loki-as-a-Logging-Driver" class="headerlink" title="Using Loki as a Logging Driver"></a>Using Loki as a Logging Driver</h3><p>There are two ways, I will cover, to change the logging driver, either directly in the docker compose file or in the daemon.json file of the docker daemon.</p>
+<h4 id="Docker-compose-yaml"><a href="#Docker-compose-yaml" class="headerlink" title="Docker-compose.yaml"></a>Docker-compose.yaml</h4><p>The default driver is json-file, but we can easily change it to loki, thanks to the docker plugin we installed earlier.<br>The loki-url option tells where to ship the logs, which in this case is to our local loki instance.<br>For a complete options list check the <a target="_blank" rel="noopener" href="https://github.com/grafana/loki/tree/master/cmd/docker-driver#log-opt-options">loki logging driver options</a></p>
+<figure class="highlight yaml hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-attr">logging:</span></span><br><span class="line">  <span class="hljs-attr">driver:</span> <span class="hljs-string">loki</span></span><br><span class="line">  <span class="hljs-attr">options:</span></span><br><span class="line">    <span class="hljs-attr">loki-url:</span> <span class="hljs-string">&quot;http://host.docker.internal:3100/loki/api/v1/push&quot;</span></span><br></pre></td></tr></table></figure>
+<p>An easier way to reuse the logging section since docker-compose version 3.4, is the <code>x-</code> extension fields and yaml anchors and aliases.<br>The <code>x-</code> extension field tells docker compose to ignore the section that follows it.<br>Anchors are identified by an <code>&amp;</code> character, and aliases by an <code>*</code> character.<br>Define an extension field at the top of your <code>docker-compose.yml</code> with an anchor after it and reuse it using the alias on all services.</p>
+<figure class="highlight yaml hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-comment"># logger driver - change this driver to ship all container logs to a different location</span></span><br><span class="line"><span class="hljs-attr">x-logging:</span> <span class="hljs-meta">&amp;logging</span></span><br><span class="line">  <span class="hljs-attr">logging:</span></span><br><span class="line">    <span class="hljs-attr">driver:</span> <span class="hljs-string">loki</span></span><br><span class="line">    <span class="hljs-attr">options:</span></span><br><span class="line">      <span class="hljs-attr">loki-url:</span> <span class="hljs-string">&quot;http://host.docker.internal:3100/loki/api/v1/push&quot;</span></span><br><span class="line"><span class="hljs-attr">services:</span></span><br><span class="line">  <span class="hljs-attr">my_service:</span></span><br><span class="line">    <span class="hljs-meta">*logging</span></span><br><span class="line">    <span class="hljs-attr">container_name:</span> <span class="hljs-string">xxx</span></span><br><span class="line">    <span class="hljs-attr">image:</span> <span class="hljs-string">xxx/xxx</span></span><br><span class="line">  <span class="hljs-attr">another_cool_service:</span></span><br><span class="line">    <span class="hljs-meta">*logging</span></span><br><span class="line">    <span class="hljs-attr">container_name:</span> <span class="hljs-string">xxxx</span></span><br><span class="line">    <span class="hljs-attr">image:</span> <span class="hljs-string">xxxx/xxxx</span></span><br></pre></td></tr></table></figure>
+
+<h4 id="Daemon-json"><a href="#Daemon-json" class="headerlink" title="Daemon.json"></a>Daemon.json</h4><p>We can also change the default logging driver for all containers in a file called <code>daemon.json</code>.
+If you are on Mac its located at <code>~/.docker/daemon.json</code><br>If you are on linux its located at <code>/etc/docker/daemon.json</code></p>
+<p>Example of daemon.json.<br>Don’t forget to restart the docker daemon afterwards.</p>
+<figure class="highlight json hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">    <span class="hljs-attr">&quot;debug&quot;</span> : <span class="hljs-literal">true</span>,</span><br><span class="line">    <span class="hljs-attr">&quot;log-driver&quot;</span>: <span class="hljs-string">&quot;loki&quot;</span>,</span><br><span class="line">    <span class="hljs-attr">&quot;log-opts&quot;</span>: &#123;</span><br><span class="line">        <span class="hljs-attr">&quot;loki-url&quot;</span>: <span class="hljs-string">&quot;http://host.docker.internal:3100/loki/api/v1/push&quot;</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>I prefer adding the logging driver in the <code>docker-compose.yaml</code> directly, because I have more control over the logging driver on a single service level, whereas, with daemon.json, you change the logging driver for all containers.</p>
+<h3 id="Running-Docker-with-Loki"><a href="#Running-Docker-with-Loki" class="headerlink" title="Running Docker with Loki"></a>Running Docker with Loki</h3><p>After you run <code>docker-compose up</code> all container logs will be sent to Loki.<br>One thing to note is, there is an error after running the containers, which says</p>
+<figure class="highlight plaintext hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">WARNING: no logs are available with the &#x27;loki&#x27; log driver</span><br></pre></td></tr></table></figure>
+<p>Nevertheless, all container logs are successfully sent to Grafana every time.<br>Because I use Loki in a development setup, I ignore this message, but if you want to run this in production, I would ensure that it is minor.<br>After all containers are up, you can still do <code>docker logs</code> command and it will work, so I am guessing the error above has something to do with container startup time.</p>
+<h3 id="Adding-Loki-to-Grafana"><a href="#Adding-Loki-to-Grafana" class="headerlink" title="Adding Loki to Grafana"></a>Adding Loki to Grafana</h3><p>Login to your Grafana instance and add a new data source of type Loki. Make sure the Grafana can reach the Loki instance.<br><img src="/2020/03/21/Collecting-Docker-Logs-With-Loki/adding-loki.png" alt></p>
+<h3 id="Using-Loki-in-Grafana"><a href="#Using-Loki-in-Grafana" class="headerlink" title="Using Loki in Grafana"></a>Using Loki in Grafana</h3><p>After adding Loki as a data source, go to explore and you should see all containers appear with automatic labels set by the Loki logging driver.<br><img src="/2020/03/21/Collecting-Docker-Logs-With-Loki/grafana-loki.png" alt></p>
+<p>You can also filter by words using the logql syntax, for example: <code>|=</code> includes syntax or <code>!=</code> excludes syntax. You can find out more about Loki logql syntax <a target="_blank" rel="noopener" href="https://github.com/grafana/loki/blob/master/docs/logql.md">here</a>.</p>
+<h3 id="Closing-Notes"><a href="#Closing-Notes" class="headerlink" title="Closing Notes"></a>Closing Notes</h3><p>We saw how to define a Loki docker container, afterwards we added Loki logging driver as a docker plugin, and finally, we shipped all of our logs to Grafana with a simple configuration.</p>
+
+        </div>
+        
+        <div class="level is-size-7 is-uppercase">
+            <div class="level-start">
+                <div class="level-item custom-tags">
+                    <span class="is-size-6 has-text-grey has-mr-7">#</span>
+                    <a class="has-link-grey -link-link" href="/tags/Containers/" rel="tag">Containers</a>, <a class="has-link-grey -link-link" href="/tags/Development/" rel="tag">Development</a>, <a class="has-link-grey -link-link" href="/tags/Docker/" rel="tag">Docker</a>, <a class="has-link-grey -link-link" href="/tags/Logging/" rel="tag">Logging</a>, <a class="has-link-grey -link-link" href="/tags/Loki/" rel="tag">Loki</a>, <a class="has-link-grey -link-link" href="/tags/Tutorial/" rel="tag">Tutorial</a>
+                </div>
+            </div>
+        </div>
+        
+        
+        
+    </div>
+</div>
+
+
+
+
+
+<div class="card card-transparent">
+    <div class="level post-navigation is-flex-wrap is-mobile">
+        
+        <div class="level-start">
+            <a class="level level-item has-link-grey  article-nav-prev" href="/2020/11/07/Golang-Memory-Leaks/">
+                <i class="level-item fas fa-chevron-left"></i>
+                <span class="level-item">Golang Memory Leaks</span>
+            </a>
+        </div>
+        
+        
+        <div class="level-end">
+            <a class="level level-item has-link-grey  article-nav-next" href="/2020/03/07/User-Space-Scheduling/">
+                <span class="level-item">User Space Scheduling</span>
+                <i class="level-item fas fa-chevron-right"></i>
+            </a>
+        </div>
+        
+    </div>
+</div>
+
+
+
+<div class="card">
+    <div class="card-content">
+        <h3 class="title is-5 has-text-weight-normal">Comments</h3>
+        
+<script>
+    var disqus_config = function () {
+        this.page.url = 'https://yuriktech.com/2020/03/21/Collecting-Docker-Logs-With-Loki/';
+        this.page.identifier = '2020/03/21/Collecting-Docker-Logs-With-Loki/';
+    };
+    (function() {
+        var d = document, s = d.createElement('script');  
+        s.src = '//' + 'yuritech' + '.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', +new Date());
+        (d.head || d.body).appendChild(s);
+    })();
+</script>
+
+<div id="disqus_thread">
+    
+    <noscript>Please enable JavaScript to view the <a target="_blank" rel="noopener" href="//disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+    </div>
+</div>
+</div>
+                
+
+
+
+
+<div class="column is-4-tablet is-4-desktop is-3-widescreen  has-order-1 column-left ">
+    
+        
+<div class="card widget">
+    <div class="card-content">
+        <nav class="level">
+            <div class="level-item has-text-centered" style="flex-shrink: 1">
+                <div>
+                    
+                        <img class="image is-128x128 has-mb-6" src="/about/index/avatar.png" alt="Yuri Khomyakov">
+                    
+                    
+                    <p class="is-size-4 is-block">
+                        Yuri Khomyakov
+                    </p>
+                    
+                    
+                    <p class="is-size-6 is-block">
+                        Technology Leader
+                    </p>
+                    
+                    
+                </div>
+            </div>
+        </nav>
+        <nav class="level is-mobile">
+            <div class="level-item has-text-centered is-marginless">
+                <div>
+                    <p class="heading">
+                        Posts
+                    </p>
+                    <p class="title has-text-weight-normal">
+                        13
+                    </p>
+                </div>
+            </div>
+            <div class="level-item has-text-centered is-marginless">
+                <div>
+                    <p class="heading">
+                        Categories
+                    </p>
+                    <p class="title has-text-weight-normal">
+                        4
+                    </p>
+                </div>
+            </div>
+            <div class="level-item has-text-centered is-marginless">
+                <div>
+                    <p class="heading">
+                        Tags
+                    </p>
+                    <p class="title has-text-weight-normal">
+                        44
+                    </p>
+                </div>
+            </div>
+        </nav>
+        <div class="level">
+            <a class="level-item button is-link is-rounded" href="https://github.com/yuraxdrumz" target="_blank">
+                Follow</a>
+        </div>
+        
+        
+        <div class="level is-mobile">
+            
+            <a class="level-item button is-white is-marginless" target="_blank"
+                title="Email" href="mailto:yurik1776@gmail.com">
+                
+                <i class="far fa-envelope"></i>
+                
+            </a>
+            
+            <a class="level-item button is-white is-marginless" target="_blank"
+                title="LinkedIn" href="https://www.linkedin.com/in/yuri-khomyakov-383278125/">
+                
+                <i class="fab fa-linkedin"></i>
+                
+            </a>
+            
+            <a class="level-item button is-white is-marginless" target="_blank"
+                title="Github" href="https://github.com/yuraxdrumz">
+                
+                <i class="fab fa-github"></i>
+                
+            </a>
+            
+            <a class="level-item button is-white is-marginless" target="_blank"
+                title="RSS" href="/atom.xml">
+                
+                <i class="fas fa-rss"></i>
+                
+            </a>
+            
+        </div>
+        
+    </div>
+</div>
+    
+        
+<div class="card widget">
+    <div class="card-content">
+        <h3 class="menu-label">
+            Tag Cloud
+        </h3>
+        <a href="/tags/API-Gateway/" style="font-size: 10px;">API Gateway</a> <a href="/tags/Actor-Model/" style="font-size: 10px;">Actor Model</a> <a href="/tags/Auditing/" style="font-size: 10px;">Auditing</a> <a href="/tags/Authentication/" style="font-size: 10px;">Authentication</a> <a href="/tags/Backend-For-Frontend/" style="font-size: 10px;">Backend For Frontend</a> <a href="/tags/Clean-Architecture/" style="font-size: 10px;">Clean Architecture</a> <a href="/tags/Concurrency/" style="font-size: 10px;">Concurrency</a> <a href="/tags/Containers/" style="font-size: 10px;">Containers</a> <a href="/tags/Context-Maps/" style="font-size: 10px;">Context Maps</a> <a href="/tags/DDD/" style="font-size: 12.5px;">DDD</a> <a href="/tags/Design/" style="font-size: 10px;">Design</a> <a href="/tags/Development/" style="font-size: 10px;">Development</a> <a href="/tags/Docker/" style="font-size: 10px;">Docker</a> <a href="/tags/Elixir/" style="font-size: 12.5px;">Elixir</a> <a href="/tags/Event-Loop/" style="font-size: 10px;">Event Loop</a> <a href="/tags/Event-Sourcing/" style="font-size: 10px;">Event Sourcing</a> <a href="/tags/Functional/" style="font-size: 15px;">Functional</a> <a href="/tags/Golang/" style="font-size: 15px;">Golang</a> <a href="/tags/Green-Threads/" style="font-size: 12.5px;">Green Threads</a> <a href="/tags/Hexagonal/" style="font-size: 10px;">Hexagonal</a> <a href="/tags/Investigation/" style="font-size: 10px;">Investigation</a> <a href="/tags/Javascript/" style="font-size: 10px;">Javascript</a> <a href="/tags/Kernel-Threads/" style="font-size: 10px;">Kernel Threads</a> <a href="/tags/Logging/" style="font-size: 10px;">Logging</a> <a href="/tags/Loki/" style="font-size: 10px;">Loki</a> <a href="/tags/Maybe-a-rant/" style="font-size: 10px;">Maybe a rant</a> <a href="/tags/Memory-Leak/" style="font-size: 10px;">Memory Leak</a> <a href="/tags/Microservices/" style="font-size: 15px;">Microservices</a> <a href="/tags/Middleware/" style="font-size: 10px;">Middleware</a> <a href="/tags/Node-js/" style="font-size: 10px;">Node js</a> <a href="/tags/Node-js/" style="font-size: 17.5px;">Node.js</a> <a href="/tags/Parallelism/" style="font-size: 10px;">Parallelism</a> <a href="/tags/Ports-and-Adapters/" style="font-size: 10px;">Ports and Adapters</a> <a href="/tags/Profiling/" style="font-size: 10px;">Profiling</a> <a href="/tags/Programming-Paradigms/" style="font-size: 10px;">Programming Paradigms</a> <a href="/tags/Scheduler/" style="font-size: 10px;">Scheduler</a> <a href="/tags/Sidecar-Pattern/" style="font-size: 10px;">Sidecar Pattern</a> <a href="/tags/Software-Architecture/" style="font-size: 20px;">Software Architecture</a> <a href="/tags/Threading-Models/" style="font-size: 10px;">Threading Models</a> <a href="/tags/Threads/" style="font-size: 10px;">Threads</a> <a href="/tags/Tutorial/" style="font-size: 12.5px;">Tutorial</a> <a href="/tags/Typescript/" style="font-size: 10px;">Typescript</a> <a href="/tags/Uncle-Bob/" style="font-size: 10px;">Uncle Bob</a> <a href="/tags/libuv/" style="font-size: 10px;">libuv</a>
+    </div>
+</div>
+
+    
+    
+        <div class="column-right-shadow is-hidden-widescreen ">
+        
+            
+<div class="card widget" id="toc">
+    <div class="card-content">
+        <div class="menu">
+            <h3 class="menu-label">
+                Catalogue
+            </h3>
+            <ul class="menu-list"><li>
+        <a class="is-flex" href="#Disclaimer">
+        <span class="has-mr-6">1</span>
+        <span>Disclaimer</span>
+        </a></li><li>
+        <a class="is-flex" href="#Setup-Loki-Container">
+        <span class="has-mr-6">2</span>
+        <span>Setup Loki Container</span>
+        </a></li><li>
+        <a class="is-flex" href="#Adding-Loki-as-a-Logging-Driver">
+        <span class="has-mr-6">3</span>
+        <span>Adding Loki as a Logging Driver</span>
+        </a></li><li>
+        <a class="is-flex" href="#Using-Loki-as-a-Logging-Driver">
+        <span class="has-mr-6">4</span>
+        <span>Using Loki as a Logging Driver</span>
+        </a><ul class="menu-list"><li>
+        <a class="is-flex" href="#Docker-compose-yaml">
+        <span class="has-mr-6">4.1</span>
+        <span>Docker-compose.yaml</span>
+        </a></li><li>
+        <a class="is-flex" href="#Daemon-json">
+        <span class="has-mr-6">4.2</span>
+        <span>Daemon.json</span>
+        </a></li></ul></li><li>
+        <a class="is-flex" href="#Running-Docker-with-Loki">
+        <span class="has-mr-6">5</span>
+        <span>Running Docker with Loki</span>
+        </a></li><li>
+        <a class="is-flex" href="#Adding-Loki-to-Grafana">
+        <span class="has-mr-6">6</span>
+        <span>Adding Loki to Grafana</span>
+        </a></li><li>
+        <a class="is-flex" href="#Using-Loki-in-Grafana">
+        <span class="has-mr-6">7</span>
+        <span>Using Loki in Grafana</span>
+        </a></li><li>
+        <a class="is-flex" href="#Closing-Notes">
+        <span class="has-mr-6">8</span>
+        <span>Closing Notes</span>
+        </a></li></ul>
+        </div>
+    </div>
+</div>
+
+        
+            
+<div class="card widget">
+    <div class="card-content">
+        <h3 class="menu-label">
+            Recent
+        </h3>
+        
+        <article class="media">
+            
+            <a href="/2021/07/19/Auditing-in-Microservices/" class="media-left">
+                <p class="image is-64x64">
+                    <img class="thumbnail" src="/images/thumbnail.svg" alt="Auditing in Microservices">
+                </p>
+            </a>
+            
+            <div class="media-content">
+                <div class="content">
+                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2021-07-19T16:41:33.000Z">2021-07-19</time></div>
+                    <a href="/2021/07/19/Auditing-in-Microservices/" class="has-link-black-ter is-size-6">Auditing in Microservices</a>
+                    <p class="is-size-7 is-uppercase">
+                        <a class="has-link-grey -link" href="/categories/Architecture/">Architecture</a>
+                    </p>
+                </div>
+            </div>
+        </article>
+        
+        <article class="media">
+            
+            <a href="/2020/11/07/Golang-Memory-Leaks/" class="media-left">
+                <p class="image is-64x64">
+                    <img class="thumbnail" src="/images/Golang.png" alt="Golang Memory Leaks">
+                </p>
+            </a>
+            
+            <div class="media-content">
+                <div class="content">
+                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2020-11-07T17:59:35.000Z">2020-11-07</time></div>
+                    <a href="/2020/11/07/Golang-Memory-Leaks/" class="has-link-black-ter is-size-6">Golang Memory Leaks</a>
+                    <p class="is-size-7 is-uppercase">
+                        <a class="has-link-grey -link" href="/categories/Programming/">Programming</a>
+                    </p>
+                </div>
+            </div>
+        </article>
+        
+        <article class="media">
+            
+            <a href="/2020/03/21/Collecting-Docker-Logs-With-Loki/" class="media-left">
+                <p class="image is-64x64">
+                    <img class="thumbnail" src="/images/loki.jpg" alt="Collecting Docker Logs With Loki">
+                </p>
+            </a>
+            
+            <div class="media-content">
+                <div class="content">
+                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2020-03-21T14:10:20.000Z">2020-03-21</time></div>
+                    <a href="/2020/03/21/Collecting-Docker-Logs-With-Loki/" class="has-link-black-ter is-size-6">Collecting Docker Logs With Loki</a>
+                    <p class="is-size-7 is-uppercase">
+                        <a class="has-link-grey -link" href="/categories/DevOps/">DevOps</a>
+                    </p>
+                </div>
+            </div>
+        </article>
+        
+        <article class="media">
+            
+            <a href="/2020/03/07/User-Space-Scheduling/" class="media-left">
+                <p class="image is-64x64">
+                    <img class="thumbnail" src="/images/multi.jpg" alt="User Space Scheduling">
+                </p>
+            </a>
+            
+            <div class="media-content">
+                <div class="content">
+                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2020-03-07T14:26:21.000Z">2020-03-07</time></div>
+                    <a href="/2020/03/07/User-Space-Scheduling/" class="has-link-black-ter is-size-6">User Space Scheduling</a>
+                    <p class="is-size-7 is-uppercase">
+                        <a class="has-link-grey -link" href="/categories/Programming/">Programming</a>
+                    </p>
+                </div>
+            </div>
+        </article>
+        
+        <article class="media">
+            
+            <a href="/2020/02/01/Implementing-Ports-and-Adapters/" class="media-left">
+                <p class="image is-64x64">
+                    <img class="thumbnail" src="/images/golang-ports-and-adapters.png" alt="Implementing Ports and Adapters">
+                </p>
+            </a>
+            
+            <div class="media-content">
+                <div class="content">
+                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2020-02-01T16:15:21.000Z">2020-02-01</time></div>
+                    <a href="/2020/02/01/Implementing-Ports-and-Adapters/" class="has-link-black-ter is-size-6">Implementing Ports and Adapters</a>
+                    <p class="is-size-7 is-uppercase">
+                        <a class="has-link-grey -link" href="/categories/Architecture/">Architecture</a>
+                    </p>
+                </div>
+            </div>
+        </article>
+        
+    </div>
+</div>
+
+        
+            
+<div class="card widget">
+    <div class="card-content">
+        <div class="menu">
+            <h3 class="menu-label">
+                Categories
+            </h3>
+            <ul class="menu-list">
+            <li>
+        <a class="level is-marginless" href="/categories/Architecture/">
+            <span class="level-start">
+                <span class="level-item">Architecture</span>
+            </span>
+            <span class="level-end">
+                <span class="level-item tag">6</span>
+            </span>
+        </a></li><li>
+        <a class="level is-marginless" href="/categories/DevOps/">
+            <span class="level-start">
+                <span class="level-item">DevOps</span>
+            </span>
+            <span class="level-end">
+                <span class="level-item tag">1</span>
+            </span>
+        </a></li><li>
+        <a class="level is-marginless" href="/categories/Paradigms/">
+            <span class="level-start">
+                <span class="level-item">Paradigms</span>
+            </span>
+            <span class="level-end">
+                <span class="level-item tag">1</span>
+            </span>
+        </a></li><li>
+        <a class="level is-marginless" href="/categories/Programming/">
+            <span class="level-start">
+                <span class="level-item">Programming</span>
+            </span>
+            <span class="level-end">
+                <span class="level-item tag">5</span>
+            </span>
+        </a></li>
+            </ul>
+        </div>
+    </div>
+</div>
+        
+        </div>
+    
+</div>
+
+                
+
+
+
+
+<div class="column is-4-tablet is-4-desktop is-3-widescreen is-hidden-touch is-hidden-desktop-only has-order-3 column-right ">
+    
+        
+<div class="card widget" id="toc">
+    <div class="card-content">
+        <div class="menu">
+            <h3 class="menu-label">
+                Catalogue
+            </h3>
+            <ul class="menu-list"><li>
+        <a class="is-flex" href="#Disclaimer">
+        <span class="has-mr-6">1</span>
+        <span>Disclaimer</span>
+        </a></li><li>
+        <a class="is-flex" href="#Setup-Loki-Container">
+        <span class="has-mr-6">2</span>
+        <span>Setup Loki Container</span>
+        </a></li><li>
+        <a class="is-flex" href="#Adding-Loki-as-a-Logging-Driver">
+        <span class="has-mr-6">3</span>
+        <span>Adding Loki as a Logging Driver</span>
+        </a></li><li>
+        <a class="is-flex" href="#Using-Loki-as-a-Logging-Driver">
+        <span class="has-mr-6">4</span>
+        <span>Using Loki as a Logging Driver</span>
+        </a><ul class="menu-list"><li>
+        <a class="is-flex" href="#Docker-compose-yaml">
+        <span class="has-mr-6">4.1</span>
+        <span>Docker-compose.yaml</span>
+        </a></li><li>
+        <a class="is-flex" href="#Daemon-json">
+        <span class="has-mr-6">4.2</span>
+        <span>Daemon.json</span>
+        </a></li></ul></li><li>
+        <a class="is-flex" href="#Running-Docker-with-Loki">
+        <span class="has-mr-6">5</span>
+        <span>Running Docker with Loki</span>
+        </a></li><li>
+        <a class="is-flex" href="#Adding-Loki-to-Grafana">
+        <span class="has-mr-6">6</span>
+        <span>Adding Loki to Grafana</span>
+        </a></li><li>
+        <a class="is-flex" href="#Using-Loki-in-Grafana">
+        <span class="has-mr-6">7</span>
+        <span>Using Loki in Grafana</span>
+        </a></li><li>
+        <a class="is-flex" href="#Closing-Notes">
+        <span class="has-mr-6">8</span>
+        <span>Closing Notes</span>
+        </a></li></ul>
+        </div>
+    </div>
+</div>
+
+    
+        
+<div class="card widget">
+    <div class="card-content">
+        <h3 class="menu-label">
+            Recent
+        </h3>
+        
+        <article class="media">
+            
+            <a href="/2021/07/19/Auditing-in-Microservices/" class="media-left">
+                <p class="image is-64x64">
+                    <img class="thumbnail" src="/images/thumbnail.svg" alt="Auditing in Microservices">
+                </p>
+            </a>
+            
+            <div class="media-content">
+                <div class="content">
+                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2021-07-19T16:41:33.000Z">2021-07-19</time></div>
+                    <a href="/2021/07/19/Auditing-in-Microservices/" class="has-link-black-ter is-size-6">Auditing in Microservices</a>
+                    <p class="is-size-7 is-uppercase">
+                        <a class="has-link-grey -link" href="/categories/Architecture/">Architecture</a>
+                    </p>
+                </div>
+            </div>
+        </article>
+        
+        <article class="media">
+            
+            <a href="/2020/11/07/Golang-Memory-Leaks/" class="media-left">
+                <p class="image is-64x64">
+                    <img class="thumbnail" src="/images/Golang.png" alt="Golang Memory Leaks">
+                </p>
+            </a>
+            
+            <div class="media-content">
+                <div class="content">
+                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2020-11-07T17:59:35.000Z">2020-11-07</time></div>
+                    <a href="/2020/11/07/Golang-Memory-Leaks/" class="has-link-black-ter is-size-6">Golang Memory Leaks</a>
+                    <p class="is-size-7 is-uppercase">
+                        <a class="has-link-grey -link" href="/categories/Programming/">Programming</a>
+                    </p>
+                </div>
+            </div>
+        </article>
+        
+        <article class="media">
+            
+            <a href="/2020/03/21/Collecting-Docker-Logs-With-Loki/" class="media-left">
+                <p class="image is-64x64">
+                    <img class="thumbnail" src="/images/loki.jpg" alt="Collecting Docker Logs With Loki">
+                </p>
+            </a>
+            
+            <div class="media-content">
+                <div class="content">
+                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2020-03-21T14:10:20.000Z">2020-03-21</time></div>
+                    <a href="/2020/03/21/Collecting-Docker-Logs-With-Loki/" class="has-link-black-ter is-size-6">Collecting Docker Logs With Loki</a>
+                    <p class="is-size-7 is-uppercase">
+                        <a class="has-link-grey -link" href="/categories/DevOps/">DevOps</a>
+                    </p>
+                </div>
+            </div>
+        </article>
+        
+        <article class="media">
+            
+            <a href="/2020/03/07/User-Space-Scheduling/" class="media-left">
+                <p class="image is-64x64">
+                    <img class="thumbnail" src="/images/multi.jpg" alt="User Space Scheduling">
+                </p>
+            </a>
+            
+            <div class="media-content">
+                <div class="content">
+                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2020-03-07T14:26:21.000Z">2020-03-07</time></div>
+                    <a href="/2020/03/07/User-Space-Scheduling/" class="has-link-black-ter is-size-6">User Space Scheduling</a>
+                    <p class="is-size-7 is-uppercase">
+                        <a class="has-link-grey -link" href="/categories/Programming/">Programming</a>
+                    </p>
+                </div>
+            </div>
+        </article>
+        
+        <article class="media">
+            
+            <a href="/2020/02/01/Implementing-Ports-and-Adapters/" class="media-left">
+                <p class="image is-64x64">
+                    <img class="thumbnail" src="/images/golang-ports-and-adapters.png" alt="Implementing Ports and Adapters">
+                </p>
+            </a>
+            
+            <div class="media-content">
+                <div class="content">
+                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2020-02-01T16:15:21.000Z">2020-02-01</time></div>
+                    <a href="/2020/02/01/Implementing-Ports-and-Adapters/" class="has-link-black-ter is-size-6">Implementing Ports and Adapters</a>
+                    <p class="is-size-7 is-uppercase">
+                        <a class="has-link-grey -link" href="/categories/Architecture/">Architecture</a>
+                    </p>
+                </div>
+            </div>
+        </article>
+        
+    </div>
+</div>
+
+    
+        
+<div class="card widget">
+    <div class="card-content">
+        <div class="menu">
+            <h3 class="menu-label">
+                Categories
+            </h3>
+            <ul class="menu-list">
+            <li>
+        <a class="level is-marginless" href="/categories/Architecture/">
+            <span class="level-start">
+                <span class="level-item">Architecture</span>
+            </span>
+            <span class="level-end">
+                <span class="level-item tag">6</span>
+            </span>
+        </a></li><li>
+        <a class="level is-marginless" href="/categories/DevOps/">
+            <span class="level-start">
+                <span class="level-item">DevOps</span>
+            </span>
+            <span class="level-end">
+                <span class="level-item tag">1</span>
+            </span>
+        </a></li><li>
+        <a class="level is-marginless" href="/categories/Paradigms/">
+            <span class="level-start">
+                <span class="level-item">Paradigms</span>
+            </span>
+            <span class="level-end">
+                <span class="level-item tag">1</span>
+            </span>
+        </a></li><li>
+        <a class="level is-marginless" href="/categories/Programming/">
+            <span class="level-start">
+                <span class="level-item">Programming</span>
+            </span>
+            <span class="level-end">
+                <span class="level-item tag">5</span>
+            </span>
+        </a></li>
+            </ul>
+        </div>
+    </div>
+</div>
+    
+    
+</div>
+
+            </div>
+        </div>
+    </section>
+    <footer class="footer">
+    <div class="container">
+        <div class="level">
+            <div class="level-start has-text-centered-mobile">
+                <p class="is-size-7">
+                &copy; 2021 Yuri Khomyakov&nbsp;
+                Powered by <a href="https://hexo.io/" target="_blank">Hexo</a> & <a
+                        href="https://github.com/ppoffice/hexo-theme-icarus" target="_blank">Icarus</a>
+                
+                </p>
+            </div>
+            <div class="level-end">
+            
+                <div class="field has-addons is-flex-center-mobile has-mt-5-mobile is-flex-wrap is-flex-middle">
+                
+                
+                <p class="control">
+                    <a class="button is-white is-large" target="_blank" title="GitHub" href="https://github.com/yuraxdrumz">
+                        
+                        <i class="fab fa-github"></i>
+                        
+                    </a>
+                </p>
+                
+                </div>
+            
+            </div>
+        </div>
+    </div>
+</footer>
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.3.1/dist/jquery.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/moment@2.22.2/min/moment-with-locales.min.js"></script>
+<script>moment.locale("en");</script>
+
+
+    
+    
+    
+    <script src="/js/animation.js"></script>
+    
+
+    
+    
+    
+    <script src="https://cdn.jsdelivr.net/npm/lightgallery@1.6.8/dist/js/lightgallery.min.js" defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/justifiedGallery@3.7.0/dist/js/jquery.justifiedGallery.min.js" defer></script>
+    <script src="/js/gallery.js" defer></script>
+    
+
+    
+    
+
+<div id="outdated">
+    <h6>Your browser is out-of-date!</h6>
+    <p>Update your browser to view this website correctly. <a id="btnUpdateBrowser" target="_blank" rel="noopener" href="http://outdatedbrowser.com/">Update
+            my browser now </a></p>
+    <p class="last"><a href="#" id="btnCloseUpdateBrowser" title="Close">&times;</a></p>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/outdatedbrowser@1.1.5/outdatedbrowser/outdatedbrowser.min.js" defer></script>
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        outdatedBrowser({
+            bgColor: '#f25648',
+            color: '#ffffff',
+            lowerThan: 'flex'
+        });
+    });
+</script>
+
+
+    
+    
+<script src="https://cdn.jsdelivr.net/npm/mathjax@2.7.5/unpacked/MathJax.js?config=TeX-MML-AM_CHTML" defer></script>
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    MathJax.Hub.Config({
+        'HTML-CSS': {
+            matchFontHeight: false
+        },
+        SVG: {
+            matchFontHeight: false
+        },
+        CommonHTML: {
+            matchFontHeight: false
+        },
+        tex2jax: {
+            inlineMath: [
+                ['$','$'],
+                ['\\(','\\)']
+            ]
+        }
+    });
+});
+</script>
+
+    
+    
+
+<a id="back-to-top" title="Back to Top" href="javascript:;">
+    <i class="fas fa-chevron-up"></i>
+</a>
+<script src="/js/back-to-top.js" defer></script>
+
+
+    
+    
+
+    
+    
+    
+    
+
+    
+    
+    
+    
+    
+    <script src="https://cdn.jsdelivr.net/npm/clipboard@2.0.4/dist/clipboard.min.js" defer></script>
+    <script src="/js/clipboard.js" defer></script>
+    
+
+    
+    
+    
+
+
+<script src="/js/main.js" defer></script>
+
+    
+    <div class="searchbox ins-search">
+    <div class="searchbox-container ins-search-container">
+        <div class="searchbox-input-wrapper">
+            <input type="text" class="searchbox-input ins-search-input" placeholder="Type something..." />
+            <span class="searchbox-close ins-close ins-selectable"><i class="fa fa-times-circle"></i></span>
+        </div>
+        <div class="searchbox-result-wrapper ins-section-wrapper">
+            <div class="ins-section-container"></div>
+        </div>
+    </div>
+</div>
+<script>
+    (function (window) {
+        var INSIGHT_CONFIG = {
+            TRANSLATION: {
+                POSTS: 'Posts',
+                PAGES: 'Pages',
+                CATEGORIES: 'Categories',
+                TAGS: 'Tags',
+                UNTITLED: '(Untitled)',
+            },
+            CONTENT_URL: '/content.json',
+        };
+        window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+    })(window);
+</script>
+<script src="/js/insight.js" defer></script>
+<link rel="stylesheet" href="/css/search.css">
+<link rel="stylesheet" href="/css/insight.css">
+    
+</body>
+</html>

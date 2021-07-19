@@ -1,0 +1,1122 @@
+<!DOCTYPE html>
+<html  lang="en">
+<head>
+    <meta charset="utf-8">
+<title>User Space Scheduling - Yurik&#39;s Tech Blog</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+<meta  />
+<meta  />
+<meta  />
+<meta  />
+
+    <meta name="description" content="A scheduler is a complex piece of software that is responsible for making sure cores are not idle if there are Threads that need work to be done.The fast switching of Threads, also called a context sw">
+<meta property="og:type" content="article">
+<meta property="og:title" content="User Space Scheduling">
+<meta property="og:url" content="https://yuriktech.com/2020/03/07/User-Space-Scheduling/index.html">
+<meta property="og:site_name" content="Yurik&#39;s Tech Blog">
+<meta property="og:description" content="A scheduler is a complex piece of software that is responsible for making sure cores are not idle if there are Threads that need work to be done.The fast switching of Threads, also called a context sw">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://yuriktech.com/images/multi.jpg">
+<meta property="article:published_time" content="2020-03-07T14:26:21.000Z">
+<meta property="article:modified_time" content="2021-01-22T11:07:55.953Z">
+<meta property="article:author" content="Yuri Khomyakov">
+<meta property="article:tag" content="Green Threads">
+<meta property="article:tag" content="Concurrency">
+<meta property="article:tag" content="Parallelism">
+<meta property="article:tag" content="Threads">
+<meta property="article:tag" content="Scheduler">
+<meta property="article:tag" content="Kernel Threads">
+<meta property="article:tag" content="Threading Models">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://yuriktech.com/images/multi.jpg">
+
+
+
+
+
+
+
+<link rel="icon" href="/favicon.ico">
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.7.2/css/bulma.css">
+<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.4.1/css/all.css">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Ubuntu:400,600|Source+Code+Pro">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@9.12.0/styles/monokai.css">
+
+
+    
+    
+    
+    <style>body>.footer,body>.navbar,body>.section{opacity:0}</style>
+    
+
+    
+    
+    
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/lightgallery@1.6.8/dist/css/lightgallery.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/justifiedGallery@3.7.0/dist/css/justifiedGallery.min.css">
+    
+
+    
+    
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/outdatedbrowser@1.1.5/outdatedbrowser/outdatedbrowser.min.css">
+
+
+    
+    
+    
+    
+
+<link rel="stylesheet" href="/css/back-to-top.css">
+
+
+    
+    
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-142167807-1"></script>
+<script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'UA-142167807-1');
+</script>
+
+
+    
+    
+    
+    
+
+    
+    
+<link rel="stylesheet" href="/css/progressbar.css">
+<script src="https://cdn.jsdelivr.net/npm/pace-js@1.0.2/pace.min.js"></script>
+
+    
+    
+    
+
+    
+    
+    
+
+
+<link rel="stylesheet" href="/css/style.css">
+<meta name="generator" content="Hexo 5.4.0"></head>
+<body class="is-3-column">
+    <nav class="navbar navbar-main">
+    <div class="container">
+
+        <div class="navbar-menu">
+            
+            <div class="navbar-start">
+                
+                <a class="navbar-item"
+                href="/">Home</a>
+                
+                <a class="navbar-item"
+                href="/archives">Archives</a>
+                
+                <a class="navbar-item"
+                href="/about">About</a>
+                
+            </div>
+            
+            <div class="navbar-end">
+                
+                    
+                    
+                    <a class="navbar-item" target="_blank" title="GitHub" href="https://github.com/yuraxdrumz">
+                        
+                        <i class="fab fa-github"></i>
+                        
+                    </a>
+                    
+                
+                
+                <a class="navbar-item is-hidden-tablet catalogue" title="Catalogue" href="javascript:;">
+                    <i class="fas fa-list-ul"></i>
+                </a>
+                
+                
+                <a class="navbar-item search" title="Search" href="javascript:;">
+                    <i class="fas fa-search"></i>
+                </a>
+                
+            </div>
+        </div>
+    </div>
+</nav>
+    
+    <section class="section">
+        <div class="container">
+            <div class="columns">
+                <div class="column is-8-tablet is-8-desktop is-6-widescreen has-order-2 column-main"><div class="card">
+    
+    <div class="card-image">
+        <span  class="image is-7by1">
+            <img class="thumbnail" src="/images/multi.jpg" alt="User Space Scheduling">
+        </span>
+    </div>
+    
+    <div class="card-content article ">
+        
+        <div class="level article-meta is-size-7 is-uppercase is-mobile is-overflow-x-auto">
+            <div class="level-left">
+                <time class="level-item has-text-grey" datetime="2020-03-07T14:26:21.000Z">2020-03-07</time>
+                
+                <div class="level-item">
+                <a class="has-link-grey -link" href="/categories/Programming/">Programming</a>
+                </div>
+                
+                
+                <span class="level-item has-text-grey">
+                    
+                    
+                    7 minutes read (About 1033 words)
+                </span>
+                
+                
+            </div>
+        </div>
+        
+        <h1 class="title is-size-3 is-size-4-mobile has-text-weight-normal">
+            
+                User Space Scheduling
+            
+        </h1>
+        <div class="content">
+            <p>A scheduler is a complex piece of software that is responsible for making sure cores are not idle if there are Threads that need work to be done.<br>The fast switching of Threads, also called a context switch, is done by the scheduler and it gives us the illusion that all of our processes run in parallel.<br>We have schedulers both in the Kernel of our favorite OS and in the user space, where our programs live and run.<br>Some types of programming languages leverage one type of scheduling, while others leverage another.<br>In this blog post, I will explain what a scheduler is and compare how scheduling affects different programming languages.</p>
+<p>Before we jump to the scheduling section, let’s refresh our memory with what Threads are.</p>
+<h2 id="Threads"><a href="#Threads" class="headerlink" title="Threads"></a>Threads</h2><p>A Thread is a set of instructions that waits to be called and there are two types of Threads:</p>
+<ol>
+<li>Kernel Threads (OS Threads)</li>
+<li>Green Threads (lightweight Threads)</li>
+</ol>
+<h3 id="Kernel-Threads"><a href="#Kernel-Threads" class="headerlink" title="Kernel Threads"></a>Kernel Threads</h3><p>Every application you run creates a process and each process is given an initial Kernel Thread, which in turn can create more Kernel Threads.<br>Kernel Threads can run concurrently by taking a turn on a single core, or in parallel each running at the same time on different cores.<br>When a Thread receives running time on a core it executes its instructions until it is pulled of the core.</p>
+<h3 id="Kernel-Thread-States"><a href="#Kernel-Thread-States" class="headerlink" title="Kernel Thread States"></a>Kernel Thread States</h3><p>A Kernel Thread can have three states</p>
+<ul>
+<li><code>Waiting</code> - the Thread is stopped because it is waiting for a sync call (mutex), a system call or a disk.</li>
+<li><code>Runnable</code> - the Thread is ready to be run on a core so it can execute its instructions</li>
+<li><code>Executing</code> - the Thread is executing instructions on the core.</li>
+</ul>
+<h3 id="Green-Threads"><a href="#Green-Threads" class="headerlink" title="Green Threads"></a>Green Threads</h3><p>These Threads only exist in our programs in the user space and are invisible to the Kernel.<br>The handling and scheduling of these Threads occurs in user space as well, depending on the <code>Threading model</code>.
+The states of user space threads depend on how the scheduler that administers them is implemented.</p>
+<h2 id="Scheduler"><a href="#Scheduler" class="headerlink" title="Scheduler"></a>Scheduler</h2><p>The scheduler is a component that selects which Thread to run next and there are two types of schedulers:</p>
+<h3 id="Preemptive"><a href="#Preemptive" class="headerlink" title="Preemptive"></a>Preemptive</h3><p>The scheduler decides when a Thread is to cease running and a new Thread is to resume running (context switching).<br>Preemptive scheduling has to solve getting all kinds of software from all kinds of places to efficiently share a CPU.</p>
+<h4 id="Benefits"><a href="#Benefits" class="headerlink" title="Benefits"></a>Benefits</h4><p>There is a degree of fairness to all Threads.</p>
+<h4 id="Drawbacks"><a href="#Drawbacks" class="headerlink" title="Drawbacks"></a>Drawbacks</h4><p>Because Threads get interrupted and switched, there is an overhead to store/restore the Thread’s state each context switch, which is very expensive computation wise.</p>
+<h3 id="Cooperative"><a href="#Cooperative" class="headerlink" title="Cooperative"></a>Cooperative</h3><p>A process does not stop running until it voluntarily decides to do so. </p>
+<h4 id="Benefits-1"><a href="#Benefits-1" class="headerlink" title="Benefits"></a>Benefits</h4><p>Works well for processes designed to work together.<br>The scheduler is much simpler to implement.<br>There is no context switching so we get better performance.</p>
+<h4 id="Drawbacks-1"><a href="#Drawbacks-1" class="headerlink" title="Drawbacks"></a>Drawbacks</h4><p>If a program forgot to yield control back to the scheduler, other programs will not get a chance to run on that core.</p>
+<p>All major OS’s today use a preemptive type of scheduler.<br>Windows 3.1 and MacOS 9 had a cooperative scheduler.</p>
+<h2 id="Threading-Models"><a href="#Threading-Models" class="headerlink" title="Threading Models"></a>Threading Models</h2><p>There are different Threading models that explain how our Green Threads are linked to Kernel threads.</p>
+<h3 id="1-1"><a href="#1-1" class="headerlink" title="1-1"></a>1-1</h3><p>When we call to create a Green Thread in our program, it invokes a system call to spawn an Kernel Thread.<br>This type of Threading model does not need its own scheduler in user space.<br>Examples would be: <code>Java (JVM)</code>, <code>C</code>, <code>Rust</code></p>
+<h4 id="Benefits-2"><a href="#Benefits-2" class="headerlink" title="Benefits"></a>Benefits</h4><p>No need for a user space scheduler as we reuse the preemptive OS scheduler.</p>
+<h4 id="Drawbacks-2"><a href="#Drawbacks-2" class="headerlink" title="Drawbacks"></a>Drawbacks</h4><p>Creating a large number of threads consumes a lot of system resources.<br>The same drawbacks to context switching apply here to due using the same OS scheduler.</p>
+<h3 id="N-1"><a href="#N-1" class="headerlink" title="N-1"></a>N-1</h3><p>We have multiple Green Threads and only one Kernel Thread.<br>This type of Threading model does need its own scheduler in user space.<br>The prime example would be <code>Node.js</code>.</p>
+<h4 id="Benefits-3"><a href="#Benefits-3" class="headerlink" title="Benefits"></a>Benefits</h4><p>Due to running on a single Kernel Thread, there is no overhead thinking about race conditions and mutexes.</p>
+<h4 id="Drawbacks-3"><a href="#Drawbacks-3" class="headerlink" title="Drawbacks"></a>Drawbacks</h4><p>Cannot leverage multi core processors</p>
+<h3 id="M-N"><a href="#M-N" class="headerlink" title="M-N"></a>M-N</h3><p>With this Threading model we create multiple Green Threads that run on multiple Kernel Threads.<br>This type of Threading model does need its own scheduler in user space.<br>Examples would be: <code>RxJava</code>, <code>Akka</code>, <code>Go</code></p>
+<h4 id="Benefits-4"><a href="#Benefits-4" class="headerlink" title="Benefits"></a>Benefits</h4><p>Leveraging the best of both worlds</p>
+<h4 id="Drawbacks-4"><a href="#Drawbacks-4" class="headerlink" title="Drawbacks"></a>Drawbacks</h4><p>You need a really good implementation of a user space scheduler to make this threading model utilize the most out of your system<br>Data races and sync issues can occur, so it is up to the developers to handle them.</p>
+<h2 id="Kernel-and-User-Space-Scheduling"><a href="#Kernel-and-User-Space-Scheduling" class="headerlink" title="Kernel and User Space Scheduling"></a>Kernel and User Space Scheduling</h2><p>We said earlier that all major OS’s today use a preemptive type of scheduler, but it does not mean that all user space schedulers are preemptive as well.</p>
+<h3 id="Preemptive-Kernel-and-Cooperative-User-Space"><a href="#Preemptive-Kernel-and-Cooperative-User-Space" class="headerlink" title="Preemptive Kernel and Cooperative User Space"></a>Preemptive Kernel and Cooperative User Space</h3><p>Take, for example <code>Node.js</code>, its event loop is actually a cooperative scheduler.<br>All phases in the event loop are run only after the previous phase finished running, meaning it gave control back to the event loop.<br>Another example for cooperative scheduling is <code>Go</code>, however we dont have to explicitly yield control back to its scheduler, as it does that by itself on each function invocation.</p>
+<p>Because we have the OS preemptive scheduler, we can leverage the cooperative scheduling in user space, thus achieving both performance and concurrency.</p>
+<h3 id="Preemptive-Kernel-and-Preemptive-User-Space"><a href="#Preemptive-Kernel-and-Preemptive-User-Space" class="headerlink" title="Preemptive Kernel and Preemptive User Space"></a>Preemptive Kernel and Preemptive User Space</h3><p>Preemptive scheduling is hard because we need to take into account context switches and synchronization primitives, however, there are a few languages like <code>Erlang</code>, <code>Elixir</code> and <code>Haskell</code> that use a preemptive scheduler in user space as well.<br>Due to their functional nature, the languages above do not share memory between processes, so they dont need synchronization.<br>The <code>Erlang</code> vm, for example, creates a preemptive scheduler per CPU core, allowing for maximum concurrency.<br>Even if you block a Thread in your application with synchronous code, the vm will still give other Green Threads time to run.</p>
+<h2 id="Conclusion"><a href="#Conclusion" class="headerlink" title="Conclusion"></a>Conclusion</h2><p>We saw what Threads are and how the scheduler uses them to not let the system idle if there is work to be done. Last, we saw how each of the Threading models affects how programming languages / runtimes work and how they are used.</p>
+
+        </div>
+        
+        <div class="level is-size-7 is-uppercase">
+            <div class="level-start">
+                <div class="level-item custom-tags">
+                    <span class="is-size-6 has-text-grey has-mr-7">#</span>
+                    <a class="has-link-grey -link-link" href="/tags/Concurrency/" rel="tag">Concurrency</a>, <a class="has-link-grey -link-link" href="/tags/Green-Threads/" rel="tag">Green Threads</a>, <a class="has-link-grey -link-link" href="/tags/Kernel-Threads/" rel="tag">Kernel Threads</a>, <a class="has-link-grey -link-link" href="/tags/Parallelism/" rel="tag">Parallelism</a>, <a class="has-link-grey -link-link" href="/tags/Scheduler/" rel="tag">Scheduler</a>, <a class="has-link-grey -link-link" href="/tags/Threading-Models/" rel="tag">Threading Models</a>, <a class="has-link-grey -link-link" href="/tags/Threads/" rel="tag">Threads</a>
+                </div>
+            </div>
+        </div>
+        
+        
+        
+    </div>
+</div>
+
+
+
+
+
+<div class="card card-transparent">
+    <div class="level post-navigation is-flex-wrap is-mobile">
+        
+        <div class="level-start">
+            <a class="level level-item has-link-grey  article-nav-prev" href="/2020/03/21/Collecting-Docker-Logs-With-Loki/">
+                <i class="level-item fas fa-chevron-left"></i>
+                <span class="level-item">Collecting Docker Logs With Loki</span>
+            </a>
+        </div>
+        
+        
+        <div class="level-end">
+            <a class="level level-item has-link-grey  article-nav-next" href="/2020/02/01/Implementing-Ports-and-Adapters/">
+                <span class="level-item">Implementing Ports and Adapters</span>
+                <i class="level-item fas fa-chevron-right"></i>
+            </a>
+        </div>
+        
+    </div>
+</div>
+
+
+
+<div class="card">
+    <div class="card-content">
+        <h3 class="title is-5 has-text-weight-normal">Comments</h3>
+        
+<script>
+    var disqus_config = function () {
+        this.page.url = 'https://yuriktech.com/2020/03/07/User-Space-Scheduling/';
+        this.page.identifier = '2020/03/07/User-Space-Scheduling/';
+    };
+    (function() {
+        var d = document, s = d.createElement('script');  
+        s.src = '//' + 'yuritech' + '.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', +new Date());
+        (d.head || d.body).appendChild(s);
+    })();
+</script>
+
+<div id="disqus_thread">
+    
+    <noscript>Please enable JavaScript to view the <a target="_blank" rel="noopener" href="//disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+    </div>
+</div>
+</div>
+                
+
+
+
+
+<div class="column is-4-tablet is-4-desktop is-3-widescreen  has-order-1 column-left ">
+    
+        
+<div class="card widget">
+    <div class="card-content">
+        <nav class="level">
+            <div class="level-item has-text-centered" style="flex-shrink: 1">
+                <div>
+                    
+                        <img class="image is-128x128 has-mb-6" src="/about/index/avatar.png" alt="Yuri Khomyakov">
+                    
+                    
+                    <p class="is-size-4 is-block">
+                        Yuri Khomyakov
+                    </p>
+                    
+                    
+                    <p class="is-size-6 is-block">
+                        Technology Leader
+                    </p>
+                    
+                    
+                </div>
+            </div>
+        </nav>
+        <nav class="level is-mobile">
+            <div class="level-item has-text-centered is-marginless">
+                <div>
+                    <p class="heading">
+                        Posts
+                    </p>
+                    <p class="title has-text-weight-normal">
+                        13
+                    </p>
+                </div>
+            </div>
+            <div class="level-item has-text-centered is-marginless">
+                <div>
+                    <p class="heading">
+                        Categories
+                    </p>
+                    <p class="title has-text-weight-normal">
+                        4
+                    </p>
+                </div>
+            </div>
+            <div class="level-item has-text-centered is-marginless">
+                <div>
+                    <p class="heading">
+                        Tags
+                    </p>
+                    <p class="title has-text-weight-normal">
+                        44
+                    </p>
+                </div>
+            </div>
+        </nav>
+        <div class="level">
+            <a class="level-item button is-link is-rounded" href="https://github.com/yuraxdrumz" target="_blank">
+                Follow</a>
+        </div>
+        
+        
+        <div class="level is-mobile">
+            
+            <a class="level-item button is-white is-marginless" target="_blank"
+                title="Email" href="mailto:yurik1776@gmail.com">
+                
+                <i class="far fa-envelope"></i>
+                
+            </a>
+            
+            <a class="level-item button is-white is-marginless" target="_blank"
+                title="LinkedIn" href="https://www.linkedin.com/in/yuri-khomyakov-383278125/">
+                
+                <i class="fab fa-linkedin"></i>
+                
+            </a>
+            
+            <a class="level-item button is-white is-marginless" target="_blank"
+                title="Github" href="https://github.com/yuraxdrumz">
+                
+                <i class="fab fa-github"></i>
+                
+            </a>
+            
+            <a class="level-item button is-white is-marginless" target="_blank"
+                title="RSS" href="/atom.xml">
+                
+                <i class="fas fa-rss"></i>
+                
+            </a>
+            
+        </div>
+        
+    </div>
+</div>
+    
+        
+<div class="card widget">
+    <div class="card-content">
+        <h3 class="menu-label">
+            Tag Cloud
+        </h3>
+        <a href="/tags/API-Gateway/" style="font-size: 10px;">API Gateway</a> <a href="/tags/Actor-Model/" style="font-size: 10px;">Actor Model</a> <a href="/tags/Auditing/" style="font-size: 10px;">Auditing</a> <a href="/tags/Authentication/" style="font-size: 10px;">Authentication</a> <a href="/tags/Backend-For-Frontend/" style="font-size: 10px;">Backend For Frontend</a> <a href="/tags/Clean-Architecture/" style="font-size: 10px;">Clean Architecture</a> <a href="/tags/Concurrency/" style="font-size: 10px;">Concurrency</a> <a href="/tags/Containers/" style="font-size: 10px;">Containers</a> <a href="/tags/Context-Maps/" style="font-size: 10px;">Context Maps</a> <a href="/tags/DDD/" style="font-size: 12.5px;">DDD</a> <a href="/tags/Design/" style="font-size: 10px;">Design</a> <a href="/tags/Development/" style="font-size: 10px;">Development</a> <a href="/tags/Docker/" style="font-size: 10px;">Docker</a> <a href="/tags/Elixir/" style="font-size: 12.5px;">Elixir</a> <a href="/tags/Event-Loop/" style="font-size: 10px;">Event Loop</a> <a href="/tags/Event-Sourcing/" style="font-size: 10px;">Event Sourcing</a> <a href="/tags/Functional/" style="font-size: 15px;">Functional</a> <a href="/tags/Golang/" style="font-size: 15px;">Golang</a> <a href="/tags/Green-Threads/" style="font-size: 12.5px;">Green Threads</a> <a href="/tags/Hexagonal/" style="font-size: 10px;">Hexagonal</a> <a href="/tags/Investigation/" style="font-size: 10px;">Investigation</a> <a href="/tags/Javascript/" style="font-size: 10px;">Javascript</a> <a href="/tags/Kernel-Threads/" style="font-size: 10px;">Kernel Threads</a> <a href="/tags/Logging/" style="font-size: 10px;">Logging</a> <a href="/tags/Loki/" style="font-size: 10px;">Loki</a> <a href="/tags/Maybe-a-rant/" style="font-size: 10px;">Maybe a rant</a> <a href="/tags/Memory-Leak/" style="font-size: 10px;">Memory Leak</a> <a href="/tags/Microservices/" style="font-size: 15px;">Microservices</a> <a href="/tags/Middleware/" style="font-size: 10px;">Middleware</a> <a href="/tags/Node-js/" style="font-size: 10px;">Node js</a> <a href="/tags/Node-js/" style="font-size: 17.5px;">Node.js</a> <a href="/tags/Parallelism/" style="font-size: 10px;">Parallelism</a> <a href="/tags/Ports-and-Adapters/" style="font-size: 10px;">Ports and Adapters</a> <a href="/tags/Profiling/" style="font-size: 10px;">Profiling</a> <a href="/tags/Programming-Paradigms/" style="font-size: 10px;">Programming Paradigms</a> <a href="/tags/Scheduler/" style="font-size: 10px;">Scheduler</a> <a href="/tags/Sidecar-Pattern/" style="font-size: 10px;">Sidecar Pattern</a> <a href="/tags/Software-Architecture/" style="font-size: 20px;">Software Architecture</a> <a href="/tags/Threading-Models/" style="font-size: 10px;">Threading Models</a> <a href="/tags/Threads/" style="font-size: 10px;">Threads</a> <a href="/tags/Tutorial/" style="font-size: 12.5px;">Tutorial</a> <a href="/tags/Typescript/" style="font-size: 10px;">Typescript</a> <a href="/tags/Uncle-Bob/" style="font-size: 10px;">Uncle Bob</a> <a href="/tags/libuv/" style="font-size: 10px;">libuv</a>
+    </div>
+</div>
+
+    
+    
+        <div class="column-right-shadow is-hidden-widescreen ">
+        
+            
+<div class="card widget" id="toc">
+    <div class="card-content">
+        <div class="menu">
+            <h3 class="menu-label">
+                Catalogue
+            </h3>
+            <ul class="menu-list"><li>
+        <a class="is-flex" href="#Threads">
+        <span class="has-mr-6">1</span>
+        <span>Threads</span>
+        </a><ul class="menu-list"><li>
+        <a class="is-flex" href="#Kernel-Threads">
+        <span class="has-mr-6">1.1</span>
+        <span>Kernel Threads</span>
+        </a></li><li>
+        <a class="is-flex" href="#Kernel-Thread-States">
+        <span class="has-mr-6">1.2</span>
+        <span>Kernel Thread States</span>
+        </a></li><li>
+        <a class="is-flex" href="#Green-Threads">
+        <span class="has-mr-6">1.3</span>
+        <span>Green Threads</span>
+        </a></li></ul></li><li>
+        <a class="is-flex" href="#Scheduler">
+        <span class="has-mr-6">2</span>
+        <span>Scheduler</span>
+        </a><ul class="menu-list"><li>
+        <a class="is-flex" href="#Preemptive">
+        <span class="has-mr-6">2.1</span>
+        <span>Preemptive</span>
+        </a><ul class="menu-list"><li>
+        <a class="is-flex" href="#Benefits">
+        <span class="has-mr-6">2.1.1</span>
+        <span>Benefits</span>
+        </a></li><li>
+        <a class="is-flex" href="#Drawbacks">
+        <span class="has-mr-6">2.1.2</span>
+        <span>Drawbacks</span>
+        </a></li></ul></li><li>
+        <a class="is-flex" href="#Cooperative">
+        <span class="has-mr-6">2.2</span>
+        <span>Cooperative</span>
+        </a><ul class="menu-list"><li>
+        <a class="is-flex" href="#Benefits-1">
+        <span class="has-mr-6">2.2.1</span>
+        <span>Benefits</span>
+        </a></li><li>
+        <a class="is-flex" href="#Drawbacks-1">
+        <span class="has-mr-6">2.2.2</span>
+        <span>Drawbacks</span>
+        </a></li></ul></li></ul></li><li>
+        <a class="is-flex" href="#Threading-Models">
+        <span class="has-mr-6">3</span>
+        <span>Threading Models</span>
+        </a><ul class="menu-list"><li>
+        <a class="is-flex" href="#1-1">
+        <span class="has-mr-6">3.1</span>
+        <span>1-1</span>
+        </a><ul class="menu-list"><li>
+        <a class="is-flex" href="#Benefits-2">
+        <span class="has-mr-6">3.1.1</span>
+        <span>Benefits</span>
+        </a></li><li>
+        <a class="is-flex" href="#Drawbacks-2">
+        <span class="has-mr-6">3.1.2</span>
+        <span>Drawbacks</span>
+        </a></li></ul></li><li>
+        <a class="is-flex" href="#N-1">
+        <span class="has-mr-6">3.2</span>
+        <span>N-1</span>
+        </a><ul class="menu-list"><li>
+        <a class="is-flex" href="#Benefits-3">
+        <span class="has-mr-6">3.2.1</span>
+        <span>Benefits</span>
+        </a></li><li>
+        <a class="is-flex" href="#Drawbacks-3">
+        <span class="has-mr-6">3.2.2</span>
+        <span>Drawbacks</span>
+        </a></li></ul></li><li>
+        <a class="is-flex" href="#M-N">
+        <span class="has-mr-6">3.3</span>
+        <span>M-N</span>
+        </a><ul class="menu-list"><li>
+        <a class="is-flex" href="#Benefits-4">
+        <span class="has-mr-6">3.3.1</span>
+        <span>Benefits</span>
+        </a></li><li>
+        <a class="is-flex" href="#Drawbacks-4">
+        <span class="has-mr-6">3.3.2</span>
+        <span>Drawbacks</span>
+        </a></li></ul></li></ul></li><li>
+        <a class="is-flex" href="#Kernel-and-User-Space-Scheduling">
+        <span class="has-mr-6">4</span>
+        <span>Kernel and User Space Scheduling</span>
+        </a><ul class="menu-list"><li>
+        <a class="is-flex" href="#Preemptive-Kernel-and-Cooperative-User-Space">
+        <span class="has-mr-6">4.1</span>
+        <span>Preemptive Kernel and Cooperative User Space</span>
+        </a></li><li>
+        <a class="is-flex" href="#Preemptive-Kernel-and-Preemptive-User-Space">
+        <span class="has-mr-6">4.2</span>
+        <span>Preemptive Kernel and Preemptive User Space</span>
+        </a></li></ul></li><li>
+        <a class="is-flex" href="#Conclusion">
+        <span class="has-mr-6">5</span>
+        <span>Conclusion</span>
+        </a></li></ul>
+        </div>
+    </div>
+</div>
+
+        
+            
+<div class="card widget">
+    <div class="card-content">
+        <h3 class="menu-label">
+            Recent
+        </h3>
+        
+        <article class="media">
+            
+            <a href="/2021/07/19/Auditing-in-Microservices/" class="media-left">
+                <p class="image is-64x64">
+                    <img class="thumbnail" src="/images/thumbnail.svg" alt="Auditing in Microservices">
+                </p>
+            </a>
+            
+            <div class="media-content">
+                <div class="content">
+                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2021-07-19T16:41:33.000Z">2021-07-19</time></div>
+                    <a href="/2021/07/19/Auditing-in-Microservices/" class="has-link-black-ter is-size-6">Auditing in Microservices</a>
+                    <p class="is-size-7 is-uppercase">
+                        <a class="has-link-grey -link" href="/categories/Architecture/">Architecture</a>
+                    </p>
+                </div>
+            </div>
+        </article>
+        
+        <article class="media">
+            
+            <a href="/2020/11/07/Golang-Memory-Leaks/" class="media-left">
+                <p class="image is-64x64">
+                    <img class="thumbnail" src="/images/Golang.png" alt="Golang Memory Leaks">
+                </p>
+            </a>
+            
+            <div class="media-content">
+                <div class="content">
+                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2020-11-07T17:59:35.000Z">2020-11-07</time></div>
+                    <a href="/2020/11/07/Golang-Memory-Leaks/" class="has-link-black-ter is-size-6">Golang Memory Leaks</a>
+                    <p class="is-size-7 is-uppercase">
+                        <a class="has-link-grey -link" href="/categories/Programming/">Programming</a>
+                    </p>
+                </div>
+            </div>
+        </article>
+        
+        <article class="media">
+            
+            <a href="/2020/03/21/Collecting-Docker-Logs-With-Loki/" class="media-left">
+                <p class="image is-64x64">
+                    <img class="thumbnail" src="/images/loki.jpg" alt="Collecting Docker Logs With Loki">
+                </p>
+            </a>
+            
+            <div class="media-content">
+                <div class="content">
+                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2020-03-21T14:10:20.000Z">2020-03-21</time></div>
+                    <a href="/2020/03/21/Collecting-Docker-Logs-With-Loki/" class="has-link-black-ter is-size-6">Collecting Docker Logs With Loki</a>
+                    <p class="is-size-7 is-uppercase">
+                        <a class="has-link-grey -link" href="/categories/DevOps/">DevOps</a>
+                    </p>
+                </div>
+            </div>
+        </article>
+        
+        <article class="media">
+            
+            <a href="/2020/03/07/User-Space-Scheduling/" class="media-left">
+                <p class="image is-64x64">
+                    <img class="thumbnail" src="/images/multi.jpg" alt="User Space Scheduling">
+                </p>
+            </a>
+            
+            <div class="media-content">
+                <div class="content">
+                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2020-03-07T14:26:21.000Z">2020-03-07</time></div>
+                    <a href="/2020/03/07/User-Space-Scheduling/" class="has-link-black-ter is-size-6">User Space Scheduling</a>
+                    <p class="is-size-7 is-uppercase">
+                        <a class="has-link-grey -link" href="/categories/Programming/">Programming</a>
+                    </p>
+                </div>
+            </div>
+        </article>
+        
+        <article class="media">
+            
+            <a href="/2020/02/01/Implementing-Ports-and-Adapters/" class="media-left">
+                <p class="image is-64x64">
+                    <img class="thumbnail" src="/images/golang-ports-and-adapters.png" alt="Implementing Ports and Adapters">
+                </p>
+            </a>
+            
+            <div class="media-content">
+                <div class="content">
+                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2020-02-01T16:15:21.000Z">2020-02-01</time></div>
+                    <a href="/2020/02/01/Implementing-Ports-and-Adapters/" class="has-link-black-ter is-size-6">Implementing Ports and Adapters</a>
+                    <p class="is-size-7 is-uppercase">
+                        <a class="has-link-grey -link" href="/categories/Architecture/">Architecture</a>
+                    </p>
+                </div>
+            </div>
+        </article>
+        
+    </div>
+</div>
+
+        
+            
+<div class="card widget">
+    <div class="card-content">
+        <div class="menu">
+            <h3 class="menu-label">
+                Categories
+            </h3>
+            <ul class="menu-list">
+            <li>
+        <a class="level is-marginless" href="/categories/Architecture/">
+            <span class="level-start">
+                <span class="level-item">Architecture</span>
+            </span>
+            <span class="level-end">
+                <span class="level-item tag">6</span>
+            </span>
+        </a></li><li>
+        <a class="level is-marginless" href="/categories/DevOps/">
+            <span class="level-start">
+                <span class="level-item">DevOps</span>
+            </span>
+            <span class="level-end">
+                <span class="level-item tag">1</span>
+            </span>
+        </a></li><li>
+        <a class="level is-marginless" href="/categories/Paradigms/">
+            <span class="level-start">
+                <span class="level-item">Paradigms</span>
+            </span>
+            <span class="level-end">
+                <span class="level-item tag">1</span>
+            </span>
+        </a></li><li>
+        <a class="level is-marginless" href="/categories/Programming/">
+            <span class="level-start">
+                <span class="level-item">Programming</span>
+            </span>
+            <span class="level-end">
+                <span class="level-item tag">5</span>
+            </span>
+        </a></li>
+            </ul>
+        </div>
+    </div>
+</div>
+        
+        </div>
+    
+</div>
+
+                
+
+
+
+
+<div class="column is-4-tablet is-4-desktop is-3-widescreen is-hidden-touch is-hidden-desktop-only has-order-3 column-right ">
+    
+        
+<div class="card widget" id="toc">
+    <div class="card-content">
+        <div class="menu">
+            <h3 class="menu-label">
+                Catalogue
+            </h3>
+            <ul class="menu-list"><li>
+        <a class="is-flex" href="#Threads">
+        <span class="has-mr-6">1</span>
+        <span>Threads</span>
+        </a><ul class="menu-list"><li>
+        <a class="is-flex" href="#Kernel-Threads">
+        <span class="has-mr-6">1.1</span>
+        <span>Kernel Threads</span>
+        </a></li><li>
+        <a class="is-flex" href="#Kernel-Thread-States">
+        <span class="has-mr-6">1.2</span>
+        <span>Kernel Thread States</span>
+        </a></li><li>
+        <a class="is-flex" href="#Green-Threads">
+        <span class="has-mr-6">1.3</span>
+        <span>Green Threads</span>
+        </a></li></ul></li><li>
+        <a class="is-flex" href="#Scheduler">
+        <span class="has-mr-6">2</span>
+        <span>Scheduler</span>
+        </a><ul class="menu-list"><li>
+        <a class="is-flex" href="#Preemptive">
+        <span class="has-mr-6">2.1</span>
+        <span>Preemptive</span>
+        </a><ul class="menu-list"><li>
+        <a class="is-flex" href="#Benefits">
+        <span class="has-mr-6">2.1.1</span>
+        <span>Benefits</span>
+        </a></li><li>
+        <a class="is-flex" href="#Drawbacks">
+        <span class="has-mr-6">2.1.2</span>
+        <span>Drawbacks</span>
+        </a></li></ul></li><li>
+        <a class="is-flex" href="#Cooperative">
+        <span class="has-mr-6">2.2</span>
+        <span>Cooperative</span>
+        </a><ul class="menu-list"><li>
+        <a class="is-flex" href="#Benefits-1">
+        <span class="has-mr-6">2.2.1</span>
+        <span>Benefits</span>
+        </a></li><li>
+        <a class="is-flex" href="#Drawbacks-1">
+        <span class="has-mr-6">2.2.2</span>
+        <span>Drawbacks</span>
+        </a></li></ul></li></ul></li><li>
+        <a class="is-flex" href="#Threading-Models">
+        <span class="has-mr-6">3</span>
+        <span>Threading Models</span>
+        </a><ul class="menu-list"><li>
+        <a class="is-flex" href="#1-1">
+        <span class="has-mr-6">3.1</span>
+        <span>1-1</span>
+        </a><ul class="menu-list"><li>
+        <a class="is-flex" href="#Benefits-2">
+        <span class="has-mr-6">3.1.1</span>
+        <span>Benefits</span>
+        </a></li><li>
+        <a class="is-flex" href="#Drawbacks-2">
+        <span class="has-mr-6">3.1.2</span>
+        <span>Drawbacks</span>
+        </a></li></ul></li><li>
+        <a class="is-flex" href="#N-1">
+        <span class="has-mr-6">3.2</span>
+        <span>N-1</span>
+        </a><ul class="menu-list"><li>
+        <a class="is-flex" href="#Benefits-3">
+        <span class="has-mr-6">3.2.1</span>
+        <span>Benefits</span>
+        </a></li><li>
+        <a class="is-flex" href="#Drawbacks-3">
+        <span class="has-mr-6">3.2.2</span>
+        <span>Drawbacks</span>
+        </a></li></ul></li><li>
+        <a class="is-flex" href="#M-N">
+        <span class="has-mr-6">3.3</span>
+        <span>M-N</span>
+        </a><ul class="menu-list"><li>
+        <a class="is-flex" href="#Benefits-4">
+        <span class="has-mr-6">3.3.1</span>
+        <span>Benefits</span>
+        </a></li><li>
+        <a class="is-flex" href="#Drawbacks-4">
+        <span class="has-mr-6">3.3.2</span>
+        <span>Drawbacks</span>
+        </a></li></ul></li></ul></li><li>
+        <a class="is-flex" href="#Kernel-and-User-Space-Scheduling">
+        <span class="has-mr-6">4</span>
+        <span>Kernel and User Space Scheduling</span>
+        </a><ul class="menu-list"><li>
+        <a class="is-flex" href="#Preemptive-Kernel-and-Cooperative-User-Space">
+        <span class="has-mr-6">4.1</span>
+        <span>Preemptive Kernel and Cooperative User Space</span>
+        </a></li><li>
+        <a class="is-flex" href="#Preemptive-Kernel-and-Preemptive-User-Space">
+        <span class="has-mr-6">4.2</span>
+        <span>Preemptive Kernel and Preemptive User Space</span>
+        </a></li></ul></li><li>
+        <a class="is-flex" href="#Conclusion">
+        <span class="has-mr-6">5</span>
+        <span>Conclusion</span>
+        </a></li></ul>
+        </div>
+    </div>
+</div>
+
+    
+        
+<div class="card widget">
+    <div class="card-content">
+        <h3 class="menu-label">
+            Recent
+        </h3>
+        
+        <article class="media">
+            
+            <a href="/2021/07/19/Auditing-in-Microservices/" class="media-left">
+                <p class="image is-64x64">
+                    <img class="thumbnail" src="/images/thumbnail.svg" alt="Auditing in Microservices">
+                </p>
+            </a>
+            
+            <div class="media-content">
+                <div class="content">
+                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2021-07-19T16:41:33.000Z">2021-07-19</time></div>
+                    <a href="/2021/07/19/Auditing-in-Microservices/" class="has-link-black-ter is-size-6">Auditing in Microservices</a>
+                    <p class="is-size-7 is-uppercase">
+                        <a class="has-link-grey -link" href="/categories/Architecture/">Architecture</a>
+                    </p>
+                </div>
+            </div>
+        </article>
+        
+        <article class="media">
+            
+            <a href="/2020/11/07/Golang-Memory-Leaks/" class="media-left">
+                <p class="image is-64x64">
+                    <img class="thumbnail" src="/images/Golang.png" alt="Golang Memory Leaks">
+                </p>
+            </a>
+            
+            <div class="media-content">
+                <div class="content">
+                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2020-11-07T17:59:35.000Z">2020-11-07</time></div>
+                    <a href="/2020/11/07/Golang-Memory-Leaks/" class="has-link-black-ter is-size-6">Golang Memory Leaks</a>
+                    <p class="is-size-7 is-uppercase">
+                        <a class="has-link-grey -link" href="/categories/Programming/">Programming</a>
+                    </p>
+                </div>
+            </div>
+        </article>
+        
+        <article class="media">
+            
+            <a href="/2020/03/21/Collecting-Docker-Logs-With-Loki/" class="media-left">
+                <p class="image is-64x64">
+                    <img class="thumbnail" src="/images/loki.jpg" alt="Collecting Docker Logs With Loki">
+                </p>
+            </a>
+            
+            <div class="media-content">
+                <div class="content">
+                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2020-03-21T14:10:20.000Z">2020-03-21</time></div>
+                    <a href="/2020/03/21/Collecting-Docker-Logs-With-Loki/" class="has-link-black-ter is-size-6">Collecting Docker Logs With Loki</a>
+                    <p class="is-size-7 is-uppercase">
+                        <a class="has-link-grey -link" href="/categories/DevOps/">DevOps</a>
+                    </p>
+                </div>
+            </div>
+        </article>
+        
+        <article class="media">
+            
+            <a href="/2020/03/07/User-Space-Scheduling/" class="media-left">
+                <p class="image is-64x64">
+                    <img class="thumbnail" src="/images/multi.jpg" alt="User Space Scheduling">
+                </p>
+            </a>
+            
+            <div class="media-content">
+                <div class="content">
+                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2020-03-07T14:26:21.000Z">2020-03-07</time></div>
+                    <a href="/2020/03/07/User-Space-Scheduling/" class="has-link-black-ter is-size-6">User Space Scheduling</a>
+                    <p class="is-size-7 is-uppercase">
+                        <a class="has-link-grey -link" href="/categories/Programming/">Programming</a>
+                    </p>
+                </div>
+            </div>
+        </article>
+        
+        <article class="media">
+            
+            <a href="/2020/02/01/Implementing-Ports-and-Adapters/" class="media-left">
+                <p class="image is-64x64">
+                    <img class="thumbnail" src="/images/golang-ports-and-adapters.png" alt="Implementing Ports and Adapters">
+                </p>
+            </a>
+            
+            <div class="media-content">
+                <div class="content">
+                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2020-02-01T16:15:21.000Z">2020-02-01</time></div>
+                    <a href="/2020/02/01/Implementing-Ports-and-Adapters/" class="has-link-black-ter is-size-6">Implementing Ports and Adapters</a>
+                    <p class="is-size-7 is-uppercase">
+                        <a class="has-link-grey -link" href="/categories/Architecture/">Architecture</a>
+                    </p>
+                </div>
+            </div>
+        </article>
+        
+    </div>
+</div>
+
+    
+        
+<div class="card widget">
+    <div class="card-content">
+        <div class="menu">
+            <h3 class="menu-label">
+                Categories
+            </h3>
+            <ul class="menu-list">
+            <li>
+        <a class="level is-marginless" href="/categories/Architecture/">
+            <span class="level-start">
+                <span class="level-item">Architecture</span>
+            </span>
+            <span class="level-end">
+                <span class="level-item tag">6</span>
+            </span>
+        </a></li><li>
+        <a class="level is-marginless" href="/categories/DevOps/">
+            <span class="level-start">
+                <span class="level-item">DevOps</span>
+            </span>
+            <span class="level-end">
+                <span class="level-item tag">1</span>
+            </span>
+        </a></li><li>
+        <a class="level is-marginless" href="/categories/Paradigms/">
+            <span class="level-start">
+                <span class="level-item">Paradigms</span>
+            </span>
+            <span class="level-end">
+                <span class="level-item tag">1</span>
+            </span>
+        </a></li><li>
+        <a class="level is-marginless" href="/categories/Programming/">
+            <span class="level-start">
+                <span class="level-item">Programming</span>
+            </span>
+            <span class="level-end">
+                <span class="level-item tag">5</span>
+            </span>
+        </a></li>
+            </ul>
+        </div>
+    </div>
+</div>
+    
+    
+</div>
+
+            </div>
+        </div>
+    </section>
+    <footer class="footer">
+    <div class="container">
+        <div class="level">
+            <div class="level-start has-text-centered-mobile">
+                <p class="is-size-7">
+                &copy; 2021 Yuri Khomyakov&nbsp;
+                Powered by <a href="https://hexo.io/" target="_blank">Hexo</a> & <a
+                        href="https://github.com/ppoffice/hexo-theme-icarus" target="_blank">Icarus</a>
+                
+                </p>
+            </div>
+            <div class="level-end">
+            
+                <div class="field has-addons is-flex-center-mobile has-mt-5-mobile is-flex-wrap is-flex-middle">
+                
+                
+                <p class="control">
+                    <a class="button is-white is-large" target="_blank" title="GitHub" href="https://github.com/yuraxdrumz">
+                        
+                        <i class="fab fa-github"></i>
+                        
+                    </a>
+                </p>
+                
+                </div>
+            
+            </div>
+        </div>
+    </div>
+</footer>
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.3.1/dist/jquery.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/moment@2.22.2/min/moment-with-locales.min.js"></script>
+<script>moment.locale("en");</script>
+
+
+    
+    
+    
+    <script src="/js/animation.js"></script>
+    
+
+    
+    
+    
+    <script src="https://cdn.jsdelivr.net/npm/lightgallery@1.6.8/dist/js/lightgallery.min.js" defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/justifiedGallery@3.7.0/dist/js/jquery.justifiedGallery.min.js" defer></script>
+    <script src="/js/gallery.js" defer></script>
+    
+
+    
+    
+
+<div id="outdated">
+    <h6>Your browser is out-of-date!</h6>
+    <p>Update your browser to view this website correctly. <a id="btnUpdateBrowser" target="_blank" rel="noopener" href="http://outdatedbrowser.com/">Update
+            my browser now </a></p>
+    <p class="last"><a href="#" id="btnCloseUpdateBrowser" title="Close">&times;</a></p>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/outdatedbrowser@1.1.5/outdatedbrowser/outdatedbrowser.min.js" defer></script>
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        outdatedBrowser({
+            bgColor: '#f25648',
+            color: '#ffffff',
+            lowerThan: 'flex'
+        });
+    });
+</script>
+
+
+    
+    
+<script src="https://cdn.jsdelivr.net/npm/mathjax@2.7.5/unpacked/MathJax.js?config=TeX-MML-AM_CHTML" defer></script>
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    MathJax.Hub.Config({
+        'HTML-CSS': {
+            matchFontHeight: false
+        },
+        SVG: {
+            matchFontHeight: false
+        },
+        CommonHTML: {
+            matchFontHeight: false
+        },
+        tex2jax: {
+            inlineMath: [
+                ['$','$'],
+                ['\\(','\\)']
+            ]
+        }
+    });
+});
+</script>
+
+    
+    
+
+<a id="back-to-top" title="Back to Top" href="javascript:;">
+    <i class="fas fa-chevron-up"></i>
+</a>
+<script src="/js/back-to-top.js" defer></script>
+
+
+    
+    
+
+    
+    
+    
+    
+
+    
+    
+    
+    
+    
+    <script src="https://cdn.jsdelivr.net/npm/clipboard@2.0.4/dist/clipboard.min.js" defer></script>
+    <script src="/js/clipboard.js" defer></script>
+    
+
+    
+    
+    
+
+
+<script src="/js/main.js" defer></script>
+
+    
+    <div class="searchbox ins-search">
+    <div class="searchbox-container ins-search-container">
+        <div class="searchbox-input-wrapper">
+            <input type="text" class="searchbox-input ins-search-input" placeholder="Type something..." />
+            <span class="searchbox-close ins-close ins-selectable"><i class="fa fa-times-circle"></i></span>
+        </div>
+        <div class="searchbox-result-wrapper ins-section-wrapper">
+            <div class="ins-section-container"></div>
+        </div>
+    </div>
+</div>
+<script>
+    (function (window) {
+        var INSIGHT_CONFIG = {
+            TRANSLATION: {
+                POSTS: 'Posts',
+                PAGES: 'Pages',
+                CATEGORIES: 'Categories',
+                TAGS: 'Tags',
+                UNTITLED: '(Untitled)',
+            },
+            CONTENT_URL: '/content.json',
+        };
+        window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+    })(window);
+</script>
+<script src="/js/insight.js" defer></script>
+<link rel="stylesheet" href="/css/search.css">
+<link rel="stylesheet" href="/css/insight.css">
+    
+</body>
+</html>

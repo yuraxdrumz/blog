@@ -1,0 +1,991 @@
+<!DOCTYPE html>
+<html  lang="en">
+<head>
+    <meta charset="utf-8">
+<title>Authentication Middleware in Elixir - Yurik&#39;s Tech Blog</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+<meta  />
+<meta  />
+<meta  />
+<meta  />
+
+    <meta name="description" content="One of the first projects I was working on in Elixir was an API gateway. Like everyone else, I saw Pheonix, which is a cool framework for building web servers which is similar to Express.js, but, for">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Authentication Middleware in Elixir">
+<meta property="og:url" content="https://yuriktech.com/2019/07/03/Authentication-Middleware-In-Elixir/index.html">
+<meta property="og:site_name" content="Yurik&#39;s Tech Blog">
+<meta property="og:description" content="One of the first projects I was working on in Elixir was an API gateway. Like everyone else, I saw Pheonix, which is a cool framework for building web servers which is similar to Express.js, but, for">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://yuriktech.com/images/og_image.png">
+<meta property="article:published_time" content="2019-07-03T15:44:34.000Z">
+<meta property="article:modified_time" content="2021-01-22T11:07:55.924Z">
+<meta property="article:author" content="Yuri Khomyakov">
+<meta property="article:tag" content="Elixir">
+<meta property="article:tag" content="Functional">
+<meta property="article:tag" content="Tutorial">
+<meta property="article:tag" content="Authentication">
+<meta property="article:tag" content="Middleware">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://yuriktech.com/images/og_image.png">
+
+
+
+
+
+
+
+<link rel="icon" href="/favicon.ico">
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.7.2/css/bulma.css">
+<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.4.1/css/all.css">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Ubuntu:400,600|Source+Code+Pro">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@9.12.0/styles/monokai.css">
+
+
+    
+    
+    
+    <style>body>.footer,body>.navbar,body>.section{opacity:0}</style>
+    
+
+    
+    
+    
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/lightgallery@1.6.8/dist/css/lightgallery.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/justifiedGallery@3.7.0/dist/css/justifiedGallery.min.css">
+    
+
+    
+    
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/outdatedbrowser@1.1.5/outdatedbrowser/outdatedbrowser.min.css">
+
+
+    
+    
+    
+    
+
+<link rel="stylesheet" href="/css/back-to-top.css">
+
+
+    
+    
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-142167807-1"></script>
+<script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'UA-142167807-1');
+</script>
+
+
+    
+    
+    
+    
+
+    
+    
+<link rel="stylesheet" href="/css/progressbar.css">
+<script src="https://cdn.jsdelivr.net/npm/pace-js@1.0.2/pace.min.js"></script>
+
+    
+    
+    
+
+    
+    
+    
+
+
+<link rel="stylesheet" href="/css/style.css">
+<meta name="generator" content="Hexo 5.4.0"></head>
+<body class="is-3-column">
+    <nav class="navbar navbar-main">
+    <div class="container">
+
+        <div class="navbar-menu">
+            
+            <div class="navbar-start">
+                
+                <a class="navbar-item"
+                href="/">Home</a>
+                
+                <a class="navbar-item"
+                href="/archives">Archives</a>
+                
+                <a class="navbar-item"
+                href="/about">About</a>
+                
+            </div>
+            
+            <div class="navbar-end">
+                
+                    
+                    
+                    <a class="navbar-item" target="_blank" title="GitHub" href="https://github.com/yuraxdrumz">
+                        
+                        <i class="fab fa-github"></i>
+                        
+                    </a>
+                    
+                
+                
+                <a class="navbar-item is-hidden-tablet catalogue" title="Catalogue" href="javascript:;">
+                    <i class="fas fa-list-ul"></i>
+                </a>
+                
+                
+                <a class="navbar-item search" title="Search" href="javascript:;">
+                    <i class="fas fa-search"></i>
+                </a>
+                
+            </div>
+        </div>
+    </div>
+</nav>
+    
+    <section class="section">
+        <div class="container">
+            <div class="columns">
+                <div class="column is-8-tablet is-8-desktop is-6-widescreen has-order-2 column-main"><div class="card">
+    
+    <div class="card-content article ">
+        
+        <div class="level article-meta is-size-7 is-uppercase is-mobile is-overflow-x-auto">
+            <div class="level-left">
+                <time class="level-item has-text-grey" datetime="2019-07-03T15:44:34.000Z">2019-07-03</time>
+                
+                <div class="level-item">
+                <a class="has-link-grey -link" href="/categories/Programming/">Programming</a>
+                </div>
+                
+                
+                <span class="level-item has-text-grey">
+                    
+                    
+                    8 minutes read (About 1151 words)
+                </span>
+                
+                
+            </div>
+        </div>
+        
+        <h1 class="title is-size-3 is-size-4-mobile has-text-weight-normal">
+            
+                Authentication Middleware in Elixir
+            
+        </h1>
+        <div class="content">
+            <p>One of the first projects I was working on in Elixir was an API gateway. Like everyone else, I saw Pheonix, which is a cool framework for building web servers which is similar to Express.js, but, for my use case, I wanted raw performance for the API gateway, and one of its features was to have basic authentication as well as bearer authentication for json web tokens. One way to achieve this was using Plugs, which are built in the language. A plug is similar to a middleware in Express.js, it accepts input, does some manipulation and either halts the request or passes it on. In this post I will show how I implemented an authentication plug in Elixir.</p>
+<h2 id="Router-with-plugs"><a href="#Router-with-plugs" class="headerlink" title="Router with plugs"></a>Router with plugs</h2><p>Lets first look at how plugs look in a cowboy based router.</p>
+<figure class="highlight elixir hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-class"><span class="hljs-keyword">defmodule</span> <span class="hljs-title">Gateway.MainRouter</span></span> <span class="hljs-keyword">do</span></span><br><span class="line">  <span class="hljs-keyword">use</span> Plug.Router</span><br><span class="line">  <span class="hljs-keyword">use</span> Plug.ErrorHandler</span><br><span class="line"></span><br><span class="line">  <span class="hljs-keyword">import</span> Plug.Conn</span><br><span class="line"></span><br><span class="line">  plug(<span class="hljs-symbol">:match</span>)</span><br><span class="line">  plug(<span class="hljs-symbol">:fetch_query_params</span>)</span><br><span class="line">  plug(Plug.RequestId)</span><br><span class="line">  plug(<span class="hljs-symbol">:dispatch</span>)</span><br><span class="line"></span><br><span class="line">  match _ <span class="hljs-keyword">do</span></span><br><span class="line">   conn</span><br><span class="line">    |&gt; put_resp_content_type(<span class="hljs-string">&quot;application/json&quot;</span>)</span><br><span class="line">    |&gt; send_resp(<span class="hljs-number">200</span>, <span class="hljs-string">&quot;Found&quot;</span>)</span><br><span class="line">  <span class="hljs-keyword">end</span></span><br><span class="line"><span class="hljs-keyword">end</span></span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>We have our use statements as well as our import for Plug.Conn. Lines 7,8,9 and 10 are plugs. Every request that comes in passes through each of the plugs before it gets to the route matches. This is useful because we want to build an authentication plug that we can reuse later on and that can be plugged wherever.</p>
+<h2 id="How-to-build-a-plug"><a href="#How-to-build-a-plug" class="headerlink" title="How to build a plug"></a>How to build a plug</h2><p>Lets first see how to build a plug, from the plug documentation:</p>
+<figure class="highlight elixir hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-class"><span class="hljs-keyword">defmodule</span> <span class="hljs-title">MyPlug</span></span> <span class="hljs-keyword">do</span></span><br><span class="line">  <span class="hljs-keyword">import</span> Plug.Conn</span><br><span class="line"></span><br><span class="line">  <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">init</span></span>(options) <span class="hljs-keyword">do</span></span><br><span class="line">    options</span><br><span class="line">  <span class="hljs-keyword">end</span></span><br><span class="line"></span><br><span class="line">  <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">call</span></span>(conn, _opts) <span class="hljs-keyword">do</span></span><br><span class="line">    conn</span><br><span class="line">    |&gt; put_resp_content_type(<span class="hljs-string">&quot;text/plain&quot;</span>)</span><br><span class="line">    |&gt; send_resp(<span class="hljs-number">200</span>, <span class="hljs-string">&quot;Hello world&quot;</span>)</span><br><span class="line">  <span class="hljs-keyword">end</span></span><br><span class="line"><span class="hljs-keyword">end</span></span><br></pre></td></tr></table></figure>
+
+<p>Each plug must have 2 methods, one is init, which allows passing options at compile time to the plug and the other, the call method with the connection received. The call method must either halt the request or return the conn object.</p>
+<h2 id="What-do-we-need-for-authorization"><a href="#What-do-we-need-for-authorization" class="headerlink" title="What do we need for authorization"></a>What do we need for authorization</h2><p>Looks pretty simple, now lets think about the authorization we need before we start writing it.</p>
+<ul>
+<li>We must accept basic auth for server to server communcation</li>
+<li>We must accept jwt(bearer) auth for client to server communication</li>
+<li>If no auth header return 401</li>
+</ul>
+<h2 id="Defining-our-401"><a href="#Defining-our-401" class="headerlink" title="Defining our 401"></a>Defining our 401</h2><p>Before we start, lets define our 401, if its hit we halt and return 401:</p>
+<figure class="highlight elixir hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-class"><span class="hljs-keyword">defmodule</span> <span class="hljs-title">Plug.Auth</span></span> <span class="hljs-keyword">do</span></span><br><span class="line">  <span class="hljs-function"><span class="hljs-keyword">defp</span> <span class="hljs-title">send_401</span></span>(</span><br><span class="line">    conn,</span><br><span class="line">    data \\ %&#123;<span class="hljs-symbol">message:</span> <span class="hljs-string">&quot;Please make sure you have authentication header&quot;</span>&#125;</span><br><span class="line">  ) <span class="hljs-keyword">do</span></span><br><span class="line">    conn</span><br><span class="line">    |&gt; put_resp_content_type(<span class="hljs-string">&quot;application/json&quot;</span>)</span><br><span class="line">    |&gt; send_resp(<span class="hljs-number">401</span>, Poison.encode!(data))</span><br><span class="line">    |&gt; halt</span><br><span class="line">  <span class="hljs-keyword">end</span></span><br><span class="line"><span class="hljs-keyword">end</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="Defining-the-call-method"><a href="#Defining-the-call-method" class="headerlink" title="Defining the call method"></a>Defining the call method</h2><p>Now that we took care of the not authorized lets see how we implement the auth itself. The call method will extract auth header and call authenticate:</p>
+<figure class="highlight elixir hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">call</span></span>(%Plug.Conn&#123;<span class="hljs-symbol">request_path:</span> _path&#125; = conn, _opts) <span class="hljs-keyword">do</span></span><br><span class="line">  conn</span><br><span class="line">  |&gt; get_auth_header</span><br><span class="line">  |&gt; authenticate</span><br><span class="line"><span class="hljs-keyword">end</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="Getting-the-authorization-header"><a href="#Getting-the-authorization-header" class="headerlink" title="Getting the authorization header"></a>Getting the authorization header</h2><p>We try get the auth header and call authenticate. If you ask where is the if/else/try/catch/send_401, Elixir has pattern matching and guard clauses we can leverage to avoid all the boilerplate of defensive programming to keep our focus on our use case.<br>Lets define the get_auth_header method:</p>
+<figure class="highlight elixir hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-class"><span class="hljs-keyword">defmodule</span> <span class="hljs-title">Plug.Auth</span></span> <span class="hljs-keyword">do</span></span><br><span class="line">  <span class="hljs-function"><span class="hljs-keyword">defp</span> <span class="hljs-title">get_auth_header</span></span>(conn) <span class="hljs-keyword">do</span></span><br><span class="line">    <span class="hljs-keyword">case</span> get_req_header(conn, <span class="hljs-string">&quot;authorization&quot;</span>) <span class="hljs-keyword">do</span></span><br><span class="line">      [token] -&gt; &#123;conn, token&#125;</span><br><span class="line">      _ -&gt; &#123;conn&#125;</span><br><span class="line">    <span class="hljs-keyword">end</span></span><br><span class="line">  <span class="hljs-keyword">end</span></span><br><span class="line"><span class="hljs-keyword">end</span></span><br></pre></td></tr></table></figure>
+
+<p>The <code>get_req_header</code> is from the Plug.Conn and allows getting the authorization header. We will return a tuple with the token if it exists or a tuple with the conn itself.</p>
+<h1 id="Authenticating"><a href="#Authenticating" class="headerlink" title="Authenticating"></a>Authenticating</h1><p>Now, the interesting part, after <code>get_auth_header</code> we call authenticate. Lets leverage Elixir’s power to extract what we need:</p>
+<figure class="highlight elixir hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-class"><span class="hljs-keyword">defmodule</span> <span class="hljs-title">Plug.Auth</span></span> <span class="hljs-keyword">do</span></span><br><span class="line">  <span class="hljs-variable">@secret</span> <span class="hljs-string">&quot;my super secret&quot;</span></span><br><span class="line">  <span class="hljs-variable">@alg</span> <span class="hljs-string">&quot;HS256&quot;</span></span><br><span class="line">  <span class="hljs-variable">@signer</span> Joken.Signer.create(<span class="hljs-variable">@alg</span>, <span class="hljs-variable">@secret</span>)</span><br><span class="line"></span><br><span class="line">  <span class="hljs-function"><span class="hljs-keyword">defp</span> <span class="hljs-title">authenticate</span></span>(&#123;conn, <span class="hljs-string">&quot;Bearer &quot;</span> &lt;&gt; jwt&#125;) <span class="hljs-keyword">do</span></span><br><span class="line">    <span class="hljs-keyword">case</span> Joken.verify(jwt, <span class="hljs-variable">@signer</span>) <span class="hljs-keyword">do</span></span><br><span class="line">      &#123;<span class="hljs-symbol">:ok</span>, claims&#125; -&gt; assign(conn, <span class="hljs-symbol">:user</span>, claims)</span><br><span class="line">      &#123;<span class="hljs-symbol">:error</span>, err&#125; -&gt; send_401(conn, %&#123;<span class="hljs-symbol">error:</span> err&#125;)</span><br><span class="line">    <span class="hljs-keyword">end</span></span><br><span class="line">  <span class="hljs-keyword">end</span></span><br><span class="line"></span><br><span class="line">  <span class="hljs-function"><span class="hljs-keyword">defp</span> <span class="hljs-title">authenticate</span></span>(&#123;conn, <span class="hljs-string">&quot;Basic &quot;</span> &lt;&gt; token&#125;) <span class="hljs-keyword">do</span></span><br><span class="line">    [username, password] =</span><br><span class="line">      token</span><br><span class="line">      |&gt; Base.decode64!(<span class="hljs-symbol">padding:</span> <span class="hljs-keyword">false</span>)</span><br><span class="line">      |&gt; String.split(<span class="hljs-string">&quot;:&quot;</span>)</span><br><span class="line"></span><br><span class="line">    <span class="hljs-keyword">case</span> Cache.get(<span class="hljs-string">&quot;users:<span class="hljs-subst">#&#123;username&#125;</span>&quot;</span>) <span class="hljs-keyword">do</span></span><br><span class="line">      <span class="hljs-keyword">nil</span> -&gt;</span><br><span class="line">        send_401(conn, <span class="hljs-string">&quot;User does not exist&quot;</span>)</span><br><span class="line"></span><br><span class="line">      %User&#123;<span class="hljs-symbol">name:</span> username, <span class="hljs-symbol">password:</span> salted_password&#125; -&gt;</span><br><span class="line">        <span class="hljs-keyword">case</span> Bcrypt.verify_pass(password, salted_password) <span class="hljs-keyword">do</span></span><br><span class="line">          <span class="hljs-keyword">true</span> -&gt; assign(conn, <span class="hljs-symbol">:user</span>, %&#123;<span class="hljs-symbol">name:</span> username&#125;)</span><br><span class="line">          <span class="hljs-keyword">false</span> -&gt; send_401(conn, <span class="hljs-string">&quot;Password is incorrect&quot;</span>)</span><br><span class="line">        <span class="hljs-keyword">end</span></span><br><span class="line">    <span class="hljs-keyword">end</span></span><br><span class="line">  <span class="hljs-keyword">end</span></span><br><span class="line"></span><br><span class="line">  <span class="hljs-function"><span class="hljs-keyword">defp</span> <span class="hljs-title">authenticate</span></span>(_) <span class="hljs-keyword">do</span></span><br><span class="line">    send_401(conn)</span><br><span class="line">  <span class="hljs-keyword">end</span></span><br><span class="line"><span class="hljs-keyword">end</span></span><br></pre></td></tr></table></figure>
+
+<p>We defined 3 authenticate methods. If the <code>get_auth_header</code> returned a tuple with only conn in it, it means we have no auth header, so we call send_401, any other header returned that does not contain basic or bearer receives 401 as well. The other two methods are either Basic or Bearer. Elixir allows us to pattern match on binary strings, because our auth strings always start with Basic or Bearer we can match on them using the <code>start_of_string &lt;&gt; rest_of_string</code> syntax. If we hit the bearer auth, we check that the jwt matches, if the basic auth is hit, we compare it to what we have in our cache/db. If auth passes, the assign username/claims is called on the conn object and then returns it.</p>
+<h2 id="Connecting-it-all-together"><a href="#Connecting-it-all-together" class="headerlink" title="Connecting it all together"></a>Connecting it all together</h2><p>Now, lets go back to our initial router and add our plug to it:</p>
+<figure class="highlight elixir hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-class"><span class="hljs-keyword">defmodule</span> <span class="hljs-title">Gateway.MainRouter</span></span> <span class="hljs-keyword">do</span></span><br><span class="line">  <span class="hljs-keyword">use</span> Plug.Router</span><br><span class="line">  <span class="hljs-keyword">use</span> Plug.ErrorHandler</span><br><span class="line"></span><br><span class="line">  <span class="hljs-keyword">import</span> Plug.Conn</span><br><span class="line"></span><br><span class="line">  plug(<span class="hljs-symbol">:match</span>)</span><br><span class="line">  plug(Plug.Auth) &lt;- our auth plug</span><br><span class="line">  plug(<span class="hljs-symbol">:fetch_query_params</span>)</span><br><span class="line">  plug(Plug.RequestId)</span><br><span class="line">  plug(<span class="hljs-symbol">:dispatch</span>)</span><br><span class="line"></span><br><span class="line">  match _ <span class="hljs-keyword">do</span></span><br><span class="line">   conn</span><br><span class="line">    |&gt; put_resp_content_type(<span class="hljs-string">&quot;application/json&quot;</span>)</span><br><span class="line">    |&gt; send_resp(<span class="hljs-number">200</span>, <span class="hljs-string">&quot;Found&quot;</span>)</span><br><span class="line">  <span class="hljs-keyword">end</span></span><br><span class="line"><span class="hljs-keyword">end</span></span><br></pre></td></tr></table></figure>
+<p>Now we have an authenticated app!</p>
+<h2 id="Full-example"><a href="#Full-example" class="headerlink" title="Full example"></a>Full example</h2><p>Here is the full module, dont forget to add Joken or some other jwt checking library and replace Cache for basic auth with your own implementation:</p>
+<figure class="highlight elixir hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-class"><span class="hljs-keyword">defmodule</span> <span class="hljs-title">Plug.Auth</span></span> <span class="hljs-keyword">do</span></span><br><span class="line">  <span class="hljs-keyword">import</span> Plug.Conn</span><br><span class="line"></span><br><span class="line">  <span class="hljs-variable">@secret</span> <span class="hljs-string">&quot;my super secret&quot;</span></span><br><span class="line">  <span class="hljs-variable">@alg</span> <span class="hljs-string">&quot;HS256&quot;</span></span><br><span class="line">  <span class="hljs-variable">@signer</span> Joken.Signer.create(<span class="hljs-variable">@alg</span>, <span class="hljs-variable">@secret</span>)</span><br><span class="line"></span><br><span class="line">  <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">init</span></span>(opts) <span class="hljs-keyword">do</span></span><br><span class="line">    opts</span><br><span class="line">  <span class="hljs-keyword">end</span></span><br><span class="line"></span><br><span class="line">  <span class="hljs-function"><span class="hljs-keyword">defp</span> <span class="hljs-title">authenticate</span></span>(&#123;conn, <span class="hljs-string">&quot;Bearer &quot;</span> &lt;&gt; jwt&#125;) <span class="hljs-keyword">do</span></span><br><span class="line">    <span class="hljs-keyword">case</span> Joken.verify(jwt, <span class="hljs-variable">@signer</span>) <span class="hljs-keyword">do</span></span><br><span class="line">      &#123;<span class="hljs-symbol">:ok</span>, claims&#125; -&gt; assign(conn, <span class="hljs-symbol">:user</span>, claims)</span><br><span class="line">      &#123;<span class="hljs-symbol">:error</span>, err&#125; -&gt; send_401(conn, %&#123;<span class="hljs-symbol">error:</span> err&#125;)</span><br><span class="line">    <span class="hljs-keyword">end</span></span><br><span class="line">  <span class="hljs-keyword">end</span></span><br><span class="line"></span><br><span class="line">  <span class="hljs-function"><span class="hljs-keyword">defp</span> <span class="hljs-title">authenticate</span></span>(&#123;conn, <span class="hljs-string">&quot;Basic &quot;</span> &lt;&gt; token&#125;) <span class="hljs-keyword">do</span></span><br><span class="line">    [username, password] =</span><br><span class="line">      token</span><br><span class="line">      |&gt; Base.decode64!(<span class="hljs-symbol">padding:</span> <span class="hljs-keyword">false</span>)</span><br><span class="line">      |&gt; String.split(<span class="hljs-string">&quot;:&quot;</span>)</span><br><span class="line"></span><br><span class="line">    <span class="hljs-keyword">case</span> Cache.get(<span class="hljs-string">&quot;users:<span class="hljs-subst">#&#123;username&#125;</span>&quot;</span>) <span class="hljs-keyword">do</span></span><br><span class="line">      <span class="hljs-keyword">nil</span> -&gt;</span><br><span class="line">        send_401(conn, <span class="hljs-string">&quot;User does not exist&quot;</span>)</span><br><span class="line"></span><br><span class="line">      %User&#123;<span class="hljs-symbol">name:</span> username, <span class="hljs-symbol">password:</span> salted_password&#125; -&gt;</span><br><span class="line">        <span class="hljs-keyword">case</span> Bcrypt.verify_pass(password, salted_password) <span class="hljs-keyword">do</span></span><br><span class="line">          <span class="hljs-keyword">true</span> -&gt; assign(conn, <span class="hljs-symbol">:user</span>, %&#123;<span class="hljs-symbol">name:</span> username&#125;)</span><br><span class="line">          <span class="hljs-keyword">false</span> -&gt; send_401(conn, <span class="hljs-string">&quot;Password is incorrect&quot;</span>)</span><br><span class="line">        <span class="hljs-keyword">end</span></span><br><span class="line">    <span class="hljs-keyword">end</span></span><br><span class="line">  <span class="hljs-keyword">end</span></span><br><span class="line"></span><br><span class="line">  <span class="hljs-function"><span class="hljs-keyword">defp</span> <span class="hljs-title">authenticate</span></span>(_) <span class="hljs-keyword">do</span></span><br><span class="line">    send_401(conn)</span><br><span class="line">  <span class="hljs-keyword">end</span></span><br><span class="line"></span><br><span class="line">  <span class="hljs-function"><span class="hljs-keyword">defp</span> <span class="hljs-title">send_401</span></span>(</span><br><span class="line">         conn,</span><br><span class="line">         data \\ %&#123;<span class="hljs-symbol">message:</span> <span class="hljs-string">&quot;Please make sure you have authentication header&quot;</span>&#125;</span><br><span class="line">       ) <span class="hljs-keyword">do</span></span><br><span class="line">    conn</span><br><span class="line">    |&gt; put_resp_content_type(<span class="hljs-string">&quot;application/json&quot;</span>)</span><br><span class="line">    |&gt; send_resp(<span class="hljs-number">401</span>, Poison.encode!(data))</span><br><span class="line">    |&gt; halt</span><br><span class="line">  <span class="hljs-keyword">end</span></span><br><span class="line"></span><br><span class="line">  <span class="hljs-function"><span class="hljs-keyword">defp</span> <span class="hljs-title">get_auth_header</span></span>(conn) <span class="hljs-keyword">do</span></span><br><span class="line">    <span class="hljs-keyword">case</span> get_req_header(conn, <span class="hljs-string">&quot;authorization&quot;</span>) <span class="hljs-keyword">do</span></span><br><span class="line">      [token] -&gt; &#123;conn, token&#125;</span><br><span class="line">      _ -&gt; &#123;conn&#125;</span><br><span class="line">    <span class="hljs-keyword">end</span></span><br><span class="line">  <span class="hljs-keyword">end</span></span><br><span class="line"></span><br><span class="line">  <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">call</span></span>(%Plug.Conn&#123;<span class="hljs-symbol">request_path:</span> _path&#125; = conn, _opts) <span class="hljs-keyword">do</span></span><br><span class="line">    conn</span><br><span class="line">    |&gt; get_auth_header</span><br><span class="line">    |&gt; authenticate</span><br><span class="line">  <span class="hljs-keyword">end</span></span><br><span class="line"><span class="hljs-keyword">end</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="Summary"><a href="#Summary" class="headerlink" title="Summary"></a>Summary</h2><p>We learned what are plugs in Elixir, later on we saw how to implement a plug ourselves. Afterwards, we defined our authentication requirements and last, we implemented the authentication, leveraging Elixir’s pattern matching capabilities.</p>
+
+        </div>
+        
+        <div class="level is-size-7 is-uppercase">
+            <div class="level-start">
+                <div class="level-item custom-tags">
+                    <span class="is-size-6 has-text-grey has-mr-7">#</span>
+                    <a class="has-link-grey -link-link" href="/tags/Authentication/" rel="tag">Authentication</a>, <a class="has-link-grey -link-link" href="/tags/Elixir/" rel="tag">Elixir</a>, <a class="has-link-grey -link-link" href="/tags/Functional/" rel="tag">Functional</a>, <a class="has-link-grey -link-link" href="/tags/Middleware/" rel="tag">Middleware</a>, <a class="has-link-grey -link-link" href="/tags/Tutorial/" rel="tag">Tutorial</a>
+                </div>
+            </div>
+        </div>
+        
+        
+        
+    </div>
+</div>
+
+
+
+
+
+<div class="card card-transparent">
+    <div class="level post-navigation is-flex-wrap is-mobile">
+        
+        <div class="level-start">
+            <a class="level level-item has-link-grey  article-nav-prev" href="/2019/07/10/Context-Maps-In-Domain-Driven-Design/">
+                <i class="level-item fas fa-chevron-left"></i>
+                <span class="level-item">Context Maps in Domain Driven Design</span>
+            </a>
+        </div>
+        
+        
+        <div class="level-end">
+            <a class="level level-item has-link-grey  article-nav-next" href="/2019/06/22/Functional-Programming-in-10-minutes/">
+                <span class="level-item">Functional Programming in 10 Minutes</span>
+                <i class="level-item fas fa-chevron-right"></i>
+            </a>
+        </div>
+        
+    </div>
+</div>
+
+
+
+<div class="card">
+    <div class="card-content">
+        <h3 class="title is-5 has-text-weight-normal">Comments</h3>
+        
+<script>
+    var disqus_config = function () {
+        this.page.url = 'https://yuriktech.com/2019/07/03/Authentication-Middleware-In-Elixir/';
+        this.page.identifier = '2019/07/03/Authentication-Middleware-In-Elixir/';
+    };
+    (function() {
+        var d = document, s = d.createElement('script');  
+        s.src = '//' + 'yuritech' + '.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', +new Date());
+        (d.head || d.body).appendChild(s);
+    })();
+</script>
+
+<div id="disqus_thread">
+    
+    <noscript>Please enable JavaScript to view the <a target="_blank" rel="noopener" href="//disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+    </div>
+</div>
+</div>
+                
+
+
+
+
+<div class="column is-4-tablet is-4-desktop is-3-widescreen  has-order-1 column-left ">
+    
+        
+<div class="card widget">
+    <div class="card-content">
+        <nav class="level">
+            <div class="level-item has-text-centered" style="flex-shrink: 1">
+                <div>
+                    
+                        <img class="image is-128x128 has-mb-6" src="/about/index/avatar.png" alt="Yuri Khomyakov">
+                    
+                    
+                    <p class="is-size-4 is-block">
+                        Yuri Khomyakov
+                    </p>
+                    
+                    
+                    <p class="is-size-6 is-block">
+                        Technology Leader
+                    </p>
+                    
+                    
+                </div>
+            </div>
+        </nav>
+        <nav class="level is-mobile">
+            <div class="level-item has-text-centered is-marginless">
+                <div>
+                    <p class="heading">
+                        Posts
+                    </p>
+                    <p class="title has-text-weight-normal">
+                        13
+                    </p>
+                </div>
+            </div>
+            <div class="level-item has-text-centered is-marginless">
+                <div>
+                    <p class="heading">
+                        Categories
+                    </p>
+                    <p class="title has-text-weight-normal">
+                        4
+                    </p>
+                </div>
+            </div>
+            <div class="level-item has-text-centered is-marginless">
+                <div>
+                    <p class="heading">
+                        Tags
+                    </p>
+                    <p class="title has-text-weight-normal">
+                        44
+                    </p>
+                </div>
+            </div>
+        </nav>
+        <div class="level">
+            <a class="level-item button is-link is-rounded" href="https://github.com/yuraxdrumz" target="_blank">
+                Follow</a>
+        </div>
+        
+        
+        <div class="level is-mobile">
+            
+            <a class="level-item button is-white is-marginless" target="_blank"
+                title="Email" href="mailto:yurik1776@gmail.com">
+                
+                <i class="far fa-envelope"></i>
+                
+            </a>
+            
+            <a class="level-item button is-white is-marginless" target="_blank"
+                title="LinkedIn" href="https://www.linkedin.com/in/yuri-khomyakov-383278125/">
+                
+                <i class="fab fa-linkedin"></i>
+                
+            </a>
+            
+            <a class="level-item button is-white is-marginless" target="_blank"
+                title="Github" href="https://github.com/yuraxdrumz">
+                
+                <i class="fab fa-github"></i>
+                
+            </a>
+            
+            <a class="level-item button is-white is-marginless" target="_blank"
+                title="RSS" href="/atom.xml">
+                
+                <i class="fas fa-rss"></i>
+                
+            </a>
+            
+        </div>
+        
+    </div>
+</div>
+    
+        
+<div class="card widget">
+    <div class="card-content">
+        <h3 class="menu-label">
+            Tag Cloud
+        </h3>
+        <a href="/tags/API-Gateway/" style="font-size: 10px;">API Gateway</a> <a href="/tags/Actor-Model/" style="font-size: 10px;">Actor Model</a> <a href="/tags/Auditing/" style="font-size: 10px;">Auditing</a> <a href="/tags/Authentication/" style="font-size: 10px;">Authentication</a> <a href="/tags/Backend-For-Frontend/" style="font-size: 10px;">Backend For Frontend</a> <a href="/tags/Clean-Architecture/" style="font-size: 10px;">Clean Architecture</a> <a href="/tags/Concurrency/" style="font-size: 10px;">Concurrency</a> <a href="/tags/Containers/" style="font-size: 10px;">Containers</a> <a href="/tags/Context-Maps/" style="font-size: 10px;">Context Maps</a> <a href="/tags/DDD/" style="font-size: 12.5px;">DDD</a> <a href="/tags/Design/" style="font-size: 10px;">Design</a> <a href="/tags/Development/" style="font-size: 10px;">Development</a> <a href="/tags/Docker/" style="font-size: 10px;">Docker</a> <a href="/tags/Elixir/" style="font-size: 12.5px;">Elixir</a> <a href="/tags/Event-Loop/" style="font-size: 10px;">Event Loop</a> <a href="/tags/Event-Sourcing/" style="font-size: 10px;">Event Sourcing</a> <a href="/tags/Functional/" style="font-size: 15px;">Functional</a> <a href="/tags/Golang/" style="font-size: 15px;">Golang</a> <a href="/tags/Green-Threads/" style="font-size: 12.5px;">Green Threads</a> <a href="/tags/Hexagonal/" style="font-size: 10px;">Hexagonal</a> <a href="/tags/Investigation/" style="font-size: 10px;">Investigation</a> <a href="/tags/Javascript/" style="font-size: 10px;">Javascript</a> <a href="/tags/Kernel-Threads/" style="font-size: 10px;">Kernel Threads</a> <a href="/tags/Logging/" style="font-size: 10px;">Logging</a> <a href="/tags/Loki/" style="font-size: 10px;">Loki</a> <a href="/tags/Maybe-a-rant/" style="font-size: 10px;">Maybe a rant</a> <a href="/tags/Memory-Leak/" style="font-size: 10px;">Memory Leak</a> <a href="/tags/Microservices/" style="font-size: 15px;">Microservices</a> <a href="/tags/Middleware/" style="font-size: 10px;">Middleware</a> <a href="/tags/Node-js/" style="font-size: 10px;">Node js</a> <a href="/tags/Node-js/" style="font-size: 17.5px;">Node.js</a> <a href="/tags/Parallelism/" style="font-size: 10px;">Parallelism</a> <a href="/tags/Ports-and-Adapters/" style="font-size: 10px;">Ports and Adapters</a> <a href="/tags/Profiling/" style="font-size: 10px;">Profiling</a> <a href="/tags/Programming-Paradigms/" style="font-size: 10px;">Programming Paradigms</a> <a href="/tags/Scheduler/" style="font-size: 10px;">Scheduler</a> <a href="/tags/Sidecar-Pattern/" style="font-size: 10px;">Sidecar Pattern</a> <a href="/tags/Software-Architecture/" style="font-size: 20px;">Software Architecture</a> <a href="/tags/Threading-Models/" style="font-size: 10px;">Threading Models</a> <a href="/tags/Threads/" style="font-size: 10px;">Threads</a> <a href="/tags/Tutorial/" style="font-size: 12.5px;">Tutorial</a> <a href="/tags/Typescript/" style="font-size: 10px;">Typescript</a> <a href="/tags/Uncle-Bob/" style="font-size: 10px;">Uncle Bob</a> <a href="/tags/libuv/" style="font-size: 10px;">libuv</a>
+    </div>
+</div>
+
+    
+    
+        <div class="column-right-shadow is-hidden-widescreen ">
+        
+            
+<div class="card widget" id="toc">
+    <div class="card-content">
+        <div class="menu">
+            <h3 class="menu-label">
+                Catalogue
+            </h3>
+            <ul class="menu-list"><ul class="menu-list"><li>
+        <a class="is-flex" href="#Router-with-plugs">
+        <span class="has-mr-6">1.1</span>
+        <span>Router with plugs</span>
+        </a></li><li>
+        <a class="is-flex" href="#How-to-build-a-plug">
+        <span class="has-mr-6">1.2</span>
+        <span>How to build a plug</span>
+        </a></li><li>
+        <a class="is-flex" href="#What-do-we-need-for-authorization">
+        <span class="has-mr-6">1.3</span>
+        <span>What do we need for authorization</span>
+        </a></li><li>
+        <a class="is-flex" href="#Defining-our-401">
+        <span class="has-mr-6">1.4</span>
+        <span>Defining our 401</span>
+        </a></li><li>
+        <a class="is-flex" href="#Defining-the-call-method">
+        <span class="has-mr-6">1.5</span>
+        <span>Defining the call method</span>
+        </a></li><li>
+        <a class="is-flex" href="#Getting-the-authorization-header">
+        <span class="has-mr-6">1.6</span>
+        <span>Getting the authorization header</span>
+        </a></li></ul><li>
+        <a class="is-flex" href="#Authenticating">
+        <span class="has-mr-6">2</span>
+        <span>Authenticating</span>
+        </a><ul class="menu-list"><li>
+        <a class="is-flex" href="#Connecting-it-all-together">
+        <span class="has-mr-6">2.1</span>
+        <span>Connecting it all together</span>
+        </a></li><li>
+        <a class="is-flex" href="#Full-example">
+        <span class="has-mr-6">2.2</span>
+        <span>Full example</span>
+        </a></li><li>
+        <a class="is-flex" href="#Summary">
+        <span class="has-mr-6">2.3</span>
+        <span>Summary</span>
+        </a></li></ul></li></ul>
+        </div>
+    </div>
+</div>
+
+        
+            
+<div class="card widget">
+    <div class="card-content">
+        <h3 class="menu-label">
+            Recent
+        </h3>
+        
+        <article class="media">
+            
+            <a href="/2021/07/19/Auditing-in-Microservices/" class="media-left">
+                <p class="image is-64x64">
+                    <img class="thumbnail" src="/images/thumbnail.svg" alt="Auditing in Microservices">
+                </p>
+            </a>
+            
+            <div class="media-content">
+                <div class="content">
+                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2021-07-19T16:41:33.000Z">2021-07-19</time></div>
+                    <a href="/2021/07/19/Auditing-in-Microservices/" class="has-link-black-ter is-size-6">Auditing in Microservices</a>
+                    <p class="is-size-7 is-uppercase">
+                        <a class="has-link-grey -link" href="/categories/Architecture/">Architecture</a>
+                    </p>
+                </div>
+            </div>
+        </article>
+        
+        <article class="media">
+            
+            <a href="/2020/11/07/Golang-Memory-Leaks/" class="media-left">
+                <p class="image is-64x64">
+                    <img class="thumbnail" src="/images/Golang.png" alt="Golang Memory Leaks">
+                </p>
+            </a>
+            
+            <div class="media-content">
+                <div class="content">
+                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2020-11-07T17:59:35.000Z">2020-11-07</time></div>
+                    <a href="/2020/11/07/Golang-Memory-Leaks/" class="has-link-black-ter is-size-6">Golang Memory Leaks</a>
+                    <p class="is-size-7 is-uppercase">
+                        <a class="has-link-grey -link" href="/categories/Programming/">Programming</a>
+                    </p>
+                </div>
+            </div>
+        </article>
+        
+        <article class="media">
+            
+            <a href="/2020/03/21/Collecting-Docker-Logs-With-Loki/" class="media-left">
+                <p class="image is-64x64">
+                    <img class="thumbnail" src="/images/loki.jpg" alt="Collecting Docker Logs With Loki">
+                </p>
+            </a>
+            
+            <div class="media-content">
+                <div class="content">
+                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2020-03-21T14:10:20.000Z">2020-03-21</time></div>
+                    <a href="/2020/03/21/Collecting-Docker-Logs-With-Loki/" class="has-link-black-ter is-size-6">Collecting Docker Logs With Loki</a>
+                    <p class="is-size-7 is-uppercase">
+                        <a class="has-link-grey -link" href="/categories/DevOps/">DevOps</a>
+                    </p>
+                </div>
+            </div>
+        </article>
+        
+        <article class="media">
+            
+            <a href="/2020/03/07/User-Space-Scheduling/" class="media-left">
+                <p class="image is-64x64">
+                    <img class="thumbnail" src="/images/multi.jpg" alt="User Space Scheduling">
+                </p>
+            </a>
+            
+            <div class="media-content">
+                <div class="content">
+                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2020-03-07T14:26:21.000Z">2020-03-07</time></div>
+                    <a href="/2020/03/07/User-Space-Scheduling/" class="has-link-black-ter is-size-6">User Space Scheduling</a>
+                    <p class="is-size-7 is-uppercase">
+                        <a class="has-link-grey -link" href="/categories/Programming/">Programming</a>
+                    </p>
+                </div>
+            </div>
+        </article>
+        
+        <article class="media">
+            
+            <a href="/2020/02/01/Implementing-Ports-and-Adapters/" class="media-left">
+                <p class="image is-64x64">
+                    <img class="thumbnail" src="/images/golang-ports-and-adapters.png" alt="Implementing Ports and Adapters">
+                </p>
+            </a>
+            
+            <div class="media-content">
+                <div class="content">
+                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2020-02-01T16:15:21.000Z">2020-02-01</time></div>
+                    <a href="/2020/02/01/Implementing-Ports-and-Adapters/" class="has-link-black-ter is-size-6">Implementing Ports and Adapters</a>
+                    <p class="is-size-7 is-uppercase">
+                        <a class="has-link-grey -link" href="/categories/Architecture/">Architecture</a>
+                    </p>
+                </div>
+            </div>
+        </article>
+        
+    </div>
+</div>
+
+        
+            
+<div class="card widget">
+    <div class="card-content">
+        <div class="menu">
+            <h3 class="menu-label">
+                Categories
+            </h3>
+            <ul class="menu-list">
+            <li>
+        <a class="level is-marginless" href="/categories/Architecture/">
+            <span class="level-start">
+                <span class="level-item">Architecture</span>
+            </span>
+            <span class="level-end">
+                <span class="level-item tag">6</span>
+            </span>
+        </a></li><li>
+        <a class="level is-marginless" href="/categories/DevOps/">
+            <span class="level-start">
+                <span class="level-item">DevOps</span>
+            </span>
+            <span class="level-end">
+                <span class="level-item tag">1</span>
+            </span>
+        </a></li><li>
+        <a class="level is-marginless" href="/categories/Paradigms/">
+            <span class="level-start">
+                <span class="level-item">Paradigms</span>
+            </span>
+            <span class="level-end">
+                <span class="level-item tag">1</span>
+            </span>
+        </a></li><li>
+        <a class="level is-marginless" href="/categories/Programming/">
+            <span class="level-start">
+                <span class="level-item">Programming</span>
+            </span>
+            <span class="level-end">
+                <span class="level-item tag">5</span>
+            </span>
+        </a></li>
+            </ul>
+        </div>
+    </div>
+</div>
+        
+        </div>
+    
+</div>
+
+                
+
+
+
+
+<div class="column is-4-tablet is-4-desktop is-3-widescreen is-hidden-touch is-hidden-desktop-only has-order-3 column-right ">
+    
+        
+<div class="card widget" id="toc">
+    <div class="card-content">
+        <div class="menu">
+            <h3 class="menu-label">
+                Catalogue
+            </h3>
+            <ul class="menu-list"><ul class="menu-list"><li>
+        <a class="is-flex" href="#Router-with-plugs">
+        <span class="has-mr-6">1.1</span>
+        <span>Router with plugs</span>
+        </a></li><li>
+        <a class="is-flex" href="#How-to-build-a-plug">
+        <span class="has-mr-6">1.2</span>
+        <span>How to build a plug</span>
+        </a></li><li>
+        <a class="is-flex" href="#What-do-we-need-for-authorization">
+        <span class="has-mr-6">1.3</span>
+        <span>What do we need for authorization</span>
+        </a></li><li>
+        <a class="is-flex" href="#Defining-our-401">
+        <span class="has-mr-6">1.4</span>
+        <span>Defining our 401</span>
+        </a></li><li>
+        <a class="is-flex" href="#Defining-the-call-method">
+        <span class="has-mr-6">1.5</span>
+        <span>Defining the call method</span>
+        </a></li><li>
+        <a class="is-flex" href="#Getting-the-authorization-header">
+        <span class="has-mr-6">1.6</span>
+        <span>Getting the authorization header</span>
+        </a></li></ul><li>
+        <a class="is-flex" href="#Authenticating">
+        <span class="has-mr-6">2</span>
+        <span>Authenticating</span>
+        </a><ul class="menu-list"><li>
+        <a class="is-flex" href="#Connecting-it-all-together">
+        <span class="has-mr-6">2.1</span>
+        <span>Connecting it all together</span>
+        </a></li><li>
+        <a class="is-flex" href="#Full-example">
+        <span class="has-mr-6">2.2</span>
+        <span>Full example</span>
+        </a></li><li>
+        <a class="is-flex" href="#Summary">
+        <span class="has-mr-6">2.3</span>
+        <span>Summary</span>
+        </a></li></ul></li></ul>
+        </div>
+    </div>
+</div>
+
+    
+        
+<div class="card widget">
+    <div class="card-content">
+        <h3 class="menu-label">
+            Recent
+        </h3>
+        
+        <article class="media">
+            
+            <a href="/2021/07/19/Auditing-in-Microservices/" class="media-left">
+                <p class="image is-64x64">
+                    <img class="thumbnail" src="/images/thumbnail.svg" alt="Auditing in Microservices">
+                </p>
+            </a>
+            
+            <div class="media-content">
+                <div class="content">
+                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2021-07-19T16:41:33.000Z">2021-07-19</time></div>
+                    <a href="/2021/07/19/Auditing-in-Microservices/" class="has-link-black-ter is-size-6">Auditing in Microservices</a>
+                    <p class="is-size-7 is-uppercase">
+                        <a class="has-link-grey -link" href="/categories/Architecture/">Architecture</a>
+                    </p>
+                </div>
+            </div>
+        </article>
+        
+        <article class="media">
+            
+            <a href="/2020/11/07/Golang-Memory-Leaks/" class="media-left">
+                <p class="image is-64x64">
+                    <img class="thumbnail" src="/images/Golang.png" alt="Golang Memory Leaks">
+                </p>
+            </a>
+            
+            <div class="media-content">
+                <div class="content">
+                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2020-11-07T17:59:35.000Z">2020-11-07</time></div>
+                    <a href="/2020/11/07/Golang-Memory-Leaks/" class="has-link-black-ter is-size-6">Golang Memory Leaks</a>
+                    <p class="is-size-7 is-uppercase">
+                        <a class="has-link-grey -link" href="/categories/Programming/">Programming</a>
+                    </p>
+                </div>
+            </div>
+        </article>
+        
+        <article class="media">
+            
+            <a href="/2020/03/21/Collecting-Docker-Logs-With-Loki/" class="media-left">
+                <p class="image is-64x64">
+                    <img class="thumbnail" src="/images/loki.jpg" alt="Collecting Docker Logs With Loki">
+                </p>
+            </a>
+            
+            <div class="media-content">
+                <div class="content">
+                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2020-03-21T14:10:20.000Z">2020-03-21</time></div>
+                    <a href="/2020/03/21/Collecting-Docker-Logs-With-Loki/" class="has-link-black-ter is-size-6">Collecting Docker Logs With Loki</a>
+                    <p class="is-size-7 is-uppercase">
+                        <a class="has-link-grey -link" href="/categories/DevOps/">DevOps</a>
+                    </p>
+                </div>
+            </div>
+        </article>
+        
+        <article class="media">
+            
+            <a href="/2020/03/07/User-Space-Scheduling/" class="media-left">
+                <p class="image is-64x64">
+                    <img class="thumbnail" src="/images/multi.jpg" alt="User Space Scheduling">
+                </p>
+            </a>
+            
+            <div class="media-content">
+                <div class="content">
+                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2020-03-07T14:26:21.000Z">2020-03-07</time></div>
+                    <a href="/2020/03/07/User-Space-Scheduling/" class="has-link-black-ter is-size-6">User Space Scheduling</a>
+                    <p class="is-size-7 is-uppercase">
+                        <a class="has-link-grey -link" href="/categories/Programming/">Programming</a>
+                    </p>
+                </div>
+            </div>
+        </article>
+        
+        <article class="media">
+            
+            <a href="/2020/02/01/Implementing-Ports-and-Adapters/" class="media-left">
+                <p class="image is-64x64">
+                    <img class="thumbnail" src="/images/golang-ports-and-adapters.png" alt="Implementing Ports and Adapters">
+                </p>
+            </a>
+            
+            <div class="media-content">
+                <div class="content">
+                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2020-02-01T16:15:21.000Z">2020-02-01</time></div>
+                    <a href="/2020/02/01/Implementing-Ports-and-Adapters/" class="has-link-black-ter is-size-6">Implementing Ports and Adapters</a>
+                    <p class="is-size-7 is-uppercase">
+                        <a class="has-link-grey -link" href="/categories/Architecture/">Architecture</a>
+                    </p>
+                </div>
+            </div>
+        </article>
+        
+    </div>
+</div>
+
+    
+        
+<div class="card widget">
+    <div class="card-content">
+        <div class="menu">
+            <h3 class="menu-label">
+                Categories
+            </h3>
+            <ul class="menu-list">
+            <li>
+        <a class="level is-marginless" href="/categories/Architecture/">
+            <span class="level-start">
+                <span class="level-item">Architecture</span>
+            </span>
+            <span class="level-end">
+                <span class="level-item tag">6</span>
+            </span>
+        </a></li><li>
+        <a class="level is-marginless" href="/categories/DevOps/">
+            <span class="level-start">
+                <span class="level-item">DevOps</span>
+            </span>
+            <span class="level-end">
+                <span class="level-item tag">1</span>
+            </span>
+        </a></li><li>
+        <a class="level is-marginless" href="/categories/Paradigms/">
+            <span class="level-start">
+                <span class="level-item">Paradigms</span>
+            </span>
+            <span class="level-end">
+                <span class="level-item tag">1</span>
+            </span>
+        </a></li><li>
+        <a class="level is-marginless" href="/categories/Programming/">
+            <span class="level-start">
+                <span class="level-item">Programming</span>
+            </span>
+            <span class="level-end">
+                <span class="level-item tag">5</span>
+            </span>
+        </a></li>
+            </ul>
+        </div>
+    </div>
+</div>
+    
+    
+</div>
+
+            </div>
+        </div>
+    </section>
+    <footer class="footer">
+    <div class="container">
+        <div class="level">
+            <div class="level-start has-text-centered-mobile">
+                <p class="is-size-7">
+                &copy; 2021 Yuri Khomyakov&nbsp;
+                Powered by <a href="https://hexo.io/" target="_blank">Hexo</a> & <a
+                        href="https://github.com/ppoffice/hexo-theme-icarus" target="_blank">Icarus</a>
+                
+                </p>
+            </div>
+            <div class="level-end">
+            
+                <div class="field has-addons is-flex-center-mobile has-mt-5-mobile is-flex-wrap is-flex-middle">
+                
+                
+                <p class="control">
+                    <a class="button is-white is-large" target="_blank" title="GitHub" href="https://github.com/yuraxdrumz">
+                        
+                        <i class="fab fa-github"></i>
+                        
+                    </a>
+                </p>
+                
+                </div>
+            
+            </div>
+        </div>
+    </div>
+</footer>
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.3.1/dist/jquery.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/moment@2.22.2/min/moment-with-locales.min.js"></script>
+<script>moment.locale("en");</script>
+
+
+    
+    
+    
+    <script src="/js/animation.js"></script>
+    
+
+    
+    
+    
+    <script src="https://cdn.jsdelivr.net/npm/lightgallery@1.6.8/dist/js/lightgallery.min.js" defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/justifiedGallery@3.7.0/dist/js/jquery.justifiedGallery.min.js" defer></script>
+    <script src="/js/gallery.js" defer></script>
+    
+
+    
+    
+
+<div id="outdated">
+    <h6>Your browser is out-of-date!</h6>
+    <p>Update your browser to view this website correctly. <a id="btnUpdateBrowser" target="_blank" rel="noopener" href="http://outdatedbrowser.com/">Update
+            my browser now </a></p>
+    <p class="last"><a href="#" id="btnCloseUpdateBrowser" title="Close">&times;</a></p>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/outdatedbrowser@1.1.5/outdatedbrowser/outdatedbrowser.min.js" defer></script>
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        outdatedBrowser({
+            bgColor: '#f25648',
+            color: '#ffffff',
+            lowerThan: 'flex'
+        });
+    });
+</script>
+
+
+    
+    
+<script src="https://cdn.jsdelivr.net/npm/mathjax@2.7.5/unpacked/MathJax.js?config=TeX-MML-AM_CHTML" defer></script>
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    MathJax.Hub.Config({
+        'HTML-CSS': {
+            matchFontHeight: false
+        },
+        SVG: {
+            matchFontHeight: false
+        },
+        CommonHTML: {
+            matchFontHeight: false
+        },
+        tex2jax: {
+            inlineMath: [
+                ['$','$'],
+                ['\\(','\\)']
+            ]
+        }
+    });
+});
+</script>
+
+    
+    
+
+<a id="back-to-top" title="Back to Top" href="javascript:;">
+    <i class="fas fa-chevron-up"></i>
+</a>
+<script src="/js/back-to-top.js" defer></script>
+
+
+    
+    
+
+    
+    
+    
+    
+
+    
+    
+    
+    
+    
+    <script src="https://cdn.jsdelivr.net/npm/clipboard@2.0.4/dist/clipboard.min.js" defer></script>
+    <script src="/js/clipboard.js" defer></script>
+    
+
+    
+    
+    
+
+
+<script src="/js/main.js" defer></script>
+
+    
+    <div class="searchbox ins-search">
+    <div class="searchbox-container ins-search-container">
+        <div class="searchbox-input-wrapper">
+            <input type="text" class="searchbox-input ins-search-input" placeholder="Type something..." />
+            <span class="searchbox-close ins-close ins-selectable"><i class="fa fa-times-circle"></i></span>
+        </div>
+        <div class="searchbox-result-wrapper ins-section-wrapper">
+            <div class="ins-section-container"></div>
+        </div>
+    </div>
+</div>
+<script>
+    (function (window) {
+        var INSIGHT_CONFIG = {
+            TRANSLATION: {
+                POSTS: 'Posts',
+                PAGES: 'Pages',
+                CATEGORIES: 'Categories',
+                TAGS: 'Tags',
+                UNTITLED: '(Untitled)',
+            },
+            CONTENT_URL: '/content.json',
+        };
+        window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+    })(window);
+</script>
+<script src="/js/insight.js" defer></script>
+<link rel="stylesheet" href="/css/search.css">
+<link rel="stylesheet" href="/css/insight.css">
+    
+</body>
+</html>

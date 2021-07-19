@@ -1,0 +1,1051 @@
+<!DOCTYPE html>
+<html  lang="en">
+<head>
+    <meta charset="utf-8">
+<title>Golang Memory Leaks - Yurik&#39;s Tech Blog</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+<meta  />
+<meta  />
+<meta  />
+<meta  />
+
+    <meta name="description" content="Recently, I had a memory leak in production. I saw that a specific service’s memory steadily rises when under load, until the process hits an out of memory exception. After a thorough investigation, I">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Golang Memory Leaks">
+<meta property="og:url" content="https://yuriktech.com/2020/11/07/Golang-Memory-Leaks/index.html">
+<meta property="og:site_name" content="Yurik&#39;s Tech Blog">
+<meta property="og:description" content="Recently, I had a memory leak in production. I saw that a specific service’s memory steadily rises when under load, until the process hits an out of memory exception. After a thorough investigation, I">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://yuriktech.com/images/Golang.png">
+<meta property="article:published_time" content="2020-11-07T17:59:35.000Z">
+<meta property="article:modified_time" content="2021-01-22T11:07:55.934Z">
+<meta property="article:author" content="Yuri Khomyakov">
+<meta property="article:tag" content="Golang">
+<meta property="article:tag" content="Memory Leak">
+<meta property="article:tag" content="Green Threads">
+<meta property="article:tag" content="Investigation">
+<meta property="article:tag" content="Profiling">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://yuriktech.com/images/Golang.png">
+
+
+
+
+
+
+
+<link rel="icon" href="/favicon.ico">
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.7.2/css/bulma.css">
+<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.4.1/css/all.css">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Ubuntu:400,600|Source+Code+Pro">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@9.12.0/styles/monokai.css">
+
+
+    
+    
+    
+    <style>body>.footer,body>.navbar,body>.section{opacity:0}</style>
+    
+
+    
+    
+    
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/lightgallery@1.6.8/dist/css/lightgallery.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/justifiedGallery@3.7.0/dist/css/justifiedGallery.min.css">
+    
+
+    
+    
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/outdatedbrowser@1.1.5/outdatedbrowser/outdatedbrowser.min.css">
+
+
+    
+    
+    
+    
+
+<link rel="stylesheet" href="/css/back-to-top.css">
+
+
+    
+    
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-142167807-1"></script>
+<script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'UA-142167807-1');
+</script>
+
+
+    
+    
+    
+    
+
+    
+    
+<link rel="stylesheet" href="/css/progressbar.css">
+<script src="https://cdn.jsdelivr.net/npm/pace-js@1.0.2/pace.min.js"></script>
+
+    
+    
+    
+
+    
+    
+    
+
+
+<link rel="stylesheet" href="/css/style.css">
+<meta name="generator" content="Hexo 5.4.0"></head>
+<body class="is-3-column">
+    <nav class="navbar navbar-main">
+    <div class="container">
+
+        <div class="navbar-menu">
+            
+            <div class="navbar-start">
+                
+                <a class="navbar-item"
+                href="/">Home</a>
+                
+                <a class="navbar-item"
+                href="/archives">Archives</a>
+                
+                <a class="navbar-item"
+                href="/about">About</a>
+                
+            </div>
+            
+            <div class="navbar-end">
+                
+                    
+                    
+                    <a class="navbar-item" target="_blank" title="GitHub" href="https://github.com/yuraxdrumz">
+                        
+                        <i class="fab fa-github"></i>
+                        
+                    </a>
+                    
+                
+                
+                <a class="navbar-item is-hidden-tablet catalogue" title="Catalogue" href="javascript:;">
+                    <i class="fas fa-list-ul"></i>
+                </a>
+                
+                
+                <a class="navbar-item search" title="Search" href="javascript:;">
+                    <i class="fas fa-search"></i>
+                </a>
+                
+            </div>
+        </div>
+    </div>
+</nav>
+    
+    <section class="section">
+        <div class="container">
+            <div class="columns">
+                <div class="column is-8-tablet is-8-desktop is-6-widescreen has-order-2 column-main"><div class="card">
+    
+    <div class="card-image">
+        <span  class="image is-7by1">
+            <img class="thumbnail" src="/images/Golang.png" alt="Golang Memory Leaks">
+        </span>
+    </div>
+    
+    <div class="card-content article ">
+        
+        <div class="level article-meta is-size-7 is-uppercase is-mobile is-overflow-x-auto">
+            <div class="level-left">
+                <time class="level-item has-text-grey" datetime="2020-11-07T17:59:35.000Z">2020-11-07</time>
+                
+                <div class="level-item">
+                <a class="has-link-grey -link" href="/categories/Programming/">Programming</a>
+                </div>
+                
+                
+                <span class="level-item has-text-grey">
+                    
+                    
+                    10 minutes read (About 1497 words)
+                </span>
+                
+                
+            </div>
+        </div>
+        
+        <h1 class="title is-size-3 is-size-4-mobile has-text-weight-normal">
+            
+                Golang Memory Leaks
+            
+        </h1>
+        <div class="content">
+            <p>Recently, I had a memory leak in production. I saw that a specific service’s memory steadily rises when under load, until the process hits an out of memory exception. After a thorough investigation, I found out the source of the memory leak as well as the reason to why it happened in the first place. To diagnose the problem, I used Golang’s profiling tool called <code>pprof</code>.
+In this post, I will explain what is pprof and show how I diagnosed the memory leak.</p>
+<h3 id="Preface"><a href="#Preface" class="headerlink" title="Preface"></a>Preface</h3><p>Our clients use our system through a proxy service, to which, we provide access to. The said memory leak happened in the proxy service.</p>
+<h3 id="Disclaimer"><a href="#Disclaimer" class="headerlink" title="Disclaimer"></a>Disclaimer</h3><p>Some of the images here will be cropped and missing some information due to security reasons.</p>
+<h3 id="The-Memory-Leak"><a href="#The-Memory-Leak" class="headerlink" title="The Memory Leak"></a>The Memory Leak</h3><p>After getting complaints from clients about hiccups and disconnects, I started digging for the problem.<br>First thing I did, was go into the company’s Grafana and check the memory and cpu of the proxy service.<br>I looked at the service and compared metrics from 3 different scenarios:</p>
+<ul>
+<li>Service is after restart and idle</li>
+<li>Service is under load</li>
+<li>Service was under load and now idle</li>
+</ul>
+<p>All the overlapping lines below are idle instances of the service, only the green line gets traffic.<br><img src="/2020/11/07/Golang-Memory-Leaks/leak.png" alt></p>
+<p>There are a couple of obervations from the image above</p>
+<ul>
+<li>When the service is idle and there is no traffic, its memory stays low</li>
+<li>After traffic stops hitting the single instance, its memory level drops but stays well above the others.</li>
+</ul>
+<p>Before jumping on a profiling adventure (some may call it a nightmare), I made a small checklist of things I wanted to exclude:</p>
+<ul>
+<li>I was using Golang version 1.12.5, so I wanted to make sure that the potential leak was not coming from the runtime (even runtimes have issues). A good place to start is by looking at <a target="_blank" rel="noopener" href="https://github.com/golang/go/issues">open issues on the github page</a></li>
+<li>Try agressive garbage collection using <a target="_blank" rel="noopener" href="https://golang.org/pkg/runtime/debug/#SetGCPercent">debug.SetGCPercent(10)</a></li>
+<li>Try Manual <a target="_blank" rel="noopener" href="https://golang.org/pkg/runtime/debug/#FreeOSMemory">debug.FreeOSMemory()</a>. Runtimes are all about performance, after memory has been garbage collected, it is not freed back to the OS immediately for performance reasons.</li>
+<li>Try to reproduce the leak in a staging environment with a small load test to confirm my suspicions.</li>
+</ul>
+<p>After completing my checklist and seeing the leak was still present and that it was reproducible, I started profiling the service with pprof.</p>
+<h3 id="Golang’s-Profiling-Tool-pprof"><a href="#Golang’s-Profiling-Tool-pprof" class="headerlink" title="Golang’s Profiling Tool - pprof"></a>Golang’s Profiling Tool - pprof</h3><p>From the <a target="_blank" rel="noopener" href="https://github.com/google/pprof">pproff github page</a></p>
+<blockquote>
+<p>pprof is a tool for visualization and analysis of profiling data.<br>pprof reads a collection of profiling samples in profile.proto format and generates reports to visualize and help analyze the data. It can generate both text and graphical reports (through the use of the dot visualization package).</p>
+</blockquote>
+<h4 id="Profiling-Types"><a href="#Profiling-Types" class="headerlink" title="Profiling Types"></a>Profiling Types</h4><p>There are several profiles you can collect</p>
+<ul>
+<li>goroutine    - stack traces of all current goroutines</li>
+<li>heap         - a sampling of all heap allocations</li>
+<li>threadcreate - stack traces that led to the creation of new OS threads</li>
+<li>block        - stack traces that led to blocking on synchronization primitives</li>
+<li>mutex        - stack traces of holders of contended mutexes</li>
+<li>profile      - cpu profile</li>
+<li>trace        - allows collecting all the profiles for a certain duration</li>
+</ul>
+<h4 id="Profiling-Example"><a href="#Profiling-Example" class="headerlink" title="Profiling Example"></a>Profiling Example</h4><p>To start the profiling, I imported pprof and started an HTTP server for it.<br>Note, that if you already have an HTTP server running, the import statement is sufficient.<br>I had a TCP server running, so I added another goroutine to listen on a separate port for the pprof.</p>
+<figure class="highlight golang hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-keyword">import</span> _ <span class="hljs-string">&quot;net/http/pprof&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="hljs-keyword">go</span> <span class="hljs-function"><span class="hljs-keyword">func</span><span class="hljs-params">()</span></span> &#123;</span><br><span class="line">	log.Println(http.ListenAndServe(<span class="hljs-string">&quot;localhost:6060&quot;</span>, <span class="hljs-literal">nil</span>))</span><br><span class="line">&#125;()</span><br></pre></td></tr></table></figure>
+
+<p>For memory leaks, we want to start with the heap profile. </p>
+<p>To capture a profile we run <code>curl http://localhost:6060/debug/pprof/heap?seconds=30 &gt; heap.out</code>.</p>
+<p>To inspect a profile we run <code>go tool pprof heap.out</code>.</p>
+<p>There are two types of allocations the profile will collect</p>
+<ul>
+<li><p>in_use - current allocations<br><img src="/2020/11/07/Golang-Memory-Leaks/pprof_inuse_space.png" alt></p>
+</li>
+<li><p>alloc - total allocations since the program started running, regardless of whether the memory was freed or not.<br><img src="/2020/11/07/Golang-Memory-Leaks/pprof_alloc_space.png" alt></p>
+</li>
+</ul>
+<p>Entering top will display the top 10 results that make up the most memory consumers. We can write any number after top to see the top results.<br>We have two important fields to look out for</p>
+<ul>
+<li>flat - how much memory is allocated by this function</li>
+<li>cum - how much cumulative memory is allocated by this function or a function it called down the stack</li>
+</ul>
+<p>pprof also has a web interface to visually examine the profile.<br>To run pprof with the web ui run <code>go tool pprof -http=&#39;:8081&#39; heap.out</code>, notice the http flag.<br>The biggest memory consumers in the profile collected will be shown as red, which are your points of reference.<br>We can see in the image below, that there are two red paths, one for the http server and one for runtime.malg</p>
+<p><img src="/2020/11/07/Golang-Memory-Leaks/malg.png" alt></p>
+<h3 id="Diagnosing-the-Leak"><a href="#Diagnosing-the-Leak" class="headerlink" title="Diagnosing the Leak"></a>Diagnosing the Leak</h3><p>Pprof has another helpful feature that allows comparing profiles using the <code>-base</code> and the <code>-diff_base</code> flags.<br>We run it like so <code>go tool pprof -http=&#39;:8081&#39; -diff_base heap-new-16:22:04:N.out heap-new-17:32:38:N.out</code></p>
+<p>After collecting a 30 second profile before and after a service got traffic, I compared the profiles. Immediately, <code>runtime.malg</code> that grew in memory caught my eye.<br><img src="/2020/11/07/Golang-Memory-Leaks/malg3.png" alt></p>
+<p>At idle runtime.malg was around 1MB and it grew to 38MB.<br>When creating a new goroutine the runtime.malg function is called. It allocates a stack trace for the newly created goroutine and holds a reference to it until the goroutine finishes execution.<br><img src="/2020/11/07/Golang-Memory-Leaks/malg2.png" alt></p>
+<h3 id="The-Fix"><a href="#The-Fix" class="headerlink" title="The Fix"></a>The Fix</h3><p>By now, pprof pointed me towards runtime.malg, that held all goroutine descriptors, which did not get garbage collected.<br>A goroutine that is never garbage collected means it never finishes execution, which happens on two occasions</p>
+<ul>
+<li>A <code>for&#123;&#125;</code> or a <code>select&#123;&#125;</code> loop without a stopping condition</li>
+<li>A <code>channel</code> that waits for messages and is not getting closed properly</li>
+</ul>
+<p>To confirm my suspicions, I took a goroutine profile, which looked like this<br><img src="/2020/11/07/Golang-Memory-Leaks/goroutines.png" alt></p>
+<p>The profile above shows that I have a lot of goroutines spawned that are doing nothing , because they are waiting on a channel.</p>
+<p>I immediately looked at the piece of code that the profile above points at and found the following</p>
+<figure class="highlight golang hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-keyword">go</span> <span class="hljs-function"><span class="hljs-keyword">func</span><span class="hljs-params">()</span></span> &#123;</span><br><span class="line">  <span class="hljs-keyword">for</span> &#123;</span><br><span class="line">    <span class="hljs-keyword">select</span> &#123;</span><br><span class="line">    <span class="hljs-keyword">case</span> &lt;-sa.reader.C:</span><br><span class="line">      sa.read()</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;()</span><br></pre></td></tr></table></figure>
+
+<p>The goroutine has a for loop which always listens on a channel from <code>time.Ticker</code>.
+Checking how the stopping of the time.Ticker occurs looks like this</p>
+<figure class="highlight golang hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sa.reader.Stop()</span><br></pre></td></tr></table></figure>
+
+<p>Looking at the <a target="_blank" rel="noopener" href="https://golang.org/pkg/time/#Ticker.Stop">documentation</a> of time.Ticker, I noticed this</p>
+<blockquote>
+<p>Stop turns off a ticker. After Stop, no more ticks will be sent. <code>Stop does not close the channel</code>, to prevent a concurrent goroutine reading from the channel from seeing an erroneous “tick”. </p>
+</blockquote>
+<p>It immediately struck me, the channel is never getting closed, which leaves the goroutine in a waiting state forever, which leads to the runtime.malg to accumulate gouroutine descriptors, which increases the heap until we reach OOM exception.</p>
+<p>I added a done channel to the goroutine and made sure to close it on <code>ticker.Stop()</code></p>
+<figure class="highlight golang hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="hljs-keyword">type</span> Reader <span class="hljs-keyword">struct</span> &#123;</span><br><span class="line">	reader            *time.Ticker</span><br><span class="line">	readerDone        <span class="hljs-keyword">chan</span> <span class="hljs-keyword">bool</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">NewReader</span><span class="hljs-params">()</span> *<span class="hljs-title">Reader</span></span> &#123;</span><br><span class="line">  <span class="hljs-keyword">return</span> &amp;Reader&#123;</span><br><span class="line">    readerDone: <span class="hljs-built_in">make</span>(<span class="hljs-keyword">chan</span> <span class="hljs-keyword">bool</span>, <span class="hljs-number">1</span>),</span><br><span class="line">    reader: time.NewTicker(time.Second * <span class="hljs-number">5</span>)</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="hljs-comment">// creation of ticker</span></span><br><span class="line"></span><br><span class="line"><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-params">(r *Reader)</span> <span class="hljs-title">Read</span><span class="hljs-params">()</span></span>&#123;</span><br><span class="line">  <span class="hljs-keyword">go</span> <span class="hljs-function"><span class="hljs-keyword">func</span><span class="hljs-params">()</span></span> &#123;</span><br><span class="line">    <span class="hljs-keyword">for</span> &#123;</span><br><span class="line">      <span class="hljs-keyword">select</span> &#123;</span><br><span class="line">      <span class="hljs-keyword">case</span> &lt;-r.reader.C: <span class="hljs-comment">// previously stuck here indefinitely</span></span><br><span class="line">        <span class="hljs-comment">// do something</span></span><br><span class="line">      <span class="hljs-keyword">case</span> &lt;-r.readerDone:</span><br><span class="line">        <span class="hljs-keyword">return</span> <span class="hljs-comment">// when done channel receives value the return causes the function to exit</span></span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;()</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="hljs-comment">// other place in the code</span></span><br><span class="line"><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-params">(r *Reader)</span> <span class="hljs-title">Stop</span><span class="hljs-params">()</span></span>&#123;</span><br><span class="line">  r.reader.Stop()</span><br><span class="line">  r.readerDone &lt;- <span class="hljs-literal">true</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+
+<h3 id="Summary"><a href="#Summary" class="headerlink" title="Summary"></a>Summary</h3><p>The memory leak above turned out to be a forgotten channel that caused a goroutine leak. A goroutine leak happens when goroutines never finish execution, which leads to their stack stay on the heap and never get garbage collected, which eventually leads to an out of memory exception.<br>The cause of memory leaks will <strong>almost</strong> always be from your applications side, but as I crunched through several of them, I noticed it is easier to start with the small things, like, checking the runtime Github page for new issues, or, if the leak started after a new release, comparing it to a previous release without the leak. These small things can save you tens if not hundreds of profiling hours. Regardless of where you choose to start, pprof can come to your aid. Pprof is Golang’s profiling tool which allows you to take cpu, heap, OS thread and goroutines profiles and compare them visually.</p>
+<h3 id="Bibliography"><a href="#Bibliography" class="headerlink" title="Bibliography"></a>Bibliography</h3><ul>
+<li><a target="_blank" rel="noopener" href="https://go101.org/article/memory-leaking.html">memory-leaking</a></li>
+<li><a target="_blank" rel="noopener" href="https://blog.detectify.com/2019/09/05/how-we-tracked-down-a-memory-leak-in-one-of-our-go-microservices/">how-we-tracked-down-a-memory-leak-in-one-of-our-go-microservices</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.freecodecamp.org/news/how-i-investigated-memory-leaks-in-go-using-pprof-on-a-large-codebase-4bec4325e192/">how-i-investigated-memory-leaks-in-go-using-pprof-on-a-large-codebase</a></li>
+</ul>
+
+        </div>
+        
+        <div class="level is-size-7 is-uppercase">
+            <div class="level-start">
+                <div class="level-item custom-tags">
+                    <span class="is-size-6 has-text-grey has-mr-7">#</span>
+                    <a class="has-link-grey -link-link" href="/tags/Golang/" rel="tag">Golang</a>, <a class="has-link-grey -link-link" href="/tags/Green-Threads/" rel="tag">Green Threads</a>, <a class="has-link-grey -link-link" href="/tags/Investigation/" rel="tag">Investigation</a>, <a class="has-link-grey -link-link" href="/tags/Memory-Leak/" rel="tag">Memory Leak</a>, <a class="has-link-grey -link-link" href="/tags/Profiling/" rel="tag">Profiling</a>
+                </div>
+            </div>
+        </div>
+        
+        
+        
+    </div>
+</div>
+
+
+
+
+
+<div class="card card-transparent">
+    <div class="level post-navigation is-flex-wrap is-mobile">
+        
+        <div class="level-start">
+            <a class="level level-item has-link-grey  article-nav-prev" href="/2021/07/19/Auditing-in-Microservices/">
+                <i class="level-item fas fa-chevron-left"></i>
+                <span class="level-item">Auditing in Microservices</span>
+            </a>
+        </div>
+        
+        
+        <div class="level-end">
+            <a class="level level-item has-link-grey  article-nav-next" href="/2020/03/21/Collecting-Docker-Logs-With-Loki/">
+                <span class="level-item">Collecting Docker Logs With Loki</span>
+                <i class="level-item fas fa-chevron-right"></i>
+            </a>
+        </div>
+        
+    </div>
+</div>
+
+
+
+<div class="card">
+    <div class="card-content">
+        <h3 class="title is-5 has-text-weight-normal">Comments</h3>
+        
+<script>
+    var disqus_config = function () {
+        this.page.url = 'https://yuriktech.com/2020/11/07/Golang-Memory-Leaks/';
+        this.page.identifier = '2020/11/07/Golang-Memory-Leaks/';
+    };
+    (function() {
+        var d = document, s = d.createElement('script');  
+        s.src = '//' + 'yuritech' + '.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', +new Date());
+        (d.head || d.body).appendChild(s);
+    })();
+</script>
+
+<div id="disqus_thread">
+    
+    <noscript>Please enable JavaScript to view the <a target="_blank" rel="noopener" href="//disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+    </div>
+</div>
+</div>
+                
+
+
+
+
+<div class="column is-4-tablet is-4-desktop is-3-widescreen  has-order-1 column-left ">
+    
+        
+<div class="card widget">
+    <div class="card-content">
+        <nav class="level">
+            <div class="level-item has-text-centered" style="flex-shrink: 1">
+                <div>
+                    
+                        <img class="image is-128x128 has-mb-6" src="/about/index/avatar.png" alt="Yuri Khomyakov">
+                    
+                    
+                    <p class="is-size-4 is-block">
+                        Yuri Khomyakov
+                    </p>
+                    
+                    
+                    <p class="is-size-6 is-block">
+                        Technology Leader
+                    </p>
+                    
+                    
+                </div>
+            </div>
+        </nav>
+        <nav class="level is-mobile">
+            <div class="level-item has-text-centered is-marginless">
+                <div>
+                    <p class="heading">
+                        Posts
+                    </p>
+                    <p class="title has-text-weight-normal">
+                        13
+                    </p>
+                </div>
+            </div>
+            <div class="level-item has-text-centered is-marginless">
+                <div>
+                    <p class="heading">
+                        Categories
+                    </p>
+                    <p class="title has-text-weight-normal">
+                        4
+                    </p>
+                </div>
+            </div>
+            <div class="level-item has-text-centered is-marginless">
+                <div>
+                    <p class="heading">
+                        Tags
+                    </p>
+                    <p class="title has-text-weight-normal">
+                        44
+                    </p>
+                </div>
+            </div>
+        </nav>
+        <div class="level">
+            <a class="level-item button is-link is-rounded" href="https://github.com/yuraxdrumz" target="_blank">
+                Follow</a>
+        </div>
+        
+        
+        <div class="level is-mobile">
+            
+            <a class="level-item button is-white is-marginless" target="_blank"
+                title="Email" href="mailto:yurik1776@gmail.com">
+                
+                <i class="far fa-envelope"></i>
+                
+            </a>
+            
+            <a class="level-item button is-white is-marginless" target="_blank"
+                title="LinkedIn" href="https://www.linkedin.com/in/yuri-khomyakov-383278125/">
+                
+                <i class="fab fa-linkedin"></i>
+                
+            </a>
+            
+            <a class="level-item button is-white is-marginless" target="_blank"
+                title="Github" href="https://github.com/yuraxdrumz">
+                
+                <i class="fab fa-github"></i>
+                
+            </a>
+            
+            <a class="level-item button is-white is-marginless" target="_blank"
+                title="RSS" href="/atom.xml">
+                
+                <i class="fas fa-rss"></i>
+                
+            </a>
+            
+        </div>
+        
+    </div>
+</div>
+    
+        
+<div class="card widget">
+    <div class="card-content">
+        <h3 class="menu-label">
+            Tag Cloud
+        </h3>
+        <a href="/tags/API-Gateway/" style="font-size: 10px;">API Gateway</a> <a href="/tags/Actor-Model/" style="font-size: 10px;">Actor Model</a> <a href="/tags/Auditing/" style="font-size: 10px;">Auditing</a> <a href="/tags/Authentication/" style="font-size: 10px;">Authentication</a> <a href="/tags/Backend-For-Frontend/" style="font-size: 10px;">Backend For Frontend</a> <a href="/tags/Clean-Architecture/" style="font-size: 10px;">Clean Architecture</a> <a href="/tags/Concurrency/" style="font-size: 10px;">Concurrency</a> <a href="/tags/Containers/" style="font-size: 10px;">Containers</a> <a href="/tags/Context-Maps/" style="font-size: 10px;">Context Maps</a> <a href="/tags/DDD/" style="font-size: 12.5px;">DDD</a> <a href="/tags/Design/" style="font-size: 10px;">Design</a> <a href="/tags/Development/" style="font-size: 10px;">Development</a> <a href="/tags/Docker/" style="font-size: 10px;">Docker</a> <a href="/tags/Elixir/" style="font-size: 12.5px;">Elixir</a> <a href="/tags/Event-Loop/" style="font-size: 10px;">Event Loop</a> <a href="/tags/Event-Sourcing/" style="font-size: 10px;">Event Sourcing</a> <a href="/tags/Functional/" style="font-size: 15px;">Functional</a> <a href="/tags/Golang/" style="font-size: 15px;">Golang</a> <a href="/tags/Green-Threads/" style="font-size: 12.5px;">Green Threads</a> <a href="/tags/Hexagonal/" style="font-size: 10px;">Hexagonal</a> <a href="/tags/Investigation/" style="font-size: 10px;">Investigation</a> <a href="/tags/Javascript/" style="font-size: 10px;">Javascript</a> <a href="/tags/Kernel-Threads/" style="font-size: 10px;">Kernel Threads</a> <a href="/tags/Logging/" style="font-size: 10px;">Logging</a> <a href="/tags/Loki/" style="font-size: 10px;">Loki</a> <a href="/tags/Maybe-a-rant/" style="font-size: 10px;">Maybe a rant</a> <a href="/tags/Memory-Leak/" style="font-size: 10px;">Memory Leak</a> <a href="/tags/Microservices/" style="font-size: 15px;">Microservices</a> <a href="/tags/Middleware/" style="font-size: 10px;">Middleware</a> <a href="/tags/Node-js/" style="font-size: 10px;">Node js</a> <a href="/tags/Node-js/" style="font-size: 17.5px;">Node.js</a> <a href="/tags/Parallelism/" style="font-size: 10px;">Parallelism</a> <a href="/tags/Ports-and-Adapters/" style="font-size: 10px;">Ports and Adapters</a> <a href="/tags/Profiling/" style="font-size: 10px;">Profiling</a> <a href="/tags/Programming-Paradigms/" style="font-size: 10px;">Programming Paradigms</a> <a href="/tags/Scheduler/" style="font-size: 10px;">Scheduler</a> <a href="/tags/Sidecar-Pattern/" style="font-size: 10px;">Sidecar Pattern</a> <a href="/tags/Software-Architecture/" style="font-size: 20px;">Software Architecture</a> <a href="/tags/Threading-Models/" style="font-size: 10px;">Threading Models</a> <a href="/tags/Threads/" style="font-size: 10px;">Threads</a> <a href="/tags/Tutorial/" style="font-size: 12.5px;">Tutorial</a> <a href="/tags/Typescript/" style="font-size: 10px;">Typescript</a> <a href="/tags/Uncle-Bob/" style="font-size: 10px;">Uncle Bob</a> <a href="/tags/libuv/" style="font-size: 10px;">libuv</a>
+    </div>
+</div>
+
+    
+    
+        <div class="column-right-shadow is-hidden-widescreen ">
+        
+            
+<div class="card widget" id="toc">
+    <div class="card-content">
+        <div class="menu">
+            <h3 class="menu-label">
+                Catalogue
+            </h3>
+            <ul class="menu-list"><li>
+        <a class="is-flex" href="#Preface">
+        <span class="has-mr-6">1</span>
+        <span>Preface</span>
+        </a></li><li>
+        <a class="is-flex" href="#Disclaimer">
+        <span class="has-mr-6">2</span>
+        <span>Disclaimer</span>
+        </a></li><li>
+        <a class="is-flex" href="#The-Memory-Leak">
+        <span class="has-mr-6">3</span>
+        <span>The Memory Leak</span>
+        </a></li><li>
+        <a class="is-flex" href="#Golang’s-Profiling-Tool-pprof">
+        <span class="has-mr-6">4</span>
+        <span>Golang’s Profiling Tool - pprof</span>
+        </a><ul class="menu-list"><li>
+        <a class="is-flex" href="#Profiling-Types">
+        <span class="has-mr-6">4.1</span>
+        <span>Profiling Types</span>
+        </a></li><li>
+        <a class="is-flex" href="#Profiling-Example">
+        <span class="has-mr-6">4.2</span>
+        <span>Profiling Example</span>
+        </a></li></ul></li><li>
+        <a class="is-flex" href="#Diagnosing-the-Leak">
+        <span class="has-mr-6">5</span>
+        <span>Diagnosing the Leak</span>
+        </a></li><li>
+        <a class="is-flex" href="#The-Fix">
+        <span class="has-mr-6">6</span>
+        <span>The Fix</span>
+        </a></li><li>
+        <a class="is-flex" href="#Summary">
+        <span class="has-mr-6">7</span>
+        <span>Summary</span>
+        </a></li><li>
+        <a class="is-flex" href="#Bibliography">
+        <span class="has-mr-6">8</span>
+        <span>Bibliography</span>
+        </a></li></ul>
+        </div>
+    </div>
+</div>
+
+        
+            
+<div class="card widget">
+    <div class="card-content">
+        <h3 class="menu-label">
+            Recent
+        </h3>
+        
+        <article class="media">
+            
+            <a href="/2021/07/19/Auditing-in-Microservices/" class="media-left">
+                <p class="image is-64x64">
+                    <img class="thumbnail" src="/images/thumbnail.svg" alt="Auditing in Microservices">
+                </p>
+            </a>
+            
+            <div class="media-content">
+                <div class="content">
+                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2021-07-19T16:41:33.000Z">2021-07-19</time></div>
+                    <a href="/2021/07/19/Auditing-in-Microservices/" class="has-link-black-ter is-size-6">Auditing in Microservices</a>
+                    <p class="is-size-7 is-uppercase">
+                        <a class="has-link-grey -link" href="/categories/Architecture/">Architecture</a>
+                    </p>
+                </div>
+            </div>
+        </article>
+        
+        <article class="media">
+            
+            <a href="/2020/11/07/Golang-Memory-Leaks/" class="media-left">
+                <p class="image is-64x64">
+                    <img class="thumbnail" src="/images/Golang.png" alt="Golang Memory Leaks">
+                </p>
+            </a>
+            
+            <div class="media-content">
+                <div class="content">
+                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2020-11-07T17:59:35.000Z">2020-11-07</time></div>
+                    <a href="/2020/11/07/Golang-Memory-Leaks/" class="has-link-black-ter is-size-6">Golang Memory Leaks</a>
+                    <p class="is-size-7 is-uppercase">
+                        <a class="has-link-grey -link" href="/categories/Programming/">Programming</a>
+                    </p>
+                </div>
+            </div>
+        </article>
+        
+        <article class="media">
+            
+            <a href="/2020/03/21/Collecting-Docker-Logs-With-Loki/" class="media-left">
+                <p class="image is-64x64">
+                    <img class="thumbnail" src="/images/loki.jpg" alt="Collecting Docker Logs With Loki">
+                </p>
+            </a>
+            
+            <div class="media-content">
+                <div class="content">
+                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2020-03-21T14:10:20.000Z">2020-03-21</time></div>
+                    <a href="/2020/03/21/Collecting-Docker-Logs-With-Loki/" class="has-link-black-ter is-size-6">Collecting Docker Logs With Loki</a>
+                    <p class="is-size-7 is-uppercase">
+                        <a class="has-link-grey -link" href="/categories/DevOps/">DevOps</a>
+                    </p>
+                </div>
+            </div>
+        </article>
+        
+        <article class="media">
+            
+            <a href="/2020/03/07/User-Space-Scheduling/" class="media-left">
+                <p class="image is-64x64">
+                    <img class="thumbnail" src="/images/multi.jpg" alt="User Space Scheduling">
+                </p>
+            </a>
+            
+            <div class="media-content">
+                <div class="content">
+                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2020-03-07T14:26:21.000Z">2020-03-07</time></div>
+                    <a href="/2020/03/07/User-Space-Scheduling/" class="has-link-black-ter is-size-6">User Space Scheduling</a>
+                    <p class="is-size-7 is-uppercase">
+                        <a class="has-link-grey -link" href="/categories/Programming/">Programming</a>
+                    </p>
+                </div>
+            </div>
+        </article>
+        
+        <article class="media">
+            
+            <a href="/2020/02/01/Implementing-Ports-and-Adapters/" class="media-left">
+                <p class="image is-64x64">
+                    <img class="thumbnail" src="/images/golang-ports-and-adapters.png" alt="Implementing Ports and Adapters">
+                </p>
+            </a>
+            
+            <div class="media-content">
+                <div class="content">
+                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2020-02-01T16:15:21.000Z">2020-02-01</time></div>
+                    <a href="/2020/02/01/Implementing-Ports-and-Adapters/" class="has-link-black-ter is-size-6">Implementing Ports and Adapters</a>
+                    <p class="is-size-7 is-uppercase">
+                        <a class="has-link-grey -link" href="/categories/Architecture/">Architecture</a>
+                    </p>
+                </div>
+            </div>
+        </article>
+        
+    </div>
+</div>
+
+        
+            
+<div class="card widget">
+    <div class="card-content">
+        <div class="menu">
+            <h3 class="menu-label">
+                Categories
+            </h3>
+            <ul class="menu-list">
+            <li>
+        <a class="level is-marginless" href="/categories/Architecture/">
+            <span class="level-start">
+                <span class="level-item">Architecture</span>
+            </span>
+            <span class="level-end">
+                <span class="level-item tag">6</span>
+            </span>
+        </a></li><li>
+        <a class="level is-marginless" href="/categories/DevOps/">
+            <span class="level-start">
+                <span class="level-item">DevOps</span>
+            </span>
+            <span class="level-end">
+                <span class="level-item tag">1</span>
+            </span>
+        </a></li><li>
+        <a class="level is-marginless" href="/categories/Paradigms/">
+            <span class="level-start">
+                <span class="level-item">Paradigms</span>
+            </span>
+            <span class="level-end">
+                <span class="level-item tag">1</span>
+            </span>
+        </a></li><li>
+        <a class="level is-marginless" href="/categories/Programming/">
+            <span class="level-start">
+                <span class="level-item">Programming</span>
+            </span>
+            <span class="level-end">
+                <span class="level-item tag">5</span>
+            </span>
+        </a></li>
+            </ul>
+        </div>
+    </div>
+</div>
+        
+        </div>
+    
+</div>
+
+                
+
+
+
+
+<div class="column is-4-tablet is-4-desktop is-3-widescreen is-hidden-touch is-hidden-desktop-only has-order-3 column-right ">
+    
+        
+<div class="card widget" id="toc">
+    <div class="card-content">
+        <div class="menu">
+            <h3 class="menu-label">
+                Catalogue
+            </h3>
+            <ul class="menu-list"><li>
+        <a class="is-flex" href="#Preface">
+        <span class="has-mr-6">1</span>
+        <span>Preface</span>
+        </a></li><li>
+        <a class="is-flex" href="#Disclaimer">
+        <span class="has-mr-6">2</span>
+        <span>Disclaimer</span>
+        </a></li><li>
+        <a class="is-flex" href="#The-Memory-Leak">
+        <span class="has-mr-6">3</span>
+        <span>The Memory Leak</span>
+        </a></li><li>
+        <a class="is-flex" href="#Golang’s-Profiling-Tool-pprof">
+        <span class="has-mr-6">4</span>
+        <span>Golang’s Profiling Tool - pprof</span>
+        </a><ul class="menu-list"><li>
+        <a class="is-flex" href="#Profiling-Types">
+        <span class="has-mr-6">4.1</span>
+        <span>Profiling Types</span>
+        </a></li><li>
+        <a class="is-flex" href="#Profiling-Example">
+        <span class="has-mr-6">4.2</span>
+        <span>Profiling Example</span>
+        </a></li></ul></li><li>
+        <a class="is-flex" href="#Diagnosing-the-Leak">
+        <span class="has-mr-6">5</span>
+        <span>Diagnosing the Leak</span>
+        </a></li><li>
+        <a class="is-flex" href="#The-Fix">
+        <span class="has-mr-6">6</span>
+        <span>The Fix</span>
+        </a></li><li>
+        <a class="is-flex" href="#Summary">
+        <span class="has-mr-6">7</span>
+        <span>Summary</span>
+        </a></li><li>
+        <a class="is-flex" href="#Bibliography">
+        <span class="has-mr-6">8</span>
+        <span>Bibliography</span>
+        </a></li></ul>
+        </div>
+    </div>
+</div>
+
+    
+        
+<div class="card widget">
+    <div class="card-content">
+        <h3 class="menu-label">
+            Recent
+        </h3>
+        
+        <article class="media">
+            
+            <a href="/2021/07/19/Auditing-in-Microservices/" class="media-left">
+                <p class="image is-64x64">
+                    <img class="thumbnail" src="/images/thumbnail.svg" alt="Auditing in Microservices">
+                </p>
+            </a>
+            
+            <div class="media-content">
+                <div class="content">
+                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2021-07-19T16:41:33.000Z">2021-07-19</time></div>
+                    <a href="/2021/07/19/Auditing-in-Microservices/" class="has-link-black-ter is-size-6">Auditing in Microservices</a>
+                    <p class="is-size-7 is-uppercase">
+                        <a class="has-link-grey -link" href="/categories/Architecture/">Architecture</a>
+                    </p>
+                </div>
+            </div>
+        </article>
+        
+        <article class="media">
+            
+            <a href="/2020/11/07/Golang-Memory-Leaks/" class="media-left">
+                <p class="image is-64x64">
+                    <img class="thumbnail" src="/images/Golang.png" alt="Golang Memory Leaks">
+                </p>
+            </a>
+            
+            <div class="media-content">
+                <div class="content">
+                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2020-11-07T17:59:35.000Z">2020-11-07</time></div>
+                    <a href="/2020/11/07/Golang-Memory-Leaks/" class="has-link-black-ter is-size-6">Golang Memory Leaks</a>
+                    <p class="is-size-7 is-uppercase">
+                        <a class="has-link-grey -link" href="/categories/Programming/">Programming</a>
+                    </p>
+                </div>
+            </div>
+        </article>
+        
+        <article class="media">
+            
+            <a href="/2020/03/21/Collecting-Docker-Logs-With-Loki/" class="media-left">
+                <p class="image is-64x64">
+                    <img class="thumbnail" src="/images/loki.jpg" alt="Collecting Docker Logs With Loki">
+                </p>
+            </a>
+            
+            <div class="media-content">
+                <div class="content">
+                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2020-03-21T14:10:20.000Z">2020-03-21</time></div>
+                    <a href="/2020/03/21/Collecting-Docker-Logs-With-Loki/" class="has-link-black-ter is-size-6">Collecting Docker Logs With Loki</a>
+                    <p class="is-size-7 is-uppercase">
+                        <a class="has-link-grey -link" href="/categories/DevOps/">DevOps</a>
+                    </p>
+                </div>
+            </div>
+        </article>
+        
+        <article class="media">
+            
+            <a href="/2020/03/07/User-Space-Scheduling/" class="media-left">
+                <p class="image is-64x64">
+                    <img class="thumbnail" src="/images/multi.jpg" alt="User Space Scheduling">
+                </p>
+            </a>
+            
+            <div class="media-content">
+                <div class="content">
+                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2020-03-07T14:26:21.000Z">2020-03-07</time></div>
+                    <a href="/2020/03/07/User-Space-Scheduling/" class="has-link-black-ter is-size-6">User Space Scheduling</a>
+                    <p class="is-size-7 is-uppercase">
+                        <a class="has-link-grey -link" href="/categories/Programming/">Programming</a>
+                    </p>
+                </div>
+            </div>
+        </article>
+        
+        <article class="media">
+            
+            <a href="/2020/02/01/Implementing-Ports-and-Adapters/" class="media-left">
+                <p class="image is-64x64">
+                    <img class="thumbnail" src="/images/golang-ports-and-adapters.png" alt="Implementing Ports and Adapters">
+                </p>
+            </a>
+            
+            <div class="media-content">
+                <div class="content">
+                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2020-02-01T16:15:21.000Z">2020-02-01</time></div>
+                    <a href="/2020/02/01/Implementing-Ports-and-Adapters/" class="has-link-black-ter is-size-6">Implementing Ports and Adapters</a>
+                    <p class="is-size-7 is-uppercase">
+                        <a class="has-link-grey -link" href="/categories/Architecture/">Architecture</a>
+                    </p>
+                </div>
+            </div>
+        </article>
+        
+    </div>
+</div>
+
+    
+        
+<div class="card widget">
+    <div class="card-content">
+        <div class="menu">
+            <h3 class="menu-label">
+                Categories
+            </h3>
+            <ul class="menu-list">
+            <li>
+        <a class="level is-marginless" href="/categories/Architecture/">
+            <span class="level-start">
+                <span class="level-item">Architecture</span>
+            </span>
+            <span class="level-end">
+                <span class="level-item tag">6</span>
+            </span>
+        </a></li><li>
+        <a class="level is-marginless" href="/categories/DevOps/">
+            <span class="level-start">
+                <span class="level-item">DevOps</span>
+            </span>
+            <span class="level-end">
+                <span class="level-item tag">1</span>
+            </span>
+        </a></li><li>
+        <a class="level is-marginless" href="/categories/Paradigms/">
+            <span class="level-start">
+                <span class="level-item">Paradigms</span>
+            </span>
+            <span class="level-end">
+                <span class="level-item tag">1</span>
+            </span>
+        </a></li><li>
+        <a class="level is-marginless" href="/categories/Programming/">
+            <span class="level-start">
+                <span class="level-item">Programming</span>
+            </span>
+            <span class="level-end">
+                <span class="level-item tag">5</span>
+            </span>
+        </a></li>
+            </ul>
+        </div>
+    </div>
+</div>
+    
+    
+</div>
+
+            </div>
+        </div>
+    </section>
+    <footer class="footer">
+    <div class="container">
+        <div class="level">
+            <div class="level-start has-text-centered-mobile">
+                <p class="is-size-7">
+                &copy; 2021 Yuri Khomyakov&nbsp;
+                Powered by <a href="https://hexo.io/" target="_blank">Hexo</a> & <a
+                        href="https://github.com/ppoffice/hexo-theme-icarus" target="_blank">Icarus</a>
+                
+                </p>
+            </div>
+            <div class="level-end">
+            
+                <div class="field has-addons is-flex-center-mobile has-mt-5-mobile is-flex-wrap is-flex-middle">
+                
+                
+                <p class="control">
+                    <a class="button is-white is-large" target="_blank" title="GitHub" href="https://github.com/yuraxdrumz">
+                        
+                        <i class="fab fa-github"></i>
+                        
+                    </a>
+                </p>
+                
+                </div>
+            
+            </div>
+        </div>
+    </div>
+</footer>
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.3.1/dist/jquery.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/moment@2.22.2/min/moment-with-locales.min.js"></script>
+<script>moment.locale("en");</script>
+
+
+    
+    
+    
+    <script src="/js/animation.js"></script>
+    
+
+    
+    
+    
+    <script src="https://cdn.jsdelivr.net/npm/lightgallery@1.6.8/dist/js/lightgallery.min.js" defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/justifiedGallery@3.7.0/dist/js/jquery.justifiedGallery.min.js" defer></script>
+    <script src="/js/gallery.js" defer></script>
+    
+
+    
+    
+
+<div id="outdated">
+    <h6>Your browser is out-of-date!</h6>
+    <p>Update your browser to view this website correctly. <a id="btnUpdateBrowser" target="_blank" rel="noopener" href="http://outdatedbrowser.com/">Update
+            my browser now </a></p>
+    <p class="last"><a href="#" id="btnCloseUpdateBrowser" title="Close">&times;</a></p>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/outdatedbrowser@1.1.5/outdatedbrowser/outdatedbrowser.min.js" defer></script>
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        outdatedBrowser({
+            bgColor: '#f25648',
+            color: '#ffffff',
+            lowerThan: 'flex'
+        });
+    });
+</script>
+
+
+    
+    
+<script src="https://cdn.jsdelivr.net/npm/mathjax@2.7.5/unpacked/MathJax.js?config=TeX-MML-AM_CHTML" defer></script>
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    MathJax.Hub.Config({
+        'HTML-CSS': {
+            matchFontHeight: false
+        },
+        SVG: {
+            matchFontHeight: false
+        },
+        CommonHTML: {
+            matchFontHeight: false
+        },
+        tex2jax: {
+            inlineMath: [
+                ['$','$'],
+                ['\\(','\\)']
+            ]
+        }
+    });
+});
+</script>
+
+    
+    
+
+<a id="back-to-top" title="Back to Top" href="javascript:;">
+    <i class="fas fa-chevron-up"></i>
+</a>
+<script src="/js/back-to-top.js" defer></script>
+
+
+    
+    
+
+    
+    
+    
+    
+
+    
+    
+    
+    
+    
+    <script src="https://cdn.jsdelivr.net/npm/clipboard@2.0.4/dist/clipboard.min.js" defer></script>
+    <script src="/js/clipboard.js" defer></script>
+    
+
+    
+    
+    
+
+
+<script src="/js/main.js" defer></script>
+
+    
+    <div class="searchbox ins-search">
+    <div class="searchbox-container ins-search-container">
+        <div class="searchbox-input-wrapper">
+            <input type="text" class="searchbox-input ins-search-input" placeholder="Type something..." />
+            <span class="searchbox-close ins-close ins-selectable"><i class="fa fa-times-circle"></i></span>
+        </div>
+        <div class="searchbox-result-wrapper ins-section-wrapper">
+            <div class="ins-section-container"></div>
+        </div>
+    </div>
+</div>
+<script>
+    (function (window) {
+        var INSIGHT_CONFIG = {
+            TRANSLATION: {
+                POSTS: 'Posts',
+                PAGES: 'Pages',
+                CATEGORIES: 'Categories',
+                TAGS: 'Tags',
+                UNTITLED: '(Untitled)',
+            },
+            CONTENT_URL: '/content.json',
+        };
+        window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+    })(window);
+</script>
+<script src="/js/insight.js" defer></script>
+<link rel="stylesheet" href="/css/search.css">
+<link rel="stylesheet" href="/css/insight.css">
+    
+</body>
+</html>
