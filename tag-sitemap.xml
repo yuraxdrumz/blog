@@ -4,35 +4,35 @@
 
     <url>
         <loc>https://yuriktech.com/tags/Golang/</loc>
-        <lastmod>2021-07-19T17:00:14.288Z</lastmod>
+        <lastmod>2021-07-19T20:32:00.567Z</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.2</priority>
     </url>
 
     <url>
         <loc>https://yuriktech.com/tags/Event-Sourcing/</loc>
-        <lastmod>2021-07-19T17:00:14.288Z</lastmod>
+        <lastmod>2021-07-19T20:32:00.567Z</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.2</priority>
     </url>
 
     <url>
         <loc>https://yuriktech.com/tags/Auditing/</loc>
-        <lastmod>2021-07-19T17:00:14.288Z</lastmod>
+        <lastmod>2021-07-19T20:32:00.567Z</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.2</priority>
     </url>
 
     <url>
         <loc>https://yuriktech.com/tags/Microservices/</loc>
-        <lastmod>2021-07-19T17:00:14.288Z</lastmod>
+        <lastmod>2021-07-19T20:32:00.567Z</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.2</priority>
     </url>
 
     <url>
         <loc>https://yuriktech.com/tags/Software-Architecture/</loc>
-        <lastmod>2021-07-19T17:00:14.288Z</lastmod>
+        <lastmod>2021-07-19T20:32:00.567Z</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.2</priority>
     </url>
@@ -52,14 +52,14 @@
     </url>
 
     <url>
-        <loc>https://yuriktech.com/tags/Functional/</loc>
+        <loc>https://yuriktech.com/tags/Elixir/</loc>
         <lastmod>2021-07-08T17:55:19.471Z</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.2</priority>
     </url>
 
     <url>
-        <loc>https://yuriktech.com/tags/Elixir/</loc>
+        <loc>https://yuriktech.com/tags/Functional/</loc>
         <lastmod>2021-07-08T17:55:19.471Z</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.2</priority>
@@ -241,6 +241,13 @@
     </url>
 
     <url>
+        <loc>https://yuriktech.com/tags/Programming-Paradigms/</loc>
+        <lastmod>2021-01-22T11:07:55.933Z</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.2</priority>
+    </url>
+
+    <url>
         <loc>https://yuriktech.com/tags/Context-Maps/</loc>
         <lastmod>2021-01-22T11:07:55.933Z</lastmod>
         <changefreq>weekly</changefreq>
@@ -248,8 +255,22 @@
     </url>
 
     <url>
-        <loc>https://yuriktech.com/tags/Programming-Paradigms/</loc>
-        <lastmod>2021-01-22T11:07:55.933Z</lastmod>
+        <loc>https://yuriktech.com/tags/Middleware/</loc>
+        <lastmod>2021-01-22T11:07:55.924Z</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.2</priority>
+    </url>
+
+    <url>
+        <loc>https://yuriktech.com/tags/Authentication/</loc>
+        <lastmod>2021-01-22T11:07:55.924Z</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.2</priority>
+    </url>
+
+    <url>
+        <loc>https://yuriktech.com/tags/Tutorial/</loc>
+        <lastmod>2021-01-22T11:07:55.924Z</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.2</priority>
     </url>
@@ -284,27 +305,6 @@
 
     <url>
         <loc>https://yuriktech.com/tags/Docker/</loc>
-        <lastmod>2021-01-22T11:07:55.924Z</lastmod>
-        <changefreq>weekly</changefreq>
-        <priority>0.2</priority>
-    </url>
-
-    <url>
-        <loc>https://yuriktech.com/tags/Middleware/</loc>
-        <lastmod>2021-01-22T11:07:55.924Z</lastmod>
-        <changefreq>weekly</changefreq>
-        <priority>0.2</priority>
-    </url>
-
-    <url>
-        <loc>https://yuriktech.com/tags/Authentication/</loc>
-        <lastmod>2021-01-22T11:07:55.924Z</lastmod>
-        <changefreq>weekly</changefreq>
-        <priority>0.2</priority>
-    </url>
-
-    <url>
-        <loc>https://yuriktech.com/tags/Tutorial/</loc>
         <lastmod>2021-01-22T11:07:55.924Z</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.2</priority>

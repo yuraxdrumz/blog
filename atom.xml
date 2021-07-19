@@ -6,7 +6,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="https://yuriktech.com/"/>
-  <updated>2021-07-19T17:00:14.288Z</updated>
+  <updated>2021-07-19T20:32:00.567Z</updated>
   <id>https://yuriktech.com/</id>
   
   <author>
@@ -21,12 +21,17 @@
     <link href="https://yuriktech.com/2021/07/19/Auditing-in-Microservices/"/>
     <id>https://yuriktech.com/2021/07/19/Auditing-in-Microservices/</id>
     <published>2021-07-19T16:41:33.000Z</published>
-    <updated>2021-07-19T17:00:14.288Z</updated>
+    <updated>2021-07-19T20:32:00.567Z</updated>
     
     <summary type="html">
     
-      &lt;p&gt;In software, auditing means tracking user or system activities for various needs, such as business or security. An example would be - &lt;code&gt;user X tried to access resource Y&lt;/code&gt;.
-When I encuntered issues with auditing at my current company, I looked for solutions online, most of which, were either vague, lackluster or plain simple. That is why, after having implemented and dealt with auditing at scale, I would like to share my thoughts. In this post, I will show the various methods for implementing auditing together with code examples and pros and cons.&lt;/p&gt;
+      
+      
+        
+        
+          &lt;p&gt;In software, auditing means tracking user or system activities for various needs, such as business or security. An example would be -
+        
+      
     
     </summary>
     
@@ -54,8 +59,13 @@ When I encuntered issues with auditing at my current company, I looked for solut
     
     <summary type="html">
     
-      &lt;p&gt;Recently, I had a memory leak in production. I saw that a specific service’s memory steadily rises when under load, until the process hits an out of memory exception. After a thorough investigation, I found out the source of the memory leak as well as the reason to why it happened in the first place. To diagnose the problem, I used Golang’s profiling tool called &lt;code&gt;pprof&lt;/code&gt;.
-In this post, I will explain what is pprof and show how I diagnosed the memory leak.&lt;/p&gt;
+      
+      
+        
+        
+          &lt;p&gt;Recently, I had a memory leak in production. I saw that a specific service’s memory steadily rises when under load, until the process
+        
+      
     
     </summary>
     
@@ -83,14 +93,18 @@ In this post, I will explain what is pprof and show how I diagnosed the memory l
     
     <summary type="html">
     
-      &lt;p&gt;Loki is a multi-tenant log aggregation system inspired by Prometheus.&lt;br&gt;It is cost effective, easy to operate and allows viewing logs directly in Grafana.&lt;br&gt;In this blog post, I will show how to setup a Loki container using docker compose, how to define the Loki logging driver to automatically ship all container logs and finally, how to view the logs in Grafana.&lt;/p&gt;
+      
+      
+        
+        
+          &lt;p&gt;Loki is a multi-tenant log aggregation system inspired by Prometheus.&lt;br&gt;It is cost effective, easy to operate and allows viewing logs
+        
+      
     
     </summary>
     
       <category term="DevOps" scheme="https://yuriktech.com/categories/DevOps/"/>
     
-    
-      <category term="Tutorial" scheme="https://yuriktech.com/tags/Tutorial/"/>
     
       <category term="Docker" scheme="https://yuriktech.com/tags/Docker/"/>
     
@@ -101,6 +115,8 @@ In this post, I will explain what is pprof and show how I diagnosed the memory l
       <category term="Development" scheme="https://yuriktech.com/tags/Development/"/>
     
       <category term="Containers" scheme="https://yuriktech.com/tags/Containers/"/>
+    
+      <category term="Tutorial" scheme="https://yuriktech.com/tags/Tutorial/"/>
     
   </entry>
   
@@ -113,7 +129,13 @@ In this post, I will explain what is pprof and show how I diagnosed the memory l
     
     <summary type="html">
     
-      &lt;p&gt;A scheduler is a complex piece of software that is responsible for making sure cores are not idle if there are Threads that need work to be done.&lt;br&gt;The fast switching of Threads, also called a context switch, is done by the scheduler and it gives us the illusion that all of our processes run in parallel.&lt;br&gt;We have schedulers both in the Kernel of our favorite OS and in the user space, where our programs live and run.&lt;br&gt;Some types of programming languages leverage one type of scheduling, while others leverage another.&lt;br&gt;In this blog post, I will explain what a scheduler is and compare how scheduling affects different programming languages.&lt;/p&gt;
+      
+      
+        
+        
+          &lt;p&gt;A scheduler is a complex piece of software that is responsible for making sure cores are not idle if there are Threads that need work to
+        
+      
     
     </summary>
     
@@ -145,7 +167,13 @@ In this post, I will explain what is pprof and show how I diagnosed the memory l
     
     <summary type="html">
     
-      &lt;p&gt;There are different architectures that allow you to keep focus on your business domain and allow for fast paced development and changes. Examples would be: Clean Architecture, Onion Architecture and Ports and Adapters (also called hexagonal).&lt;br&gt;&lt;a href=&quot;/2019/06/11/Implementing-Clean-Architecture/&quot;&gt;In my previous post&lt;/a&gt;, I talked about Clean Architecture and how it helps get your code more modular and developer friendly after a somewhat short learning curve. After joining a new team, I noticed Clean Architecture did not really settle and the team found it to be somewhat over abstracted, so I decided to play around with a variation of Ports and Adapters.&lt;br&gt;In this post I will show what is Ports and Adapters and how I implemented it in Golang. Github repo is available &lt;a href=&quot;https://github.com/yuraxdrumz/ports-and-adapters-golang&quot;&gt;here&lt;/a&gt;.&lt;/p&gt;
+      
+      
+        
+        
+          &lt;p&gt;There are different architectures that allow you to keep focus on your business domain and allow for fast paced development and changes.
+        
+      
     
     </summary>
     
@@ -171,7 +199,13 @@ In this post, I will explain what is pprof and show how I diagnosed the memory l
     
     <summary type="html">
     
-      &lt;p&gt;After having written and implemented several microservice architectures, I wanted to have a go at explaining microservices from my point of view and share my insights. In this post I will explain what are microservices, what are their pros and cons, how they communicate and the different approaches towards building microservices.&lt;/p&gt;
+      
+      
+        
+        
+          &lt;p&gt;After having written and implemented several microservice architectures, I wanted to have a go at explaining microservices from my point
+        
+      
     
     </summary>
     
@@ -203,7 +237,13 @@ In this post, I will explain what is pprof and show how I diagnosed the memory l
     
     <summary type="html">
     
-      &lt;p&gt;The majority of the posts I see about microservices talk about the differences vs monoliths and how everyone, including myself, is rushing to build microservices in this fast paced world we live in. Recently, I read &lt;em&gt;Implementing Domain Driven Design&lt;/em&gt; by Vaughn Vernon, which seemed unrelated to microservices at first but soon changed my perspective on things. What I experienced, like the title suggests, was an epiphany that I was building microservices wrong all along. In fact, I was building smaller monoliths, separated by a url subdomain. &lt;em&gt;Head Explodes!&lt;/em&gt; In this short post, I will show a couple of symptoms that I found are a sign your microservices architecture might suffer in the long run.&lt;/p&gt;
+      
+      
+        
+        
+          &lt;p&gt;The majority of the posts I see about microservices talk about the differences vs monoliths and how everyone, including myself, is
+        
+      
     
     </summary>
     
@@ -227,7 +267,13 @@ In this post, I will explain what is pprof and show how I diagnosed the memory l
     
     <summary type="html">
     
-      &lt;p&gt;Ideally, it would be great to have a single place that incorporates all of our models, but in reality, our systems fragment to multiple models and we need to understand how to approach building them in way that allows future changes quickly.&lt;br&gt;Strategic Domain Driven Design is a high level approach to distributed software architecture and is an essential part of DDD. One of its features is context maps, which allows grasping the different relationships between bounded contexts (a boundary within which the ubiquitous language is consistent) and gives the teams a better understanding on how they affect each other. In this short post I will introduce you to the basics of context maps.&lt;/p&gt;
+      
+      
+        
+        
+          &lt;p&gt;Ideally, it would be great to have a single place that incorporates all of our models, but in reality, our systems fragment to multiple
+        
+      
     
     </summary>
     
@@ -251,18 +297,24 @@ In this post, I will explain what is pprof and show how I diagnosed the memory l
     
     <summary type="html">
     
-      &lt;p&gt;One of the first projects I was working on in Elixir was an API gateway. Like everyone else, I saw Pheonix, which is a cool framework for building web servers which is similar to Express.js, but, for my use case, I wanted raw performance for the API gateway, and one of its features was to have basic authentication as well as bearer authentication for json web tokens. One way to achieve this was using Plugs, which are built in the language. A plug is similar to a middleware in Express.js, it accepts input, does some manipulation and either halts the request or passes it on. In this post I will show how I implemented an authentication plug in Elixir.&lt;/p&gt;
+      
+      
+        
+        
+          &lt;p&gt;One of the first projects I was working on in Elixir was an API gateway. Like everyone else, I saw Pheonix, which is a cool framework
+        
+      
     
     </summary>
     
       <category term="Programming" scheme="https://yuriktech.com/categories/Programming/"/>
     
     
-      <category term="Elixir" scheme="https://yuriktech.com/tags/Elixir/"/>
-    
       <category term="Functional" scheme="https://yuriktech.com/tags/Functional/"/>
     
       <category term="Tutorial" scheme="https://yuriktech.com/tags/Tutorial/"/>
+    
+      <category term="Elixir" scheme="https://yuriktech.com/tags/Elixir/"/>
     
       <category term="Authentication" scheme="https://yuriktech.com/tags/Authentication/"/>
     
@@ -279,16 +331,22 @@ In this post, I will explain what is pprof and show how I diagnosed the memory l
     
     <summary type="html">
     
-      &lt;p&gt;When I first saw the ideas of functional programming, I found them very strange due to the fact that, I, like most people, got used to structural and object oriented programming paradigms. The structural takes away the &lt;code&gt;goto&lt;/code&gt; definitions from our code and replaces them with &lt;code&gt;if/else/do/while&lt;/code&gt;, which forces the code to execute in an order. The object oriented, encapsulates local variables and methods long after a function returns (what eventually became a constructor) and through the use of function pointers introduced polymorphism. In this post, I will introduce you to functional programming.&lt;/p&gt;
+      
+      
+        
+        
+          &lt;p&gt;When I first saw the ideas of functional programming, I found them very strange due to the fact that, I, like most people, got used to
+        
+      
     
     </summary>
     
       <category term="Paradigms" scheme="https://yuriktech.com/categories/Paradigms/"/>
     
     
-      <category term="Functional" scheme="https://yuriktech.com/tags/Functional/"/>
-    
       <category term="Programming Paradigms" scheme="https://yuriktech.com/tags/Programming-Paradigms/"/>
+    
+      <category term="Functional" scheme="https://yuriktech.com/tags/Functional/"/>
     
   </entry>
   
@@ -301,17 +359,22 @@ In this post, I will explain what is pprof and show how I diagnosed the memory l
     
     <summary type="html">
     
-      &lt;p&gt;After writing software for the past 6 years, I realized that the implementations that we write are far more important than the languages we choose, but, having a developer friendly, safe, strict language, can guide you towards better implementations. That is why I set out to search for a new programming language, that will replace my daily driver - &lt;code&gt;Node.js&lt;/code&gt;. 
-In a search for a new programming language, I asked myself two questions - &lt;em&gt;what are the must-have features I expect from a programming language?&lt;/em&gt; and &lt;em&gt;do its pros outweigh its cons?&lt;/em&gt;&lt;br&gt;In this post, I will weigh some of Javascript’s pros and cons, later on, I will list the features, I believe, a programming language should have, afterwards, I will explain why I chose to learn &lt;code&gt;Elixir&lt;/code&gt; and at last, I will weigh Elixir’s pros and cons.&lt;/p&gt;
+      
+      
+        
+        
+          &lt;p&gt;After writing software for the past 6 years, I realized that the implementations that we write are far more important than the languages
+        
+      
     
     </summary>
     
       <category term="Programming" scheme="https://yuriktech.com/categories/Programming/"/>
     
     
-      <category term="Elixir" scheme="https://yuriktech.com/tags/Elixir/"/>
-    
       <category term="Functional" scheme="https://yuriktech.com/tags/Functional/"/>
+    
+      <category term="Elixir" scheme="https://yuriktech.com/tags/Elixir/"/>
     
       <category term="Actor Model" scheme="https://yuriktech.com/tags/Actor-Model/"/>
     
@@ -328,7 +391,13 @@ In a search for a new programming language, I asked myself two questions - &lt;e
     
     <summary type="html">
     
-      &lt;p&gt;Last year, I had the opportunity to design a new project at work and since I had just finished reading Robert Martin’s &lt;em&gt;Clean Architecture&lt;/em&gt; I thought to myself, why not implement it on that project ? One of the reasons, except my usual &lt;em&gt;I have to implement this cool thing right away!&lt;/em&gt; was that working on legacy systems in the company was accompanied with the good ol’ &lt;em&gt;big ball of mud&lt;/em&gt; code. The purpose of this post is to show you how can one implement &lt;em&gt;Clean Architecture&lt;/em&gt; in practice and still understand it years from now, whether you work alone or in a team. Everything shown will be written in &lt;em&gt;Typescript&lt;/em&gt; on &lt;em&gt;Node.js&lt;/em&gt; using &lt;em&gt;Object Oriented&lt;/em&gt; programming paradigm. All of the code will be available &lt;a href=&quot;https://github.com/yuraxdrumz/clean-architecture-example&quot;&gt;here&lt;/a&gt;&lt;/p&gt;
+      
+      
+        
+        
+          &lt;p&gt;Last year, I had the opportunity to design a new project at work and since I had just finished reading Robert Martin’s &lt;em&gt;Clean
+        
+      
     
     </summary>
     
@@ -356,7 +425,13 @@ In a search for a new programming language, I asked myself two questions - &lt;e
     
     <summary type="html">
     
-      &lt;p&gt;After writing in Node.js for 3 years, I felt that the majority of the posts about it were lacking deeper knowledge, especially about the event loops internals, so, I decided to dig deep and give you my insights. Node.js seems like a simple beast to handle but in reality, there are a lot of layers of abstraction behind it. From one perspective, this abstraction is great, but, like everything else in software, abstraction comes at a cost.&lt;br&gt;The purpose of this post is to show you a broader picture of how the Node core handles the event loop, what it really is and how it coexists with the JS runtime.&lt;/p&gt;
+      
+      
+        
+        
+          &lt;p&gt;After writing in Node.js for 3 years, I felt that the majority of the posts about it were lacking deeper knowledge, especially about the
+        
+      
     
     </summary>
     

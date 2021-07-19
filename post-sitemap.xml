@@ -9,7 +9,7 @@
 
     <url>
         <loc>https://yuriktech.com/2021/07/19/Auditing-in-Microservices/</loc>
-        <lastmod>2021-07-19T17:00:14.288Z</lastmod>
+        <lastmod>2021-07-19T20:32:00.567Z</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.6</priority>
 
@@ -80,14 +80,6 @@
     </url>
 
     <url>
-        <loc>https://yuriktech.com/2019/06/22/Functional-Programming-in-10-minutes/</loc>
-        <lastmod>2021-01-22T11:07:55.933Z</lastmod>
-        <changefreq>weekly</changefreq>
-        <priority>0.6</priority>
-
-    </url>
-
-    <url>
         <loc>https://yuriktech.com/2019/07/10/Context-Maps-In-Domain-Driven-Design/</loc>
         <lastmod>2021-01-22T11:07:55.933Z</lastmod>
         <changefreq>weekly</changefreq>
@@ -96,8 +88,8 @@
     </url>
 
     <url>
-        <loc>https://yuriktech.com/2019/07/03/Authentication-Middleware-In-Elixir/</loc>
-        <lastmod>2021-01-22T11:07:55.924Z</lastmod>
+        <loc>https://yuriktech.com/2019/06/22/Functional-Programming-in-10-minutes/</loc>
+        <lastmod>2021-01-22T11:07:55.933Z</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.6</priority>
 
@@ -105,6 +97,14 @@
 
     <url>
         <loc>https://yuriktech.com/2020/03/21/Collecting-Docker-Logs-With-Loki/</loc>
+        <lastmod>2021-01-22T11:07:55.924Z</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.6</priority>
+
+    </url>
+
+    <url>
+        <loc>https://yuriktech.com/2019/07/03/Authentication-Middleware-In-Elixir/</loc>
         <lastmod>2021-01-22T11:07:55.924Z</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.6</priority>
