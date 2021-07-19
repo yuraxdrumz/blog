@@ -8,6 +8,7 @@ tags:
   - Golang
 category: Architecture
 date: 2021-07-19 19:41:33
+thumbnail: images/audit.png
 ---
 
 In software, auditing means tracking user or system activities for various needs, such as business or security. An example would be - `user X tried to access resource Y`.
