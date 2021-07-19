@@ -289,7 +289,7 @@ func (g *Groups) AddUserToGroup(user *User, groupId uuid.UUID) error {
 | Dedicated Service | Low        | Medium/High | Medium/High                            |
 |                   |            |             |                                        |
 
-Each of the implementations above has its pros and cons and you should always start with the simpler solution that can be implemented with as little effort as possible. If you are lucky enough to grow with your company to larger business needs and scale, you should consider the more scalable approches, which are also more challenging. Regardless of what you choose, always try to write your code modular and consistent, like I explained in Ports and Adapters [4] and Clean Architecture [5].
+Each of the implementations above has its pros and cons and you should always start with the simpler solution that can be implemented with as little effort as possible. If you are lucky enough to grow with your company to larger business needs and scale, you should consider the more scalable approaches, which are also more challenging. Regardless of what you choose, always try to write your code modular and consistent, like I explained in my previous posts, Ports and Adapters [4] and Clean Architecture [5].
 
 ## Bibliography
 
