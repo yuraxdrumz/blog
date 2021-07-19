@@ -108,117 +108,6 @@ func (g *Groups) AddUserToGroup(user *User, groupId uuid.UUID) error {
 - Not scalable if you use the same database as your application
 - Tougher to manage in a microservices environment as each service should have its own database, meaning no single owner of the audit data, unless you make an audit service, which we will discuss later in the post.
 
-## Auditing With Event Sourcing And CQRS
-
-From microservices.io [1, 2]
-> Event sourcing persists the state of a business entity such an Order or a Customer as a sequence of state-changing events. Whenever the state of a business entity changes, a new event is appended to the list of events. Since saving an event is a single operation, it is inherently atomic. The application reconstructs an entity’s current state by replaying the events.
-
-CQRS - Command Query Responsibility Segregation [3]
-> At its heart is the notion that you can use a different model to update information than the model you use to read information
-
-To keep things simple, with event sourcing, your business logic fires commands that in turn generate events that are appended to the store (append only database that is usually fast for writes), and each time a new event is appended, it is also published for the appropriate consumers to react.
-
-Event sourcing goes hand in hand with CQRS, due to events needing some sort of snapshot (a normalized view), to allow for fast reads. If we were to query only from the append only store, we would need to start from a known state, extract all relevant events and apply each one of them to the known state, which is very slow. With CQRS, we store a snapshot of the latest data and when a query comes, we are able to return the snapshot instead of reconstructing the state.
-
-Back to our example, we fire the `AddUserToGroup` Command, which generates the `UserAddedToGroup` event. Afterwards, the group consumer receives the `UserAddedToGroup` event, and reacts accordingly by populating the new data in a normalized way for easier querying.
-
-Command side
-
-```golang
-
-type User struct {
-    name `json:"name"`
-    id `json:"id"`
-}
-
-type Event struct {
-    id string `json:"id"`
-    event_type string `json:"event_type"`
-    aggregate_id string `json:"aggregate_id"`
-    aggregate_type string `json:"aggregate_type"`
-    payload string `json:"payload"`
-}
-
-func (g *Gateway) AddUserToGroup(user *User, groupId uuid.UUID) error {
-    err := g.validateUser(user)
-    if err != nil {
-        return err
-    }
-
-    err := g.validateGroupId(groupId)
-    if err != nil {
-        return err
-    }
-
-    userPayload, err := json.Marshal(user)
-    if err != nil {
-        return err
-    }
-
-    event := &Event{
-        id: uuid.NewV4(),
-        event_type: "UserAddedToGroup",
-        aggregate_id: groupId.String(),
-        aggregate_type: "group",
-        payload: string(userPayload)
-    }
-
-    // append the event to the store
-    err := g.appendOnlyStore.createEvent(user)
-    if err != nil {
-        return err
-    }
-
-    // send to pubsub
-    go g.pubsub.PublishEvent(event)
-
-    g.logger.info("event %+v was published", event)
-}
-```
-
-Query Handler
-
-```golang
-
-func main() {
-    groupHandler := NewGroupHandler(...dependencies)
-    groupListener := NewGroupListener()
-    groupListener.Subscribe("group.UserAddedToGroup", groupHandler.handler)
-}
-
-type Group struct {
-    id string `json:"id"`
-    name string `json:"name"`
-    users []User `json:"users"`
-}
-
-func (g *groupHandler) handler(event string) {
-    ev, err := json.Unmarshal(event)
-    if err != nil {
-        g.logger.error("failed to unmarshal event %s", event)
-        return
-    }
-
-    // add in a normalized way for the read model to easily query
-    err := g.queryStore.AddUserToGroup(ev.aggregate_id, ev.payload)
-}
-
-// later on when an API request will be made for group with users
-func (g *groupHandler) GetGroup(groupId uuid.UUID) (*Group, error) {
-    return g.queryStore.GetGroup(groupId)
-}
-```
-
-### Pros
-
-- We get audit out of the box for all operations
-- We are asynchronous from the get go, which can help with scale issues down the line
-
-### Cons
-
-- The event store is difficult to query since it requires typical queries to reconstruct the state of the business entities, unless we ALSO save the data in a normalized way (CQRS), like in our group handler example. This increases operational costs as well as adds complexity to the developers.
-- Unfamiliar programming style for most developers
-
 ## Auditing With Dedicated Micro-Service
 
 Have a single service for auditing, which is responsible for managing all audit data. All other services can communicate with it either synchronously (HTTP) or asynchronously (Publish/Subscribe, Queues, gRPC).
@@ -248,7 +137,7 @@ func (g *Groups) AddUserToGroup(user *User, groupId uuid.UUID) error {
         return err
     }
 
-    err := g.db.AddUserToGroup(user)
+    err := g.db.AddUserToGroup(user, groupId)
     if err != nil {
         return err
     }
@@ -279,14 +168,127 @@ func (g *Groups) AddUserToGroup(user *User, groupId uuid.UUID) error {
 
 - New audits must be explicitly created with a call to audit service, unlike the implicit nature of Event Sourcing
 
+## Auditing With Event Sourcing And CQRS
+
+From microservices.io [1, 2]
+> Event sourcing persists the state of a business entity such an Order or a Customer as a sequence of state-changing events. Whenever the state of a business entity changes, a new event is appended to the list of events. Since saving an event is a single operation, it is inherently atomic. The application reconstructs an entity’s current state by replaying the events.
+
+CQRS - Command Query Responsibility Segregation [3]
+> At its heart is the notion that you can use a different model to update information than the model you use to read information
+
+To keep things simple, with event sourcing, your business logic fires commands that in turn generate events that are appended to the store (append only database that is usually fast for writes), and each time a new event is appended, it is also published for the appropriate consumers to react.
+
+Event sourcing goes hand in hand with CQRS, due to events needing some sort of snapshot (a normalized view), to allow for fast reads. If we were to query only from the append only store, we would need to start from a known state, extract all relevant events and apply each one of them to the known state, which is very slow. With CQRS, we store a snapshot of the latest data and when a query comes, we are able to return the snapshot instead of reconstructing the state.
+
+Back to our example, we fire the `AddUserToGroup` Command, which generates the `UserAddedToGroup` event. Afterwards, the group consumer receives the `UserAddedToGroup` event, and reacts accordingly by populating the new data in a normalized way for easier querying.
+
+Groups service command side
+
+```golang
+
+type Event {
+    id string `json:"id"`
+    event_type string `json:"event_type"`
+    aggregate_id string `json:"aggregate_id"`
+    aggregate_type string `json:"aggregate_type"`
+    payload string `json:"payload"`
+}
+
+func (g *Groups) AddUserToGroup(user *User, groupId uuid.UUID) error {
+    // call users service to validate user
+    err := g.usersService.ValidateUser(user)
+    if err != nil {
+        return 
+    }
+
+    userPayload, err := json.Marshal(user)
+    if err != nil {
+        return err
+    }
+
+    event := &Event{
+        id: uuid.NewV4(),
+        event_type: "UserAddedToGroup",
+        aggregate_id: groupId.String(),
+        aggregate_type: "group",
+        payload: string(userPayload)
+    }
+
+    // append the event to the store, 
+    // the store should send the event added to the query store asynchronously
+    err := a.groupsAppendOnlyStore.CreateEvent(event)
+    if err != nil {
+        return err
+    }
+
+    // send to pubsub for other subscribers to react
+    go a.pubsub.PublishEvent(event)
+
+    a.logger.info("event %+v was published", event)
+}
+```
+
+Group service query side
+
+```golang
+
+type Group struct {
+    id string `json:"id"`
+    name string `json:"name"`
+    users []User `json:"users"`
+}
+
+// later on when an API request will be made for group with users
+func (g *groupHandler) GetGroup(groupId uuid.UUID) (*Group, error) {
+    return g.queryStore.GetGroup(groupId)
+}
+```
+
+Audit service
+
+```golang
+
+func main() {
+    audit := NewAuditHandler(...dependencies)
+    pubsub := PubSubConnection()
+    pubsub.Subscribe("group.*", audit.Handler)
+}
+
+func (a *Audit) Handler(event string) {
+    event, err := json.Unmarshal(event)
+    if err != nil {
+        a.logger.error("failed to unmarshal event=%s, err=%s", event, err)
+        return
+    }
+
+    // add in a normalized way for the read model to easily query
+    err := a.auditQueryStore.AddAudit(event)
+    if err != nil {
+        a.logger.error("failed to add audit event=%s, err=%s", event, err)
+        return
+    }
+}
+
+```
+
+### Pros
+
+- We get audit out of the box for all operations
+- We are asynchronous from the get go, which can help with scale issues down the line
+
+### Cons
+
+- The event store is difficult to query since it requires typical queries to reconstruct the state of the business entities, unless we ALSO save the data in a normalized way (CQRS), like in our group handler example. This increases operational costs as well as adds complexity to the developers.
+- Unfamiliar programming style for most developers
+
 ## Summary
 
 | Audit Type        | Complexity | Scfalablity  | Ease Of Integration With Existing Architecture |
 |-------------------|------------|-------------|----------------------------------------|
 | Logging           | Low        | Low         | High                                   |
 | Database          | Low        | Medium      | Medium/High                                 |
-| Event Sourcing    | High       | High        | Low                                    |
 | Dedicated Service | Low        | Medium/High | Medium/High                            |
+| Event Sourcing    | High       | High        | Low                                    |
 |                   |            |             |                                        |
 
 Each of the implementations above has its pros and cons and you should always start with the simpler solution that can be implemented with as little effort as possible. If you are lucky enough to grow with your company to larger business needs and scale, you should consider the more scalable approaches, which are also more challenging. Regardless of what you choose, always try to write your code modular and consistent, like I explained in my previous posts, Ports and Adapters [4] and Clean Architecture [5].
