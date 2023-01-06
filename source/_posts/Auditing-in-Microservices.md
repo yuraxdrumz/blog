@@ -283,7 +283,7 @@ func (a *Audit) Handler(event string) {
 
 ## Summary
 
-| Audit Type        | Complexity | Scfalablity  | Ease Of Integration With Existing Architecture |
+| Audit Type        | Complexity | Scalablity  | Ease Of Integration With Existing Architecture |
 |-------------------|------------|-------------|----------------------------------------|
 | Logging           | Low        | Low         | High                                   |
 | Database          | Low        | Medium      | Medium/High                                 |
